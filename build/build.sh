@@ -15,4 +15,7 @@ emmake make
 # If the project output is a library, you may need to add your 'main.c' file
 # here as well.
 # [-Ox] represents build optimisations (discussed in the next section).
-emcc -O3 lib/*.a -o highs.js
+emcc -O3 \
+	-s EXPORTED_FUNCTIONS="@$(pwd)/exported_functions.json" \
+	-s EXPORT_ES6=1 -s MODULARIZE=1 \
+	lib/*.a -o highs.js
