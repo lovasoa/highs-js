@@ -1,0 +1,5 @@
+build/*
+!build/highs.js
+!build/highs.wasm
+HiGHS/
+tests/
