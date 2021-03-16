@@ -4,7 +4,7 @@ name: Create a release
 
 jobs:
   build:
-    name: Create a release
+    name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
