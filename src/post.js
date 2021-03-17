@@ -23,7 +23,7 @@ Module["solve"] = function (model_str) {
     )
   );
   assert_ok(_Highs_run(highs));
-  //stdout_bytes.length = 0;
+  const status = _Highs_getModelStatus(highs, 0);
   assert_ok(
     Module.ccall(
       "Highs_writeSolutionPretty",
@@ -33,7 +33,7 @@ Module["solve"] = function (model_str) {
     )
   );
   _Highs_destroy(highs);
-  const output = parseResult(stderr_lines);
+  const output = parseResult(stderr_lines, status);
   stderr_lines.length = 0;
   return output;
 };
@@ -68,9 +68,28 @@ function lineToObj(headers, line) {
   );
 }
 
-function parseResult(lines) {
+const status_codes = {
+  1: "LOAD_ERROR",
+  2: "MODEL_ERROR",
+  0: "NOTSET",
+  3: "PRESOLVE_ERROR",
+  4: "SOLVE_ERROR",
+  5: "POSTSOLVE_ERROR",
+  6: "MODEL_EMPTY",
+  7: "PRIMAL_INFEASIBLE",
+  8: "PRIMAL_UNBOUNDED",
+  9: "OPTIMAL",
+  10: "REACHED_DUAL_OBJECTIVE_VALUE_UPPER_BOUND",
+  11: "REACHED_TIME_LIMIT",
+  12: "REACHED_ITERATION_LIMIT",
+  13: "PRIMAL_DUAL_INFEASIBLE",
+  14: "DUAL_INFEASIBLE",
+};
+
+function parseResult(lines, status_code) {
   let headers = lineValues(lines[1]);
-  var result = { ["Columns"]: {}, ["Rows"]: [] };
+  const status = status_codes[status_code];
+  var result = { ["Columns"]: {}, ["Rows"]: [], status };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;

@@ -13,6 +13,7 @@ Bounds
 End`;
 
 const SOLUTION = {
+  status: 'OPTIMAL',
   Columns: {
     x1: {
       Index: 0,
@@ -82,7 +83,7 @@ const SOLUTION = {
 async function test() {
   const Module = await highs();
   const sol = Module.solve(PROBLEM);
-  assert.deepEqual(sol, SOLUTION);
+  assert.deepStrictEqual(sol, SOLUTION);
   console.log("test succeeded");
 }
 

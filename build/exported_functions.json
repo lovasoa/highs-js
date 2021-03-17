@@ -8,5 +8,6 @@
 	"_Highs_destroy",
 	"_Highs_setHighsStringOptionValue",
 	"_Highs_setHighsIntOptionValue",
+	"_Highs_getModelStatus",
 	"_Highs_setHighsBoolOptionValue"
 ]
