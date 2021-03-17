@@ -18,4 +18,5 @@ emmake make -j8 libhighs
 emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$(pwd)/exported_functions.json" \
 	-s EXPORT_ES6=1 -s MODULARIZE=1 \
+	-flto \
 	lib/*.a -o highs.js
