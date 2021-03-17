@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <meta name="description" content="HiGHS online linear programming solver">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HiGHS-js linear programming</title>
+    <script src="demo.js" async defer></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="https://github.com/lovasoa/highs-js">Github project page</a>
+            <ul>
+                <li><a href="#">Demo</a></li>
+                <li><a href="https://www.npmjs.com/package/highs">NPM package</a></li>
+                <li><a href="https://highs.dev/">HiGHS solver</a></li>
+            </ul>
+        </nav>
+        <h1><u>HiGHS</u> online linear programming solver</h1>
+        <p>A linear programming solver you can use directly from your <mark>browser</mark></p>
+    </header>
+    <main>
+        <hr>
+        <section>
+            <header>
+                <h2>Demo</h2>
+            </header>
+            <aside>
+                <h3>Problem definition</h3>
+                <p>Enter a problem definition in the <a href="http://lim.univ-reunion.fr/staff/fred/Enseignement/Optim/doc/CPLEX-LP/CPLEX-LP-file-format.html">LP Format</a></p>
+                <p><textarea id="lp_problem" style="min-height: 400px; width: 95%;">
+Maximize
+ obj: x1 + 2 x2 + 3 x3 + x4
+Subject To
+ c1: - x1 + x2 + x3 + 10 x4 <= 20
+ c2: x1 - 3 x2 + x3 <= 30
+ c3: x2 - 3.5 x4 = 0
+Bounds
+ 0 <= x1 <= 40
+ 2 <= x4 <= 3
+End
+                </textarea></p>
+            </aside>
+            <aside>
+                <h3>Solution</h3>
+                <pre id="solution">Loading...</pre>
+            </aside>
+        </section>
+        <hr>
+        <section>
+            <blockquote>
+                "Linear programming is viewed as a revolutionary development giving man the ability to state general objectives and to find, by means of the simplex method, optimal policy decisions for a broad class of practical decision problems of great complexity. In the real world, planning tends to be ad hoc because of the many special-interest groups with their multiple objectives. "
+                <footer><i>- George Dantzig</i></footer>
+            </blockquote>
+        </section>
+        <hr>
+    <footer>
+        <p>
+            <small>Contact info</small>
+        </p>
+    </footer>
+</body>
+
+</html>
+
