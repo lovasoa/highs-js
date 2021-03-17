@@ -1,5 +1,8 @@
 # highs-js
 
+[![npm version](https://badge.fury.io/js/highs.svg)](https://www.npmjs.com/package/highs)
+[![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
+
 This is a javascript linear programming library.
 It is built by compiling [HiGHS](https://highs.dev) to WebAssembly using emscripten.
 
@@ -88,3 +91,7 @@ assert.deepEqual(sol, {
   ]
 });
 ```
+
+## Demo
+
+See the online demo at: https://lovasoa.github.io/highs-js/
