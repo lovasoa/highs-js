@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "This is a javascript linear programming library. It is built by compiling HiGHS to WebAssembly using emscripten.",
   "main": "build/highs.js",
-  "type": "module",
   "directories": {
     "test": "test"
   },

@@ -1,3 +1,4 @@
 build/*
 !build/build.sh
 !build/*json
+cbuild/
