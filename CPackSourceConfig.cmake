@@ -32,7 +32,7 @@ set(CPACK_IGNORE_FILES "/CVS/;/\\.svn/;/\\.bzr/;/\\.hg/;/\\.git/;\\.swp\$;\\.#;/
 set(CPACK_INSTALLED_DIRECTORIES "/home/runner/work/highs-js/highs-js/HiGHS;/")
 set(CPACK_INSTALL_CMAKE_PROJECTS "")
 set(CPACK_INSTALL_PREFIX "/usr/local")
-set(CPACK_MODULE_PATH "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules")
+set(CPACK_MODULE_PATH "/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules;/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules")
 set(CPACK_NSIS_DISPLAY_NAME "HIGHS 1.0")
 set(CPACK_NSIS_INSTALLER_ICON_CODE "")
 set(CPACK_NSIS_INSTALLER_MUI_ICON_CODE "")

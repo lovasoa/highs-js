@@ -80,15 +80,15 @@ check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o: check/CMakeFiles/capi_unit_te
 check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o: check/CMakeFiles/capi_unit_tests.dir/includes_C.rsp
 check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o: /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o"
-	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o -c /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c
+	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/capi_unit_tests.dir/TestCAPI.c.o -c /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c
 
 check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/capi_unit_tests.dir/TestCAPI.c.i"
-	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c > CMakeFiles/capi_unit_tests.dir/TestCAPI.c.i
+	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c > CMakeFiles/capi_unit_tests.dir/TestCAPI.c.i
 
 check/CMakeFiles/capi_unit_tests.dir/TestCAPI.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/capi_unit_tests.dir/TestCAPI.c.s"
-	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c -o CMakeFiles/capi_unit_tests.dir/TestCAPI.c.s
+	cd /home/runner/work/highs-js/highs-js/build/check && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/runner/work/highs-js/highs-js/HiGHS/check/TestCAPI.c -o CMakeFiles/capi_unit_tests.dir/TestCAPI.c.s
 
 # Object files for target capi_unit_tests
 capi_unit_tests_OBJECTS = \

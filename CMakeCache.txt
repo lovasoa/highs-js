@@ -27,7 +27,7 @@ CI:BOOL=ON
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 
 //Emscripten ar
-CMAKE_AR:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emar
+CMAKE_AR:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
@@ -37,19 +37,19 @@ CMAKE_BUILD_TYPE:STRING=
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //No help, variable specified on the command line.
-CMAKE_CROSSCOMPILING_EMULATOR:UNINITIALIZED="/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/node/14.15.5_64bit/bin/node"
+CMAKE_CROSSCOMPILING_EMULATOR:UNINITIALIZED="/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/node/14.15.5_64bit/bin/node"
 
 //CSharp compiler
 CMAKE_CSharp_COMPILER:FILEPATH=NOTFOUND
 
 //CXX compiler
-CMAKE_CXX_COMPILER:STRING=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++
+CMAKE_CXX_COMPILER:STRING=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/em++
 
 //Emscripten ar
-CMAKE_CXX_COMPILER_AR:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emar
+CMAKE_CXX_COMPILER_AR:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emar
 
 //Emscripten ranlib
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emranlib
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emranlib
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -67,13 +67,13 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:STRING=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc
+CMAKE_C_COMPILER:STRING=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emcc
 
 //Emscripten ar
-CMAKE_C_COMPILER_AR:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emar
+CMAKE_C_COMPILER_AR:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emar
 
 //Emscripten ranlib
-CMAKE_C_COMPILER_RANLIB:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emranlib
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emranlib
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -200,7 +200,7 @@ CMAKE_PROJECT_VERSION_PATCH:STATIC=
 CMAKE_PROJECT_VERSION_TWEAK:STATIC=
 
 //Emscripten ranlib
-CMAKE_RANLIB:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emranlib
+CMAKE_RANLIB:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/emranlib
 
 //Path to a program.
 CMAKE_READELF:FILEPATH=/usr/bin/readelf
@@ -256,7 +256,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
 //The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
+CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -417,7 +417,7 @@ SCIP_DEV:BOOL=OFF
 SHARED:BOOL=OFF
 
 //Name of the computer/site where compile is being run
-SITE:STRING=fv-az133-277
+SITE:STRING=fv-az177-717
 
 //Path to the SLURM sbatch executable
 SLURM_SBATCH_COMMAND:FILEPATH=SLURM_SBATCH_COMMAND-NOTFOUND

@@ -4,11 +4,11 @@
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
-add_test(capi_unit_tests "\"/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/node/14.15.5_64bit/bin/node\"" "/home/runner/work/highs-js/highs-js/build/bin/capi_unit_tests.js")
+add_test(capi_unit_tests "\"/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/node/14.15.5_64bit/bin/node\"" "/home/runner/work/highs-js/highs-js/build/bin/capi_unit_tests.js")
 set_tests_properties(capi_unit_tests PROPERTIES  _BACKTRACE_TRIPLES "/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;69;add_test;/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;0;")
 add_test(unit-test-build "/usr/local/bin/cmake" "--build" "/home/runner/work/highs-js/highs-js/build" "--target" "unit_tests")
 set_tests_properties(unit-test-build PROPERTIES  RESOURCE_LOCK "unittestbin" _BACKTRACE_TRIPLES "/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;72;add_test;/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;0;")
-add_test(unit_tests_all "\"/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/node/14.15.5_64bit/bin/node\"" "/home/runner/work/highs-js/highs-js/build/bin/unit_tests.js" "--success")
+add_test(unit_tests_all "\"/home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/node/14.15.5_64bit/bin/node\"" "/home/runner/work/highs-js/highs-js/build/bin/unit_tests.js" "--success")
 set_tests_properties(unit_tests_all PROPERTIES  DEPENDS "unit-test-build" _BACKTRACE_TRIPLES "/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;85;add_test;/home/runner/work/highs-js/highs-js/HiGHS/check/CMakeLists.txt;0;")
 add_test(25fv47--presolve=off "/home/runner/work/highs-js/highs-js/build/bin/highs.js" "--presolve=off" "/home/runner/work/highs-js/highs-js/HiGHS/check/instances/25fv47.mps")
 set_tests_properties(25fv47--presolve=off PROPERTIES  DEPENDS "unit_tests_all" PASS_REGULAR_EXPRESSION "Simplex   iterations: 2888

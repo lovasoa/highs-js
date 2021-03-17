@@ -11,7 +11,7 @@ BuildDirectory: /home/runner/work/highs-js/highs-js/build
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: fv-az133-277
+Site: fv-az177-717
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Emscripten-em++
@@ -62,7 +62,7 @@ UpdateOptions:
 UpdateType: 
 
 # Compiler info
-Compiler: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++
+Compiler: /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/em++
 CompilerVersion: 13.0.0
 
 # Dynamic analysis (MemCheck)

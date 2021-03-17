@@ -80,15 +80,15 @@ app/CMakeFiles/highs.dir/RunHighs.cpp.o: app/CMakeFiles/highs.dir/flags.make
 app/CMakeFiles/highs.dir/RunHighs.cpp.o: app/CMakeFiles/highs.dir/includes_CXX.rsp
 app/CMakeFiles/highs.dir/RunHighs.cpp.o: /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object app/CMakeFiles/highs.dir/RunHighs.cpp.o"
-	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/highs.dir/RunHighs.cpp.o -c /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp
+	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/highs.dir/RunHighs.cpp.o -c /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp
 
 app/CMakeFiles/highs.dir/RunHighs.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/highs.dir/RunHighs.cpp.i"
-	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp > CMakeFiles/highs.dir/RunHighs.cpp.i
+	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp > CMakeFiles/highs.dir/RunHighs.cpp.i
 
 app/CMakeFiles/highs.dir/RunHighs.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/highs.dir/RunHighs.cpp.s"
-	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp -o CMakeFiles/highs.dir/RunHighs.cpp.s
+	cd /home/runner/work/highs-js/highs-js/build/app && /home/runner/work/_temp/e1f54eb4-1cd7-401b-9eb5-7586302e0454/emsdk-master/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/runner/work/highs-js/highs-js/HiGHS/app/RunHighs.cpp -o CMakeFiles/highs.dir/RunHighs.cpp.s
 
 # Object files for target highs
 highs_OBJECTS = \
