@@ -1,0 +1,1 @@
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++  -Wall -Wextra -Wno-unused-parameter -pedantic -O3 -DNDEBUG @CMakeFiles/capi_unit_tests.dir/objects1.rsp -o ../bin/capi_unit_tests.js @CMakeFiles/capi_unit_tests.dir/linklibs.rsp

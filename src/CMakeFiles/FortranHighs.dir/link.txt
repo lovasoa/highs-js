@@ -1,0 +1,2 @@
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emar qc ../lib/libFortranHighs.a CMakeFiles/FortranHighs.dir/interfaces/highs_lp_solver.f90.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emranlib ../lib/libFortranHighs.a

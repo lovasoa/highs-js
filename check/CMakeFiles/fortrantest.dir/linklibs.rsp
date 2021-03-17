@@ -1,0 +1,1 @@
+  -L/usr/lib/gcc/x86_64-linux-gnu/9  -L/usr/lib/x86_64-linux-gnu  -L/usr/lib  -L/lib/x86_64-linux-gnu  -L/lib  ../lib/libhighs.a ../lib/libFortranHighs.a ../lib/libhighs.a ../lib/libipx.a ../lib/libbasiclu.a -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc 

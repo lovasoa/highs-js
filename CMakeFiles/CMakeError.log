@@ -1,0 +1,292 @@
+Detecting C OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_61460/fast && /usr/bin/make  -f CMakeFiles/cmTC_61460.dir/build.make CMakeFiles/cmTC_61460.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc   -fopenmp=libomp -v -o CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+shared:INFO: (Emscripten: Running sanity checks)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libomp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.c -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fignore-exceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o -x c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+emcc: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libomp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_61460.dir/build.make:85: CMakeFiles/cmTC_61460.dir/OpenMPTryFlag.c.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_61460/fast] Error 2
+
+
+
+Detecting C OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_9da8e/fast && /usr/bin/make  -f CMakeFiles/cmTC_9da8e.dir/build.make CMakeFiles/cmTC_9da8e.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc   -fopenmp=libiomp5 -v -o CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libiomp5 -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.c -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fignore-exceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o -x c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+emcc: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libiomp5 -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_9da8e.dir/build.make:85: CMakeFiles/cmTC_9da8e.dir/OpenMPTryFlag.c.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_9da8e/fast] Error 2
+
+
+
+Detecting C OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_5035c/fast && /usr/bin/make  -f CMakeFiles/cmTC_5035c.dir/build.make CMakeFiles/cmTC_5035c.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc   -fopenmp -v -o CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.c -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fignore-exceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o -x c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+emcc: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_5035c.dir/build.make:85: CMakeFiles/cmTC_5035c.dir/OpenMPTryFlag.c.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_5035c/fast] Error 2
+
+
+
+Detecting C OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_d1c59/fast && /usr/bin/make  -f CMakeFiles/cmTC_d1c59.dir/build.make CMakeFiles/cmTC_d1c59.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/emcc   -Xclang -fopenmp -v -o CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -Xclang -fopenmp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.c -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fgnuc-version=4.2.1 -flegacy-pass-manager -fignore-exceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -fopenmp -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o -x c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+emcc: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -Xclang -fopenmp -v -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.c -o CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_d1c59.dir/build.make:85: CMakeFiles/cmTC_d1c59.dir/OpenMPTryFlag.c.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_d1c59/fast] Error 2
+
+
+
+Detecting CXX OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_af145/fast && /usr/bin/make  -f CMakeFiles/cmTC_af145.dir/build.make CMakeFiles/cmTC_af145.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++   -fopenmp=libomp -v -std=gnu++11 -o CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libomp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.cpp -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -std=gnu++11 -fdeprecated-macro -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fcxx-exceptions -fignore-exceptions -fexceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o -x c++ /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1"
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+em++: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libomp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_af145.dir/build.make:85: CMakeFiles/cmTC_af145.dir/OpenMPTryFlag.cpp.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_af145/fast] Error 2
+
+
+
+Detecting CXX OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_479c5/fast && /usr/bin/make  -f CMakeFiles/cmTC_479c5.dir/build.make CMakeFiles/cmTC_479c5.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++   -fopenmp=libiomp5 -v -std=gnu++11 -o CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libiomp5 -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.cpp -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -std=gnu++11 -fdeprecated-macro -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fcxx-exceptions -fignore-exceptions -fexceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o -x c++ /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1"
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+em++: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp=libiomp5 -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_479c5.dir/build.make:85: CMakeFiles/cmTC_479c5.dir/OpenMPTryFlag.cpp.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_479c5/fast] Error 2
+
+
+
+Detecting CXX OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_53006/fast && /usr/bin/make  -f CMakeFiles/cmTC_53006.dir/build.make CMakeFiles/cmTC_53006.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++   -fopenmp -v -std=gnu++11 -o CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.cpp -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -std=gnu++11 -fdeprecated-macro -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fopenmp -fopenmp-cuda-parallel-target-regions -fgnuc-version=4.2.1 -flegacy-pass-manager -fcxx-exceptions -fignore-exceptions -fexceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o -x c++ /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1"
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+em++: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -fopenmp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_53006.dir/build.make:85: CMakeFiles/cmTC_53006.dir/OpenMPTryFlag.cpp.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_53006/fast] Error 2
+
+
+
+Detecting CXX OpenMP failed with the following output:
+Change Dir: /home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_8100d/fast && /usr/bin/make  -f CMakeFiles/cmTC_8100d.dir/build.make CMakeFiles/cmTC_8100d.dir/build
+make[1]: Entering directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o
+/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/em++   -Xclang -fopenmp -v -std=gnu++11 -o CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++" -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -Xclang -fopenmp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o
+clang version 13.0.0 (/b/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin
+ (in-process)
+ "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang-13" -cc1 -triple wasm32-unknown-emscripten -emit-obj -mrelax-all --mrelax-relocations -disable-free -main-file-name OpenMPTryFlag.cpp -mrelocation-model static -mframe-pointer=none -fno-rounding-math -mconstructor-aliases -target-cpu generic -fvisibility hidden -debugger-tuning=gdb -v -fcoverage-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -resource-dir /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0 -D EMSCRIPTEN -D __EMSCRIPTEN_major__=2 -D __EMSCRIPTEN_minor__=0 -D __EMSCRIPTEN_tiny__=15 -D _LIBCPP_ABI_VERSION=2 -D unix -D __unix -D __unix__ -isysroot /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1 -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten -internal-isystem /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include -Werror=implicit-function-declaration -std=gnu++11 -fdeprecated-macro -fdebug-compilation-dir=/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fgnuc-version=4.2.1 -flegacy-pass-manager -fcxx-exceptions -fignore-exceptions -fexceptions -iwithsysroot/include/SDL -iwithsysroot/include/compat -fopenmp -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -o CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o -x c++ /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+clang -cc1 version 13.0.0 based upon LLVM 13.0.0git default target x86_64-unknown-linux-gnu
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten/c++/v1"
+ignoring nonexistent directory "/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/wasm32-emscripten"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/SDL
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/compat
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include/c++/v1
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/lib/clang/13.0.0/include
+ /home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot/include
+End of search list.
+/home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp:2:10: fatal error: 'omp.h' file not found
+#include <omp.h>
+         ^~~~~~~
+1 error generated.
+em++: error: '/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/bin/clang++ -DEMSCRIPTEN -fignore-exceptions -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr -Xclang -iwithsysroot/include/SDL -target wasm32-unknown-emscripten -D__EMSCRIPTEN_major__=2 -D__EMSCRIPTEN_minor__=0 -D__EMSCRIPTEN_tiny__=15 -D_LIBCPP_ABI_VERSION=2 -Dunix -D__unix -D__unix__ -flegacy-pass-manager -Werror=implicit-function-declaration --sysroot=/home/runner/work/_temp/c0054d28-3603-4535-9490-35dab74f9839/emsdk-master/upstream/emscripten/cache/sysroot -Xclang -iwithsysroot/include/compat -Xclang -fopenmp -v -std=gnu++11 -c /home/runner/work/highs-js/highs-js/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -o CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o' failed (1)
+make[1]: *** [CMakeFiles/cmTC_8100d.dir/build.make:85: CMakeFiles/cmTC_8100d.dir/OpenMPTryFlag.cpp.o] Error 1
+make[1]: Leaving directory '/home/runner/work/highs-js/highs-js/build/CMakeFiles/CMakeTmp'
+make: *** [Makefile:140: cmTC_8100d/fast] Error 2
+
+
+
+Looking for a CSharp compiler failed with the following output:
+CMake Error at /usr/local/share/cmake-3.19/Modules/CMakeDetermineCSharpCompiler.cmake:5 (message):
+  C# is currently only supported for Microsoft Visual Studio 2010 and later.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
+CMake Error: CMAKE_CSharp_COMPILER not set, after EnableLanguage
+-- Configuring incomplete, errors occurred!
+See also "/home/runner/work/highs-js/highs-js/build/CMakeFiles/CheckCSharp/CMakeFiles/CMakeOutput.log".
+
