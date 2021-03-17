@@ -1,6 +1,6 @@
 on: [push, pull_request]
 
-name: Create a release
+name: Continuous Integration
 
 jobs:
   build:
