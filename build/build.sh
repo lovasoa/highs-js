@@ -20,6 +20,7 @@ emcc -O3 \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall']" \
 	-s MODULARIZE=1 \
 	-flto \
+	--closure 1 \
 	--pre-js "$(pwd)/../src/pre.js" \
 	--post-js "$(pwd)/../src/post.js" \
 	lib/*.a -o highs.js

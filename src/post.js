@@ -7,7 +7,7 @@ Module["solve"] = function (model_str) {
   FS.writeFile(MODEL_FILENAME, model_str);
   const highs = _Highs_create();
   assert_ok(
-    Module.ccall(
+    Module["ccall"](
       "Highs_readModel",
       "number",
       ["number", "string"],
@@ -15,7 +15,7 @@ Module["solve"] = function (model_str) {
     )
   );
   assert_ok(
-    Module.ccall(
+    Module["ccall"](
       "Highs_setHighsIntOptionValue",
       "number",
       ["number", "string", "number"],
@@ -27,7 +27,7 @@ Module["solve"] = function (model_str) {
     _Highs_highsModelStatusToChar(highs, _Highs_getModelStatus(highs, 0))
   );
   assert_ok(
-    Module.ccall(
+    Module["ccall"](
       "Highs_writeSolutionPretty",
       "number",
       ["number", "string"],
@@ -47,11 +47,11 @@ function parseNum(s) {
 }
 
 const known_columns = {
-  ["Index"]: (s) => parseInt(s),
-  ["Lower"]: parseNum,
-  ["Upper"]: parseNum,
-  ["Primal"]: parseNum,
-  ["Dual"]: parseNum,
+  "Index": (s) => parseInt(s),
+  "Lower": parseNum,
+  "Upper": parseNum,
+  "Primal": parseNum,
+  "Dual": parseNum,
 };
 
 function lineValues(s) {
@@ -70,9 +70,9 @@ function lineToObj(headers, line) {
   );
 }
 
-function parseResult(lines, Status) {
+function parseResult(lines, status) {
   let headers = lineValues(lines[1]);
-  var result = { Status, ["Columns"]: {}, ["Rows"]: [] };
+  var result = { "Status": status, "Columns": {}, "Rows": [] };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;

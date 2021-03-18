@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/highs.svg)](https://www.npmjs.com/package/highs)
 [![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
+[![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)
 
 This is a javascript linear programming library.
 It is built by compiling [HiGHS](https://highs.dev) to WebAssembly using emscripten.
@@ -89,6 +90,24 @@ assert.deepEqual(sol, {
       Dual: -4.41667
     }
   ]
+});
+```
+
+### Loading the wasm file
+
+This package requires a wasm file.
+You can find it in `node_modules/highs/build/highs.wasm` inside the NPM package,
+or download it from the [release page](https://github.com/lovasoa/highs-js/releases).
+By default, it will be loaded from the same path as the javascript file,
+which mean you have to add the wasm file to your assets.
+
+Alternatively, if you don't want to bother with that, you can load the file directly from github:
+
+```js
+const highs_loader = require("highs");
+
+const highs = await highs_loader({
+  locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
 });
 ```
 
