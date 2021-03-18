@@ -15,7 +15,7 @@ worker.onmessage = function ({ data: { solution, error } }) {
 };
 
 worker.onerror = function (err) {
-  solution_el.innerText = `Error: ${err}`;
+  solution_el.innerText = `Error: ${err.message || err}`;
 };
 
 lp_problem_el.oninput = solve;
