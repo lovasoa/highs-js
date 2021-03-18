@@ -13,7 +13,7 @@ Bounds
 End`;
 
 const SOLUTION = {
-  status: 'OPTIMAL',
+  Status: 'Optimal',
   Columns: {
     x1: {
       Index: 0,
