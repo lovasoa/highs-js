@@ -60,14 +60,15 @@ function lineValues(s) {
 
 function lineToObj(headers, line) {
   const values = lineValues(line);
-  return Object.fromEntries(
-    values.map((value, idx) => {
-      const header = headers[idx];
-      const parser = known_columns[header];
-      const parsed = parser ? parser(value) : value;
-      return [header, parsed];
-    })
-  );
+  const result = {};
+  for (let idx = 0; idx < values.length; idx++) {
+    const value = values[idx];
+    const header = headers[idx];
+    const parser = known_columns[header];
+    const parsed = parser ? parser(value) : value;
+    result[header] = parsed;
+  }
+  return result;
 }
 
 function parseResult(lines, status) {
