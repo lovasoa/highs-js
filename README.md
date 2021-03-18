@@ -99,7 +99,7 @@ This package requires a wasm file.
 You can find it in `node_modules/highs/build/highs.wasm` inside the NPM package,
 or download it from the [release page](https://github.com/lovasoa/highs-js/releases).
 By default, it will be loaded from the same path as the javascript file,
-which mean you have to add the wasm file to your assets.
+which means you have to add the wasm file to your assets.
 
 Alternatively, if you don't want to bother with that, you can load the file directly from github:
 
