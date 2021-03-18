@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HiGHS-js linear programming</title>
     <script src="demo.js" async defer></script>
+    <script src="https://embed.runkit.com" data-element-id="runkit" async defer></script>
+    <link rel="prefetch" href="highs.js">
+    <link rel="prefetch" href="highs.wasm">
+    <link rel="prefetch" href="worker.js">
 </head>
 
 <body>
@@ -46,13 +50,12 @@ End
             </aside>
             <aside>
                 <h3>Solution</h3>
-                <pre id="solution">Loading...</pre>
+                <pre id="solution">Downloading highs-js...</pre>
             </aside>
         </section>
         <hr>
         <article>
             <header><h2>Try the API</h2></header>
-            <script src="https://embed.runkit.com" data-element-id="runkit"></script>
             <div id="runkit" style="white-space: pre-wrap; font-family: monospace;">
                 var highs = await require("highs")();
 
