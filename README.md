@@ -23,7 +23,7 @@ Bounds
  2 <= x4 <= 3
 End`;
 
-const sol = Module.solve(PROBLEM);
+const sol = highs.solve(PROBLEM);
 
 assert.deepEqual(sol, {
   Columns: {

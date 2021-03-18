@@ -50,6 +50,24 @@ End
             </aside>
         </section>
         <hr>
+        <article>
+            <header><h2>Try the API</h2></header>
+            <script src="https://embed.runkit.com" data-element-id="runkit"></script>
+            <div id="runkit" style="white-space: pre-wrap; font-family: monospace;">
+                var highs = await require("highs")();
+
+                highs.solve(`Maximize
+                obj: x + 2 y
+                Subject To
+                c1: x + y <= 20
+                c2: x - y >= -30
+                Bounds
+                0 <= x
+                0 <= y
+                End`);
+            </div>
+        </article>
+        <hr>
         <section>
             <blockquote>
                 "Linear programming is viewed as a revolutionary development giving man the ability to state general objectives and to find, by means of the simplex method, optimal policy decisions for a broad class of practical decision problems of great complexity. In the real world, planning tends to be ad hoc because of the many special-interest groups with their multiple objectives. "

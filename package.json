@@ -28,5 +28,6 @@
   "bugs": {
     "url": "https://github.com/lovasoa/highs-js/issues"
   },
-  "homepage": "https://lovasoa.github.io/highs-js/"
+  "homepage": "https://lovasoa.github.io/highs-js/",
+  "runkitExampleFilename": "example.js"
 }
