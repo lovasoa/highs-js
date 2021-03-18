@@ -1,6 +1,6 @@
 {
   "name": "highs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "This is a javascript linear programming library. It is built by compiling HiGHS to WebAssembly using emscripten.",
   "main": "build/highs.js",
   "directories": {
@@ -15,8 +15,10 @@
     "url": "git+https://github.com/lovasoa/highs-js.git"
   },
   "keywords": [
-    "linear",
-    "programming",
+    "linear programming",
+    "LP",
+    "MILP",
+    "solver",
     "maths",
     "or",
     "optimization"
@@ -26,5 +28,5 @@
   "bugs": {
     "url": "https://github.com/lovasoa/highs-js/issues"
   },
-  "homepage": "https://github.com/lovasoa/highs-js#readme"
+  "homepage": "https://lovasoa.github.io/highs-js/"
 }

@@ -3,3 +3,4 @@ build/*
 !build/highs.wasm
 HiGHS/
 tests/
+.github/
