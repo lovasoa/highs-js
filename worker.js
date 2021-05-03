@@ -5,6 +5,6 @@ onmessage = async function ({ data }) {
   try {
     postMessage({ solution: highs.solve(data) });
   } catch (error) {
-    postMessage({ error });
+    postMessage({ error: error.toString() });
   }
 };
