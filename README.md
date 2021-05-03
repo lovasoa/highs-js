@@ -10,7 +10,7 @@ It is built by compiling [HiGHS](https://highs.dev) to WebAssembly using emscrip
 ## Usage
 
 ```js
-const highs = await require("highs")();
+const highs_promise = require("highs");
 
 const PROBLEM = `Maximize
  obj: x1 + 2 x2 + 3 x3 + x4
@@ -23,9 +23,7 @@ Bounds
  2 <= x4 <= 3
 End`;
 
-const sol = highs.solve(PROBLEM);
-
-assert.deepEqual(sol, {
+const EXPECTED_SOLUTION = {
   Columns: {
     x1: {
       Index: 0,
@@ -90,8 +88,16 @@ assert.deepEqual(sol, {
       Dual: -4.41667
     }
   ]
-});
+};
+
+async function test() {
+  const highs = await highs_promise;
+  const sol = highs.solve(PROBLEM);
+  require("assert").deepEqual(sol, EXPECTED_SOLUTION);
+}
 ```
+
+For a more complete example, see the [`demo`](./demo/) folder.
 
 ### Loading the wasm file
 
