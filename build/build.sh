@@ -19,6 +19,7 @@ emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$(pwd)/exported_functions.json" \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall']" \
 	-s MODULARIZE=1 \
+	-fexceptions \
 	-flto \
 	--closure 1 \
 	--pre-js "$(pwd)/../src/pre.js" \
