@@ -17,9 +17,8 @@ emmake make -j8 libhighs
 # [-Ox] represents build optimisations (discussed in the next section).
 emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$(pwd)/exported_functions.json" \
-	-s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall']" \
+	-s EXTRA_EXPORTED_RUNTIME_METHODS="['cwrap']" \
 	-s MODULARIZE=1 \
-	-fexceptions \
 	-flto \
 	--closure 1 \
 	--pre-js "$(pwd)/../src/pre.js" \
