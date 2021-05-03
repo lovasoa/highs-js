@@ -1,15 +1,15 @@
 const MODEL_FILENAME = "m.lp";
 
-Module.Highs_readModel = Module.cwrap("Highs_readModel", "number", [
+Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
   "string",
 ]);
-Module.Highs_setHighsIntOptionValue = Module.cwrap(
+Module.Highs_setHighsIntOptionValue = Module["cwrap"](
   "Highs_setHighsIntOptionValue",
   "number",
   ["number", "string", "number"]
 );
-Module.Highs_writeSolutionPretty = Module.cwrap(
+Module.Highs_writeSolutionPretty = Module["cwrap"](
   "Highs_writeSolutionPretty",
   "number",
   ["number", "string"]
