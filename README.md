@@ -101,12 +101,15 @@ or download it from the [release page](https://github.com/lovasoa/highs-js/relea
 By default, it will be loaded from the same path as the javascript file,
 which means you have to add the wasm file to your assets.
 
-Alternatively, if you don't want to bother with that, you can load the file directly from github:
+Alternatively, if you don't want to bother with that, 
+if you are running highs-js in a web browser (and not in node),
+you can load the file directly from github:
 
 ```js
 const highs_loader = require("highs");
 
 const highs = await highs_loader({
+  // In a browser, one can load the wasm file from github
   locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
 });
 ```
