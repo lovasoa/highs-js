@@ -80,10 +80,22 @@ const SOLUTION = {
   ]
 };
 
-async function test() {
-  const Module = await highs();
+function test_optimal(Module) {
   const sol = Module.solve(PROBLEM);
   assert.deepStrictEqual(sol, SOLUTION);
+}
+
+function test_invalid_model(Module) {
+  assert.throws(
+    (_) => Module.solve("blah blah not a good file"),
+    /Unable to read LP model/
+  );
+}
+
+async function test() {
+  const Module = await highs();
+  test_optimal(Module);
+  test_invalid_model(Module);
   console.log("test succeeded");
 }
 
