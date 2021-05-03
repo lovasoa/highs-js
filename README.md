@@ -7,13 +7,26 @@
 This is a javascript linear programming library.
 It is built by compiling [HiGHS](https://highs.dev) to WebAssembly using emscripten.
 
+## Demo
+
+See the online demo at: https://lovasoa.github.io/highs-js/
+
 ## Usage
 
 ```js
-const highs_promise = require("highs");
+const highs_settings = {
+  // In node, locateFile is not needed
+  // In the browser, point locateFile to the URL of the wasm file (see below)
+  locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
+};
+const highs_promise = require("highs")(highs_settings);
 
 const PROBLEM = `Maximize
- obj: x1 + 2 x2 + 3 x3 + x4
+ obj:
+    x1 +
+  2 x2 +
+  3 x3 +
+  1 x4
 Subject To
  c1: - x1 + x2 + x3 + 10 x4 <= 20
  c2: x1 - 3 x2 + x3 <= 30
@@ -97,6 +110,8 @@ async function test() {
 }
 ```
 
+The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/lpsolve/doc/CPLEX-format.htm) (newlines must be inserted so that all lines are shorter than 510 bytes).
+
 For a more complete example, see the [`demo`](./demo/) folder.
 
 ### Loading the wasm file
@@ -119,7 +134,3 @@ const highs = await highs_loader({
   locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
 });
 ```
-
-## Demo
-
-See the online demo at: https://lovasoa.github.io/highs-js/
