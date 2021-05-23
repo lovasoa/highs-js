@@ -33,12 +33,16 @@ Module["solve"] = function (model_str) {
   const status = UTF8ToString(
     _Highs_highsModelStatusToChar(highs, _Highs_getModelStatus(highs, 0))
   );
+  // Flush the content of stdout in order to have a clean stream before writing the solution in it
+  stdout_lines.length = 0;
   assert_ok(
-    () => Module.Highs_writeSolutionPretty(highs, "/dev/stderr"),
+    () => Module.Highs_writeSolutionPretty(highs, ""),
     "write and extract solution"
   );
   _Highs_destroy(highs);
-  const output = parseResult(stderr_lines, status);
+  const output = parseResult(stdout_lines, status);
+  // Flush the content of stdout and stderr because these streams are not used anymore
+  stdout_lines.length = 0;
   stderr_lines.length = 0;
   return output;
 };
