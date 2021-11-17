@@ -4,8 +4,8 @@ Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
   "string",
 ]);
-Module.Highs_setHighsIntOptionValue = Module["cwrap"](
-  "Highs_setHighsIntOptionValue",
+Module.Highs_setIntOptionValue = Module["cwrap"](
+  "Highs_setIntOptionValue",
   "number",
   ["number", "string", "number"]
 );
@@ -14,6 +14,25 @@ Module.Highs_writeSolutionPretty = Module["cwrap"](
   "number",
   ["number", "string"]
 );
+
+const MODEL_STATUS_CODES = {
+  0: "Not Set",
+  1: "Load error",
+  2: "Model error",
+  3: "Presolve error",
+  4: "Solve error",
+  5: "Postsolve error",
+  6: "Empty",
+  7: "Optimal",
+  8: "Infeasible",
+  9: "Primal infeasible or unbounded",
+  10: "Unbounded",
+  11: "Bound on objective reached",
+  12: "Target for objective reached",
+  13: "Time limit reached",
+  14: "Iteration limit reached",
+  15: "Unknown",
+};
 
 /**
  * Solve a model in the CPLEX LP file format.
@@ -25,14 +44,14 @@ Module["solve"] = function (model_str) {
     () => Module.Highs_readModel(highs, MODEL_FILENAME),
     "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
   );
+  /*
   assert_ok(
-    () => Module.Highs_setHighsIntOptionValue(highs, "message_level", 0),
+    () => Module.Highs_setIntOptionValue(highs, "message_level", 0),
     "set option"
   );
+  */
   assert_ok(() => _Highs_run(highs), "solve the problem");
-  const status = UTF8ToString(
-    _Highs_highsModelStatusToChar(highs, _Highs_getModelStatus(highs, 0))
-  );
+  const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unrecognised HiGHS model status";
   // Flush the content of stdout in order to have a clean stream before writing the solution in it
   stdout_lines.length = 0;
   assert_ok(
