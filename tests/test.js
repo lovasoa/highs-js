@@ -85,6 +85,15 @@ function test_optimal(Module) {
   assert.deepStrictEqual(sol, SOLUTION);
 }
 
+function test_options(Module) {
+  const sol = Module.solve(PROBLEM, {
+    "allowed_cost_scale_factor": 2,
+    "use_implied_bounds_from_presolve": true,
+    "presolve": "off",
+  });
+  assert.deepStrictEqual(sol, SOLUTION);
+}
+
 function test_invalid_model(Module) {
   assert.throws(
     (_) => Module.solve("blah blah not a good file"),
@@ -96,6 +105,7 @@ async function test() {
   const Module = await highs();
   test_optimal(Module);
   test_invalid_model(Module);
+  test_options(Module);
   console.log("test succeeded");
 }
 

@@ -4,8 +4,18 @@ Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
   "string",
 ]);
-Module.Highs_setIntOptionValue = Module["cwrap"](
+const Highs_setIntOptionValue = Module["cwrap"](
   "Highs_setIntOptionValue",
+  "number",
+  ["number", "string", "number"]
+);
+const Highs_setStringOptionValue = Module["cwrap"](
+  "Highs_setStringOptionValue",
+  "number",
+  ["number", "string", "string"]
+);
+const Highs_setBoolOptionValue = Module["cwrap"](
+  "Highs_setBoolOptionValue",
   "number",
   ["number", "string", "number"]
 );
@@ -36,20 +46,31 @@ const MODEL_STATUS_CODES = {
 
 /**
  * Solve a model in the CPLEX LP file format.
+ * @param {string} model_str The problem to solve in the .lp format
+ * @param {undefined | Object<string,string|boolean|number>} highs_options Options to pass the solver. Only integer, boolean and string options are supported at the moment.  See https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h
  */
-Module["solve"] = function (model_str) {
+Module["solve"] = function (model_str, highs_options) {
   FS.writeFile(MODEL_FILENAME, model_str);
   const highs = _Highs_create();
   assert_ok(
     () => Module.Highs_readModel(highs, MODEL_FILENAME),
     "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
   );
-  /*
-  assert_ok(
-    () => Module.Highs_setIntOptionValue(highs, "message_level", 0),
-    "set option"
-  );
-  */
+  if (highs_options) {
+    for (const option_name in highs_options) {
+      const option_value = highs_options[option_name];
+      const type = typeof option_value;
+      let setoption;
+      if (type === "number" && type === type | 0) setoption = Highs_setIntOptionValue;
+      else if (type === "boolean") setoption = Highs_setBoolOptionValue;
+      else if (type === "string") setoption = Highs_setStringOptionValue;
+      else throw new Error(`Unsupported option value type ${option_value} for '${option_name}'`);
+      assert_ok(
+        () => setoption(highs, option_name, option_value),
+        `set option '${option_name}'`
+      );
+    }
+  }
   assert_ok(() => _Highs_run(highs), "solve the problem");
   const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unrecognised HiGHS model status";
   // Flush the content of stdout in order to have a clean stream before writing the solution in it

@@ -131,3 +131,18 @@ const highs = await highs_loader({
   locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
 });
 ```
+## Passing custom options
+
+HiGHS is configurable through [a large number of options](https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h#L414-L885).
+
+You can pass options as the second parameter to `solve` : 
+
+```js
+const highs_promise = require("highs")(highs_settings);
+const highs = await highs_promise;
+const sol = highs.solve(PROBLEM, {
+  "allowed_cost_scale_factor": 2,
+  "use_implied_bounds_from_presolve": true,
+  "presolve": "on",
+});
+```
