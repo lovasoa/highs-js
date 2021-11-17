@@ -107,7 +107,7 @@ async function test() {
 }
 ```
 
-The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/lpsolve/doc/CPLEX-format.htm) (newlines must be inserted so that all lines are shorter than 510 bytes).
+The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/lpsolve/doc/CPLEX-format.htm).
 
 For a more complete example, see the [`demo`](./demo/) folder.
 
