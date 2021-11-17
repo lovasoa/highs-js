@@ -59,7 +59,7 @@ const SOLUTION = {
       Lower: -Infinity,
       Upper: 20,
       Primal: 20,
-      Dual: -1.64583
+      Dual: 1.64583
     },
     {
       Index: 1,
@@ -67,7 +67,7 @@ const SOLUTION = {
       Lower: -Infinity,
       Upper: 30,
       Primal: 30,
-      Dual: -1.35417
+      Dual: 1.35417
     },
     {
       Index: 2,
@@ -75,7 +75,7 @@ const SOLUTION = {
       Lower: 0,
       Upper: 0,
       Primal: 0,
-      Dual: -4.41667
+      Dual: 4.41667
     }
   ]
 };

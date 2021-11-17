@@ -4,7 +4,7 @@
 [![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
 [![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)
 
-This is a javascript linear programming library.
+This is a javascript mixed integer linear programming library.
 It is built by compiling [HiGHS](https://highs.dev) to WebAssembly using emscripten.
 
 ## Demo
@@ -23,10 +23,7 @@ const highs_promise = require("highs")(highs_settings);
 
 const PROBLEM = `Maximize
  obj:
-    x1 +
-  2 x2 +
-  3 x3 +
-  1 x4
+    x1 + 2 x2 + 3 x3 + 1 x4
 Subject To
  c1: - x1 + x2 + x3 + 10 x4 <= 20
  c2: x1 - 3 x2 + x3 <= 30
@@ -82,7 +79,7 @@ const EXPECTED_SOLUTION = {
       Lower: -Infinity,
       Upper: 20,
       Primal: 20,
-      Dual: -1.64583
+      Dual: 1.64583
     },
     {
       Index: 1,
@@ -90,7 +87,7 @@ const EXPECTED_SOLUTION = {
       Lower: -Infinity,
       Upper: 30,
       Primal: 30,
-      Dual: -1.35417
+      Dual: 1.35417
     },
     {
       Index: 2,
@@ -98,7 +95,7 @@ const EXPECTED_SOLUTION = {
       Lower: 0,
       Upper: 0,
       Primal: 0,
-      Dual: -4.41667
+      Dual: 4.41667
     }
   ]
 };
