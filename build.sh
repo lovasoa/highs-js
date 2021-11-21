@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+root="$(dirname $(realpath "$0"))"
+mkdir -p build
+cd build
+
 # Run emconfigure with the normal configure command as an argument.
 emcmake cmake ../HiGHS -DOPENMP=OFF -DFAST_BUILD=OFF -DSHARED=OFF
 
@@ -16,11 +20,11 @@ emmake make -j8 libhighs
 # here as well.
 # [-Ox] represents build optimisations (discussed in the next section).
 emcc -O3 \
-	-s EXPORTED_FUNCTIONS="@$(pwd)/exported_functions.json" \
+	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS="['cwrap']" \
 	-s MODULARIZE=1 \
 	-flto \
 	--closure 1 \
-	--pre-js "$(pwd)/../src/pre.js" \
-	--post-js "$(pwd)/../src/post.js" \
+	--pre-js "$root/src/pre.js" \
+	--post-js "$root/src/post.js" \
 	lib/*.a -o highs.js
