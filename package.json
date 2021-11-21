@@ -1,7 +1,7 @@
 {
   "name": "highs",
-  "version": "0.4.0",
-  "description": "This is a javascript linear programming library. It is built by compiling HiGHS to WebAssembly using emscripten.",
+  "version": "0.4.1",
+  "description": "This is a javascript mixed integer linear programming library. It is built by compiling HiGHS to WebAssembly using emscripten.",
   "main": "build/highs.js",
   "directories": {
     "test": "test"
