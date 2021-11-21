@@ -16,6 +16,9 @@ RUN sudo ln -s /usr/share/emscripten/emcc.py /usr/share/emscripten/emcc && \
 
 RUN cd /usr/share/emscripten/ && sudo npm install acorn google-closure-compiler
 
+# Remove buggy debian patch (see https://github.com/emscripten-core/emscripten/issues/15545)
+RUN sudo sed -i "s/cmd = \['closure-compiler'\]/cmd = shared.get_npm_cmd('google-closure-compiler')/g" /usr/share/emscripten/tools/building.py
+
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
