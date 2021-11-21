@@ -56,20 +56,19 @@ Module["solve"] = function (model_str, highs_options) {
     () => Module.Highs_readModel(highs, MODEL_FILENAME),
     "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
   );
-  if (highs_options) {
-    for (const option_name in highs_options) {
-      const option_value = highs_options[option_name];
-      const type = typeof option_value;
-      let setoption;
-      if (type === "number" && type === type | 0) setoption = Highs_setIntOptionValue;
-      else if (type === "boolean") setoption = Highs_setBoolOptionValue;
-      else if (type === "string") setoption = Highs_setStringOptionValue;
-      else throw new Error(`Unsupported option value type ${option_value} for '${option_name}'`);
-      assert_ok(
-        () => setoption(highs, option_name, option_value),
-        `set option '${option_name}'`
-      );
-    }
+  const options = highs_options || {};
+  for (const option_name in options) {
+    const option_value = options[option_name];
+    const type = typeof option_value;
+    let setoption;
+    if (type === "number" && type === type | 0) setoption = Highs_setIntOptionValue;
+    else if (type === "boolean") setoption = Highs_setBoolOptionValue;
+    else if (type === "string") setoption = Highs_setStringOptionValue;
+    else throw new Error(`Unsupported option value type ${option_value} for '${option_name}'`);
+    assert_ok(
+      () => setoption(highs, option_name, option_value),
+      `set option '${option_name}'`
+    );
   }
   assert_ok(() => _Highs_run(highs), "solve the problem");
   const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unrecognised HiGHS model status";
@@ -124,6 +123,10 @@ function parseResult(lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
   let headers = lineValues(lines[1]);
+  if (headers.indexOf("Type") > 0) {
+    // There is no value for "status" and "dual" when the problem contains integer variables
+    headers = headers.filter(h => h !== "Status" && h !== "Dual");
+  }
   var result = { "Status": status, "Columns": {}, "Rows": [] };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);

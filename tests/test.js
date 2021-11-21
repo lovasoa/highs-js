@@ -101,11 +101,46 @@ function test_invalid_model(Module) {
   );
 }
 
+function test_integer_problem(Module) {
+  const sol = Module.solve(`Minimize
+  obj: a + b
+ Subject To
+  c1: 2 a + b >= 6.5
+ General
+ a
+ End`);
+  assert.deepStrictEqual(sol, {
+    Status: 'Optimal',
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Upper: Infinity,
+        Primal: 3,
+        Type: 'Integer',
+        Name: 'a'
+      },
+      b: {
+        Index: 1,
+        Lower: 0,
+        Upper: Infinity,
+        Primal: 0.5,
+        Type: 'Continuous',
+        Name: 'b'
+      }
+    },
+    Rows: [
+      { Index: 0, Status: '6.5', Lower: Infinity, Upper: 6.5, Primal: 0 }
+    ]
+  });
+}
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
   test_invalid_model(Module);
   test_options(Module);
+  test_integer_problem(Module);
   console.log("test succeeded");
 }
 
