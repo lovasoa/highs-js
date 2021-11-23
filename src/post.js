@@ -101,7 +101,7 @@ const known_columns = {
 };
 
 function lineValues(s) {
-  return s.split(/\s+/).slice(1);
+  return s.match(/[^\s]+/g) || [];
 }
 
 function lineToObj(headers, line) {
@@ -123,16 +123,18 @@ function parseResult(lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
   let headers = lineValues(lines[1]);
-  if (headers.indexOf("Type") > 0) {
-    // There is no value for "status" and "dual" when the problem contains integer variables
-    headers = headers.filter(h => h !== "Status" && h !== "Dual");
-  }
+  // There is no value for "status" and "dual" when the problem contains integer variables
+  const headersFilter =
+    headers.indexOf("Type") > 0
+      ? (h => h !== "Status" && h !== "Dual")
+      : _ => true;
+  headers = headers.filter(headersFilter);
   var result = { "Status": status, "Columns": {}, "Rows": [] };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;
   }
-  headers = lineValues(lines[i + 1]);
+  headers = lineValues(lines[i + 1]).filter(headersFilter);
   for (var j = i + 2; j < lines.length; j++) {
     result["Rows"].push(lineToObj(headers, lines[j]));
   }

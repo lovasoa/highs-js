@@ -130,7 +130,7 @@ function test_integer_problem(Module) {
       }
     },
     Rows: [
-      { Index: 0, Status: '6.5', Lower: Infinity, Upper: 6.5, Primal: 0 }
+      { Index: 0, Lower: 6.5, Upper: Infinity, Primal: 6.5 }
     ]
   });
 }
