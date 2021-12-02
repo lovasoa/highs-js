@@ -272,11 +272,17 @@ type HighsOptions = Readonly<
     mip_heuristic_effort: number;
   }>
 >;
+type HighsSolution =
+  | GenericHighsSolution<HighsLinearSolutionColumn, HighsLinearSolutionRow>
+  | GenericHighsSolution<
+      HighsMixedIntegerLinearSolutionColumn,
+      HighsMixedIntegerLinearSolutionRow
+    >;
 
-type HighsSolution = {
+type GenericHighsSolution<ColType, RowType> = {
   Status: HighsModelStatus;
-  Columns: Record<string, HighsSolutionColumn>;
-  Rows: HighsSolutionRow[];
+  Columns: Record<string, ColType>;
+  Rows: RowType[];
 };
 
 type HighsModelStatus =
@@ -297,27 +303,55 @@ type HighsModelStatus =
   | "Iteration limit reached"
   | "Unknown";
 
-type HighsSolutionColumn = HighsSolutionRow & {
-  Name: string;
-};
-
-type HighsSolutionRow = {
+interface HighsSolutionBase {
   Index: number;
-  Status: HighsBasisStatus;
   Lower: number | null;
   Upper: number | null;
   Primal: number;
-  Dual: number;
-};
+}
 
-type HighsBasisStatus = "FX" | "LB" | "BS" | "UB" | "FR" | "NB";
+interface HighsLinearSolutionColumn extends HighsSolutionBase {
+  Dual: number;
+  Name: string;
+  Status: HighsBasisStatus;
+}
+
+interface HighsMixedIntegerLinearSolutionColumn extends HighsSolutionBase {
+  Type: "Integer" | "Continuous";
+  Name: string;
+}
+
+interface HighsLinearSolutionRow extends HighsSolutionBase {
+  Dual: number;
+  Status: HighsBasisStatus;
+}
+
+interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase {}
+
+type HighsBasisStatus =
+  /** Fixed */
+  | "FX"
+  /** Lower Bound */
+  | "LB"
+  /** Basis */
+  | "BS"
+  /** Upper Bound */
+  | "UB"
+  /** Free */
+  | "FR"
+  /** Non-Bounded */
+  | "NB";
 
 type HighsLoaderOptions = Readonly<
   Partial<{
+    /** Should return the URL of an asset given its name. Useful for locating the wasm file */
     locateFile(file: string): string;
   }>
 >;
 
-export default function highsLoader(options?: HighsLoaderOptions): Promise<Highs>;
+/** Loads HiGHS */
+export default function highsLoader(
+  options?: HighsLoaderOptions
+): Promise<Highs>;
 
 // export const Model: unknown
