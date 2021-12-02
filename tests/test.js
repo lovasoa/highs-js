@@ -1,3 +1,4 @@
+/** @type {import("../types").default} */
 const highs = require("../build/highs.js");
 const assert = require('assert').strict;
 
@@ -80,11 +81,17 @@ const SOLUTION = {
   ]
 };
 
+/**
+ * @param {import("../types").Highs} Module 
+ */
 function test_optimal(Module) {
   const sol = Module.solve(PROBLEM);
   assert.deepStrictEqual(sol, SOLUTION);
 }
 
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_options(Module) {
   const sol = Module.solve(PROBLEM, {
     "allowed_cost_scale_factor": 2,
@@ -94,6 +101,9 @@ function test_options(Module) {
   assert.deepStrictEqual(sol, SOLUTION);
 }
 
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_invalid_model(Module) {
   assert.throws(
     (_) => Module.solve("blah blah not a good file"),
@@ -101,6 +111,9 @@ function test_invalid_model(Module) {
   );
 }
 
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_integer_problem(Module) {
   const sol = Module.solve(`Minimize
   obj: a + b
