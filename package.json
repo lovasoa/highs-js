@@ -3,6 +3,7 @@
   "version": "0.4.2",
   "description": "This is a javascript mixed integer linear programming library. It is built by compiling HiGHS to WebAssembly using emscripten.",
   "main": "build/highs.js",
+  "types": "types.d.ts",
   "directories": {
     "test": "test"
   },
