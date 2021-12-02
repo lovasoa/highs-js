@@ -25,6 +25,7 @@ Module.Highs_writeSolutionPretty = Module["cwrap"](
   ["number", "string"]
 );
 
+/** @type {Record<number, import("../types").HighsModelStatus>} */
 const MODEL_STATUS_CODES = {
   0: "Not Set",
   1: "Load error",
@@ -47,7 +48,8 @@ const MODEL_STATUS_CODES = {
 /**
  * Solve a model in the CPLEX LP file format.
  * @param {string} model_str The problem to solve in the .lp format
- * @param {undefined | Object<string,string|boolean|number>} highs_options Options to pass the solver. Only integer, boolean and string options are supported at the moment.  See https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h
+ * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. Only integer, boolean and string options are supported at the moment.  See https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h
+ * @returns {import("../types").HighsSolution} The solution
  */
 Module["solve"] = function (model_str, highs_options) {
   FS.writeFile(MODEL_FILENAME, model_str);
@@ -100,10 +102,20 @@ const known_columns = {
   "Dual": parseNum,
 };
 
+/**
+ * @param {string} s 
+ * @returns {string[]} The values (words) of a line
+ */
 function lineValues(s) {
   return s.match(/[^\s]+/g) || [];
 }
 
+/**
+ * 
+ * @param {string[]} headers 
+ * @param {string} line 
+ * @returns {Record<string, string | number>}
+ */
 function lineToObj(headers, line) {
   const values = lineValues(line);
   const result = {};
@@ -119,6 +131,12 @@ function lineToObj(headers, line) {
   return result;
 }
 
+/**
+ * Parse HiGHS output lines
+ * @param {string[]} lines stdout from highs
+ * @param {import("../types").HighsModelStatus} status status
+ * @returns {import("../types").HighsSolution} The solution
+ */
 function parseResult(lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
