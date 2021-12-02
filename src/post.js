@@ -9,6 +9,11 @@ const Highs_setIntOptionValue = Module["cwrap"](
   "number",
   ["number", "string", "number"]
 );
+const Highs_setDoubleOptionValue = Module["cwrap"](
+  "Highs_setDoubleOptionValue",
+  "number",
+  ["number", "string", "number"]
+);
 const Highs_setStringOptionValue = Module["cwrap"](
   "Highs_setStringOptionValue",
   "number",
@@ -48,7 +53,7 @@ const MODEL_STATUS_CODES = {
 /**
  * Solve a model in the CPLEX LP file format.
  * @param {string} model_str The problem to solve in the .lp format
- * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. Only integer, boolean and string options are supported at the moment.  See https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h
+ * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/c70854d/src/lp_data/HighsOptions.h
  * @returns {import("../types").HighsSolution} The solution
  */
 Module["solve"] = function (model_str, highs_options) {
@@ -63,7 +68,7 @@ Module["solve"] = function (model_str, highs_options) {
     const option_value = options[option_name];
     const type = typeof option_value;
     let setoption;
-    if (type === "number" && type === type | 0) setoption = Highs_setIntOptionValue;
+    if (type === "number") setoption = setNumericOption;
     else if (type === "boolean") setoption = Highs_setBoolOptionValue;
     else if (type === "string") setoption = Highs_setStringOptionValue;
     else throw new Error(`Unsupported option value type ${option_value} for '${option_name}'`);
@@ -87,6 +92,13 @@ Module["solve"] = function (model_str, highs_options) {
   stderr_lines.length = 0;
   return output;
 };
+
+function setNumericOption(highs, option_name, option_value) {
+  let result = Highs_setDoubleOptionValue(highs, option_name, option_value);
+  if (result === -1 && option_value === (option_value | 0))
+    result = Highs_setIntOptionValue(highs, option_name, option_value);
+  return result;
+}
 
 function parseNum(s) {
   if (s === "inf") return 1 / 0;

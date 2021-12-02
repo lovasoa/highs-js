@@ -95,7 +95,9 @@ function test_optimal(Module) {
  */
 function test_options(Module) {
   const sol = Module.solve(PROBLEM, {
-    "allowed_cost_scale_factor": 2,
+    "primal_feasibility_tolerance": 1e-9,// option type: double
+    "time_limit": 1000, // option type: double
+    "allowed_cost_scale_factor": 2, // option type: integer
     "use_implied_bounds_from_presolve": true,
     "presolve": "off",
   });

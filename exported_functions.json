@@ -9,5 +9,6 @@
   "_Highs_getModelStatus",
   "_Highs_setStringOptionValue",
   "_Highs_setIntOptionValue",
+  "_Highs_setDoubleOptionValue",
   "_Highs_setBoolOptionValue"
 ]
