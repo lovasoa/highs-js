@@ -282,11 +282,17 @@ type HighsSolution =
     false,
     HighsMixedIntegerLinearSolutionColumn,
     HighsMixedIntegerLinearSolutionRow
+  >
+  | GenericHighsSolution<
+    boolean,
+    HighsInfeasibleSolutionColumn,
+    HighsInfeasibleSolutionRow,
+    "Infeasible"
   >;
 
-type GenericHighsSolution<IsLinear extends boolean, ColType, RowType> = {
+type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status extends HighsModelStatus = HighsModelStatus> = {
   IsLinear: IsLinear,
-  Status: HighsModelStatus;
+  Status: Status;
   Columns: Record<string, ColType>;
   Rows: RowType[];
 };
@@ -309,10 +315,18 @@ type HighsModelStatus =
   | "Iteration limit reached"
   | "Unknown";
 
-interface HighsSolutionBase {
+interface HighsInfeasibleSolutionBase {
   Index: number;
   Lower: number | null;
   Upper: number | null;
+}
+
+interface HighsInfeasibleSolutionRow extends HighsInfeasibleSolutionBase { }
+interface HighsInfeasibleSolutionColumn extends HighsInfeasibleSolutionBase {
+  Type: "Integer" | "Continuous"
+}
+
+interface HighsSolutionBase extends HighsInfeasibleSolutionBase {
   Primal: number;
 }
 

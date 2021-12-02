@@ -143,10 +143,11 @@ function parseResult(lines, status) {
   let headers = lineValues(lines[1]);
   // There is no value for "status" and "dual" when the problem contains integer variables
   const isLinear = headers.indexOf("Type") === -1;
-  const headersFilter =
-    isLinear
-      ? _ => true
-      : (h => h !== "Status" && h !== "Dual");
+  const infeasible = status === "Infeasible";
+  const headersFilter = h => !(
+    (infeasible && (h === "Status" || h === "Dual" || h === "Primal")) ||
+    (!isLinear && (h === "Status" || h === "Dual"))
+  );
   headers = headers.filter(headersFilter);
   var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear };
   for (var i = 2; lines[i] != "Rows"; i++) {

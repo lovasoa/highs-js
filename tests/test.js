@@ -150,12 +150,64 @@ function test_integer_problem(Module) {
   });
 }
 
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_infeasible(Module) {
+  const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0`);
+  assert.deepStrictEqual(sol, {
+    IsLinear: true,
+    Status: 'Infeasible',
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Upper: 0,
+        Name: 'a'
+      }
+    },
+    Rows: [
+      { Index: 0, Lower: 1, Upper: Infinity }
+    ]
+  });
+}
+
+
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_unbounded(Module) {
+  const sol = Module.solve(`Maximize a subject to a >= 1`);
+  assert.deepStrictEqual(sol, {
+    IsLinear: true,
+    Status: 'Unbounded',
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Upper: Infinity,
+        Primal: 1,
+        Dual: -0,
+        Status: 'BS',
+        Name: 'a'
+      }
+    },
+    Rows: [{ Index: 0, Status: 'LB', Lower: 1, Upper: Infinity, Primal: 1, Dual: 1 }
+    ]
+  });
+}
+
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
   test_invalid_model(Module);
   test_options(Module);
   test_integer_problem(Module);
+  test_infeasible(Module);
+  test_unbounded(Module);
   console.log("test succeeded");
 }
 
