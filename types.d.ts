@@ -273,13 +273,19 @@ type HighsOptions = Readonly<
   }>
 >;
 type HighsSolution =
-  | GenericHighsSolution<HighsLinearSolutionColumn, HighsLinearSolutionRow>
   | GenericHighsSolution<
-      HighsMixedIntegerLinearSolutionColumn,
-      HighsMixedIntegerLinearSolutionRow
-    >;
+    true,
+    HighsLinearSolutionColumn,
+    HighsLinearSolutionRow
+  >
+  | GenericHighsSolution<
+    false,
+    HighsMixedIntegerLinearSolutionColumn,
+    HighsMixedIntegerLinearSolutionRow
+  >;
 
-type GenericHighsSolution<ColType, RowType> = {
+type GenericHighsSolution<IsLinear extends boolean, ColType, RowType> = {
+  IsLinear: IsLinear,
   Status: HighsModelStatus;
   Columns: Record<string, ColType>;
   Rows: RowType[];
@@ -326,7 +332,7 @@ interface HighsLinearSolutionRow extends HighsSolutionBase {
   Status: HighsBasisStatus;
 }
 
-interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase {}
+interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase { }
 
 type HighsBasisStatus =
   /** Fixed */

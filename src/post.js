@@ -142,12 +142,13 @@ function parseResult(lines, status) {
     throw new Error("Unable to parse solution. Too few lines.");
   let headers = lineValues(lines[1]);
   // There is no value for "status" and "dual" when the problem contains integer variables
+  const isLinear = headers.indexOf("Type") === -1;
   const headersFilter =
-    headers.indexOf("Type") > 0
-      ? (h => h !== "Status" && h !== "Dual")
-      : _ => true;
+    isLinear
+      ? _ => true
+      : (h => h !== "Status" && h !== "Dual");
   headers = headers.filter(headersFilter);
-  var result = { "Status": status, "Columns": {}, "Rows": [] };
+  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;

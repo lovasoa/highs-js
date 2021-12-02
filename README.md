@@ -34,6 +34,7 @@ Bounds
 End`;
 
 const EXPECTED_SOLUTION = {
+  IsLinear: true,
   Columns: {
     x1: {
       Index: 0,

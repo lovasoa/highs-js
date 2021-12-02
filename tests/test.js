@@ -14,6 +14,7 @@ Bounds
 End`;
 
 const SOLUTION = {
+  IsLinear: true,
   Status: 'Optimal',
   Columns: {
     x1: {
@@ -123,6 +124,7 @@ function test_integer_problem(Module) {
  a
  End`);
   assert.deepStrictEqual(sol, {
+    IsLinear: false,
     Status: 'Optimal',
     Columns: {
       a: {
