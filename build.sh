@@ -23,6 +23,7 @@ emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS="['cwrap']" \
 	-s MODULARIZE=1 \
+	-s ALLOW_MEMORY_GROWTH=1 \
 	-flto \
 	--closure 1 \
 	--pre-js "$root/src/pre.js" \

@@ -1,6 +1,7 @@
 /** @type {import("../types").default} */
 const highs = require("../build/highs.js");
 const assert = require('assert').strict;
+const fs = require("fs");
 
 const PROBLEM = `Maximize
  obj: x1 + 2 x2 + 3 x3 + x4
@@ -202,6 +203,14 @@ function test_unbounded(Module) {
 }
 
 
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_big(Module) {
+  const pb = fs.readFileSync(__dirname + "/life_goe.mod.lp");
+  Module.solve(pb);
+}
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
@@ -210,6 +219,7 @@ async function test() {
   test_integer_problem(Module);
   test_infeasible(Module);
   test_unbounded(Module);
+  test_big(Module);
   console.log("test succeeded");
 }
 
