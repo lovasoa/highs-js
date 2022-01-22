@@ -74,7 +74,7 @@ const SOLUTION = {
     },
     {
       Index: 2,
-      Status: 'FX',
+      Status: 'UB',
       Lower: 0,
       Upper: 0,
       Primal: 0,
@@ -211,6 +211,13 @@ function test_big(Module) {
   Module.solve(pb);
 }
 
+function test_many_solves(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/10
+  for (let i = 0; i < 5000; i++) {
+    Module.solve(`Maximize a subject to a <= 1`);
+  }
+}
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
@@ -220,6 +227,7 @@ async function test() {
   test_infeasible(Module);
   test_unbounded(Module);
   test_big(Module);
+  test_many_solves(Module);
   console.log("test succeeded");
 }
 
