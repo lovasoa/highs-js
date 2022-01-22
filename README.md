@@ -5,7 +5,7 @@
 [![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)
 
 This is a javascript mixed integer linear programming library.
-It is built by compiling a high-performance C++ solver developed by the University of Edinburgh, (HiGHS)[HiGHS](https://highs.dev), to WebAssembly using emscripten.
+It is built by compiling a high-performance C++ solver developed by the University of Edinburgh, ([HiGHS](https://highs.dev)), to WebAssembly using emscripten.
 
 ## Demo
 
