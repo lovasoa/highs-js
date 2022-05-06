@@ -86,7 +86,9 @@ Module["solve"] = function (model_str, highs_options) {
     "write and extract solution"
   );
   _Highs_destroy(highs);
-  const output = parseResult(stdout_lines, status);
+  const isQuadratic = model_str.indexOf("[") !== -1;
+  // The final four lines of the output (whose contents are the objective value) are removed before parsing
+  const output = parseResult(stdout_lines.slice(0, -4), status, isQuadratic);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
   stderr_lines.length = 0;
@@ -149,19 +151,21 @@ function lineToObj(headers, line) {
  * @param {import("../types").HighsModelStatus} status status
  * @returns {import("../types").HighsSolution} The solution
  */
-function parseResult(lines, status) {
+function parseResult(lines, status, isQuadratic) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
   let headers = lineValues(lines[1]);
-  // There is no value for "status" and "dual" when the problem contains integer variables
-  const isLinear = headers.indexOf("Type") === -1;
+  // There is no value for "status" and "dual" when the problem contains integer variables,
+  // and no value for "status" when the problem is a quadratic program.
+  const isLinear = !isQuadratic && headers.indexOf("Type") === -1;
   const infeasible = status === "Infeasible";
   const headersFilter = h => !(
     (infeasible && (h === "Status" || h === "Dual" || h === "Primal")) ||
-    (!isLinear && (h === "Status" || h === "Dual"))
+    (!isLinear && !isQuadratic && (h === "Status" || h === "Dual")) ||
+    (isQuadratic && (h === "Status"))
   );
   headers = headers.filter(headersFilter);
-  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear };
+  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear, "IsQuadratic": isQuadratic };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;
