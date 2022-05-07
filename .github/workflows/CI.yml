@@ -16,4 +16,3 @@ jobs:
         run: npm run build
       - name: test
         run: npm test
-      - run: cp build/highs.* demo/
