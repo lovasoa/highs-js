@@ -18,6 +18,8 @@ RUN cd /usr/share/emscripten/ && sudo npm install acorn google-closure-compiler
 
 # Remove buggy debian patch (see https://github.com/emscripten-core/emscripten/issues/15545)
 RUN sudo sed -i "s/cmd = \['closure-compiler'\]/cmd = shared.get_npm_cmd('google-closure-compiler')/g" /usr/share/emscripten/tools/building.py
+# see https://github.com/lovasoa/highs-js/issues/14
+RUN sudo sed -i "s/ECMASCRIPT_NEXT_IN/ECMASCRIPT_2020/g" /usr/share/emscripten/tools/building.py
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
