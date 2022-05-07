@@ -184,14 +184,13 @@ function parseResult(lines, status) {
  * @returns {string[]} The headers for which there is data available
  */
 function headersForNonEmptyColumns(headerLine, firstDataLine) {
-  // Headers can correspond to empty columns. The contents of a column can be left or right
-  // aligned, so we determine if a given header should be included by looking at whether
-  // the row immediately below the header has any contents.
-  const headers = [...headerLine.matchAll(/[^\s]+/g)];
-  const headerStarts = headers.map(h => h.index);
-  const headerEnds = headers.map(h => h.index + h[0].length - 1);
-  return headers.map(x => x[0]).filter(
-    (_, i) => firstDataLine[headerStarts[i]] !== ' ' || firstDataLine[headerEnds[i]] !== ' ');
+	// Headers can correspond to empty columns. The contents of a column can be left or right
+	// aligned, so we determine if a given header should be included by looking at whether
+	// the row immediately below the header has any contents.
+	return [...headerLine.matchAll(/[^\s]+/g)].filter(match =>
+		firstDataLine[match.index] !== ' ' ||
+		firstDataLine[match.index + match[0].length - 1] !== ' '
+	).map(match => match[0])
 }
 
 function assert_ok(fn, action) {
