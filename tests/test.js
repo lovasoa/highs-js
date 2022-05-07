@@ -16,6 +16,7 @@ End`;
 
 const SOLUTION = {
   IsLinear: true,
+  IsQuadratic: false,
   Status: 'Optimal',
   Columns: {
     x1: {
@@ -128,6 +129,7 @@ function test_integer_problem(Module) {
  End`);
   assert.deepStrictEqual(sol, {
     IsLinear: false,
+    IsQuadratic: false,
     Status: 'Optimal',
     Columns: {
       a: {
@@ -153,6 +155,92 @@ function test_integer_problem(Module) {
   });
 }
 
+function test_case_with_no_constraints(Module) {
+  const sol = Module.solve(`Maximize
+  obj: x1 + 2 x2
+ Bounds
+  0 <= x1 <= 40
+  2 <= x2 <= 3
+ End`);
+  assert.deepStrictEqual(sol, {
+    "IsLinear": true,
+    "IsQuadratic": false,
+    "Status": "Optimal",
+    "Columns": {
+      "x1": {
+        "Index": 0,
+        "Status": "UB",
+        "Lower": 0,
+        "Upper": 40,
+        "Primal": 40,
+        "Dual": 1,
+        "Name": "x1"
+      },
+      "x2": {
+        "Index": 1,
+        "Status": "UB",
+        "Lower": 2,
+        "Upper": 3,
+        "Primal": 3,
+        "Dual": 2,
+        "Name": "x2"
+      }
+    },
+    "Rows": [],
+  })
+
+}
+
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_quadratic_program(Module) {
+  const sol = Module.solve(`Minimize
+  obj: a + b + [ a^2 + 4 a * b + 7 b^2 ]/2
+Subject To
+  c1: a + b >= 10
+End`);
+  assert.deepStrictEqual(sol, {
+    IsLinear: false,
+    IsQuadratic: true,
+    Status: 'Optimal',
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Upper: Infinity,
+        Primal: 10,
+        Dual: 0,
+        Name: 'a'
+      },
+      b: {
+        Index: 1,
+        Lower: 0,
+        Upper: Infinity,
+        Primal: 0,
+        Dual: 10,
+        Name: 'b'
+      }
+    },
+    Rows: [ { Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11 } ]
+  });
+}
+
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+ function test_quadratic_program_not_positive_semidefinite(Module) {
+  assert.throws(
+    (_) => Module.solve(`Maximize
+  obj: [x1^2]/2
+ Bounds
+  0 <= x1 <= 40
+ End`)
+  );
+}
+
 
 /**
  * @param {import("../types").Highs} Module
@@ -161,6 +249,7 @@ function test_infeasible(Module) {
   const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0`);
   assert.deepStrictEqual(sol, {
     IsLinear: true,
+    IsQuadratic: false,
     Status: 'Infeasible',
     Columns: {
       a: {
@@ -177,6 +266,38 @@ function test_infeasible(Module) {
 }
 
 
+/**
+ * @param {import("../types").Highs} Module
+ */
+ function test_infeasible_ilp(Module) {
+  const sol = Module.solve(`Maximize
+  a 
+subject to
+  a >= 1
+bounds
+  a <= 0
+General
+  a
+end`);
+  assert.deepStrictEqual(sol, {
+    IsLinear: false,
+    IsQuadratic: false,
+    Status: 'Infeasible',
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Upper: 0,
+        Type: 'Integer',
+        Name: 'a'
+      }
+    },
+    Rows: [
+      { Index: 0, Lower: 1, Upper: Infinity }
+    ]
+  });
+}
+
 
 /**
  * @param {import("../types").Highs} Module
@@ -185,6 +306,7 @@ function test_unbounded(Module) {
   const sol = Module.solve(`Maximize a subject to a >= 1`);
   assert.deepStrictEqual(sol, {
     IsLinear: true,
+    IsQuadratic: false,
     Status: 'Unbounded',
     Columns: {
       a: {
@@ -224,7 +346,11 @@ async function test() {
   test_invalid_model(Module);
   test_options(Module);
   test_integer_problem(Module);
+  test_case_with_no_constraints(Module);
+  test_quadratic_program(Module);
+  test_quadratic_program_not_positive_semidefinite(Module);
   test_infeasible(Module);
+  test_infeasible_ilp(Module);
   test_unbounded(Module);
   test_big(Module);
   test_many_solves(Module);

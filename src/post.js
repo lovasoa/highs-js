@@ -86,7 +86,8 @@ Module["solve"] = function (model_str, highs_options) {
     "write and extract solution"
   );
   _Highs_destroy(highs);
-  const output = parseResult(stdout_lines, status);
+  // The final four lines of the output (whose contents are the objective value) are removed before parsing
+  const output = parseResult(stdout_lines.slice(0, -4), status);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
   stderr_lines.length = 0;
@@ -152,25 +153,44 @@ function lineToObj(headers, line) {
 function parseResult(lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
-  let headers = lineValues(lines[1]);
-  // There is no value for "status" and "dual" when the problem contains integer variables
-  const isLinear = headers.indexOf("Type") === -1;
-  const infeasible = status === "Infeasible";
-  const headersFilter = h => !(
-    (infeasible && (h === "Status" || h === "Dual" || h === "Primal")) ||
-    (!isLinear && (h === "Status" || h === "Dual"))
-  );
-  headers = headers.filter(headersFilter);
-  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear };
+
+  let headers = headersForNonEmptyColumns(lines[1], lines[2]);
+  
+  // We identity whether the problem is a QP by the available headers: For infeasible
+  // problems, "Status", "Dual", and "Primal" are missing, for integer linear programs,
+  // "Status" and "Dual" are missing, and for QPs, only "Status" is missing
+  const isQuadratic = !headers.includes("Status") && headers.includes("Dual");
+  const isLinear = !headers.includes("Type") && !isQuadratic;
+
+  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear, "IsQuadratic": isQuadratic };
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;
   }
-  headers = lineValues(lines[i + 1]).filter(headersFilter);
-  for (var j = i + 2; j < lines.length; j++) {
-    result["Rows"].push(lineToObj(headers, lines[j]));
+
+  if (lines.length > i + 2) {
+    headers = headersForNonEmptyColumns(lines[i + 1], lines[i + 2]);
+    for (var j = i + 2; j < lines.length; j++) {
+      result["Rows"].push(lineToObj(headers, lines[j]));
+    }
   }
   return result;
+}
+
+/**
+ * Finds the non headers for non-empty columns in a HiGHS output
+ * @param {string} headerLine The line containing the header names
+ * @param {string} firstDataLine The line immediately below the header line
+ * @returns {string[]} The headers for which there is data available
+ */
+function headersForNonEmptyColumns(headerLine, firstDataLine) {
+	// Headers can correspond to empty columns. The contents of a column can be left or right
+	// aligned, so we determine if a given header should be included by looking at whether
+	// the row immediately below the header has any contents.
+	return [...headerLine.matchAll(/[^\s]+/g)].filter(match =>
+		firstDataLine[match.index] !== ' ' ||
+		firstDataLine[match.index + match[0].length - 1] !== ' '
+	).map(match => match[0])
 }
 
 function assert_ok(fn, action) {
