@@ -1,0 +1,28 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Continuous Deployment
+
+jobs:
+  build:
+    name: Continuous Deployment of website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+      - uses: mymindstorm/setup-emsdk@ca0cef33e53bf9149891246a1b13ef3dbd498ca5
+        with: {version: '2.0.31'}
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm test
+      - run: cp build/highs.* demo/
+      - name: Deploy demo 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: demo
