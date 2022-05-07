@@ -17,8 +17,3 @@ jobs:
       - name: test
         run: npm test
       - run: cp build/highs.* demo/
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.0
-        with:
-          branch: gh-pages
-          folder: demo
