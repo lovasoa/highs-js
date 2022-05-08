@@ -86,7 +86,6 @@ Module["solve"] = function (model_str, highs_options) {
     "write and extract solution"
   );
   _Highs_destroy(highs);
-  // The final four lines of the output (whose contents are the objective value) are removed before parsing
   const output = parseResult(stdout_lines, status);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
