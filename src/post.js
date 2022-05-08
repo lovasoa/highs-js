@@ -87,7 +87,7 @@ Module["solve"] = function (model_str, highs_options) {
   );
   _Highs_destroy(highs);
   // The final four lines of the output (whose contents are the objective value) are removed before parsing
-  const output = parseResult(stdout_lines.slice(0, -4), status);
+  const output = parseResult(stdout_lines, status);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
   stderr_lines.length = 0;
@@ -163,17 +163,21 @@ function parseResult(lines, status) {
   const isLinear = !headers.includes("Type") && !isQuadratic;
 
   var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear, "IsQuadratic": isQuadratic };
+
+  // Parse columns
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
     result["Columns"][obj["Name"]] = obj;
   }
 
-  if (lines.length > i + 2) {
-    headers = headersForNonEmptyColumns(lines[i + 1], lines[i + 2]);
-    for (var j = i + 2; j < lines.length; j++) {
-      result["Rows"].push(lineToObj(headers, lines[j]));
-    }
+  // Parse rows
+  headers = headersForNonEmptyColumns(lines[i + 1], lines[i + 2]);
+  for (var j = i + 2; lines[j] != ""; j++) {
+    result["Rows"].push(lineToObj(headers, lines[j]));
   }
+
+  // Parse objective value
+  result["ObjectiveValue"] = parseNum(lines[j + 3].match(/Objective value: (.+)/)[1]);
   return result;
 }
 

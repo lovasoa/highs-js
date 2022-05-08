@@ -18,6 +18,7 @@ const SOLUTION = {
   IsLinear: true,
   IsQuadratic: false,
   Status: 'Optimal',
+  ObjectiveValue: 125.2083333333333,
   Columns: {
     x1: {
       Index: 0,
@@ -131,6 +132,7 @@ function test_integer_problem(Module) {
     IsLinear: false,
     IsQuadratic: false,
     Status: 'Optimal',
+    ObjectiveValue: 3.5,
     Columns: {
       a: {
         Index: 0,
@@ -166,6 +168,7 @@ function test_case_with_no_constraints(Module) {
     "IsLinear": true,
     "IsQuadratic": false,
     "Status": "Optimal",
+    "ObjectiveValue": 46,
     "Columns": {
       "x1": {
         "Index": 0,
@@ -205,6 +208,7 @@ End`);
     IsLinear: false,
     IsQuadratic: true,
     Status: 'Optimal',
+    ObjectiveValue: 60,
     Columns: {
       a: {
         Index: 0,
@@ -251,6 +255,7 @@ function test_infeasible(Module) {
     IsLinear: true,
     IsQuadratic: false,
     Status: 'Infeasible',
+    ObjectiveValue: 0,
     Columns: {
       a: {
         Index: 0,
@@ -283,6 +288,7 @@ end`);
     IsLinear: false,
     IsQuadratic: false,
     Status: 'Infeasible',
+    ObjectiveValue: Infinity,
     Columns: {
       a: {
         Index: 0,
@@ -308,6 +314,7 @@ function test_unbounded(Module) {
     IsLinear: true,
     IsQuadratic: false,
     Status: 'Unbounded',
+    ObjectiveValue: 1,
     Columns: {
       a: {
         Index: 0,
