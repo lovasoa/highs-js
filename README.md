@@ -35,6 +35,9 @@ End`;
 
 const EXPECTED_SOLUTION = {
   IsLinear: true,
+  IsQuadratic: false,
+  Status: 'Optimal',
+  ObjectiveValue: 125.2083333333333,
   Columns: {
     x1: {
       Index: 0,
