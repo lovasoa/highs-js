@@ -402,9 +402,9 @@ async function test() {
   test_infeasible(Module);
   test_infeasible_ilp(Module);
   test_unbounded(Module);
+  test_read_model_warning(Module);
   test_big(Module);
   test_many_solves(Module);
-  test_read_model_warning(Module);
   console.log("test succeeded");
 }
 
