@@ -59,10 +59,19 @@ const MODEL_STATUS_CODES = {
 Module["solve"] = function (model_str, highs_options) {
   FS.writeFile(MODEL_FILENAME, model_str);
   const highs = _Highs_create();
-  assert_ok(
-    () => Module.Highs_readModel(highs, MODEL_FILENAME),
-    "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
-  );
+
+  const readErrorMessage = "Unable to read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)";
+  let readStatus;
+  try {
+    readStatus = Module.Highs_readModel(highs, MODEL_FILENAME);
+  } catch (err) {
+    throw new Error(readErrorMessage);
+  }
+  // Also check for HighsStatus::kError (-1)
+  if (readStatus === -1) {
+    throw new Error(readErrorMessage);
+  }
+
   const options = highs_options || {};
   for (const option_name in options) {
     const option_value = options[option_name];

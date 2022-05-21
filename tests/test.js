@@ -328,6 +328,56 @@ function test_unbounded(Module) {
 /**
  * @param {import("../types").Highs} Module
  */
+function test_read_model_warning(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/17
+  const sol = Module.solve(`Minimize
+obj: x1
+Subject To
+c1: 1 x0 + 1 x1 = 1
+Bounds
+0 <= x1 <= 1
+1.1 <= x2 <= 1
+End`);
+  assert.deepStrictEqual(sol, {
+    IsLinear: true,
+    IsQuadratic: false,
+    Status: 'Infeasible',
+    Columns: {
+      x0: {
+        Index: 1,
+        Lower: 0,
+        Name: 'x0',
+        Upper: Infinity
+      },
+      x1: {
+        Index: 0,
+        Lower: 0,
+        Name: 'x1',
+        Upper: 1
+      },
+      x2: {
+        Index: 2,
+        Lower: 1.1,
+        Name: 'x2',
+        Upper: 1
+      }
+    },
+    IsLinear: true,
+    IsQuadratic: false,
+    Rows: [
+      {
+        Index: 0,
+        Lower: 1,
+        Upper: 1
+      }
+    ]
+  });
+}
+
+
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_big(Module) {
   const pb = fs.readFileSync(__dirname + "/life_goe.mod.lp");
   Module.solve(pb);
@@ -354,6 +404,7 @@ async function test() {
   test_unbounded(Module);
   test_big(Module);
   test_many_solves(Module);
+  test_read_model_warning(Module);
   console.log("test succeeded");
 }
 
