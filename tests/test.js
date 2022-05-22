@@ -60,6 +60,7 @@ const SOLUTION = {
   Rows: [
     {
       Index: 0,
+      Name: 'c1',
       Status: 'UB',
       Lower: -Infinity,
       Upper: 20,
@@ -68,6 +69,7 @@ const SOLUTION = {
     },
     {
       Index: 1,
+      Name: 'c2',
       Status: 'UB',
       Lower: -Infinity,
       Upper: 30,
@@ -76,6 +78,7 @@ const SOLUTION = {
     },
     {
       Index: 2,
+      Name: 'c3',
       Status: 'UB',
       Lower: 0,
       Upper: 0,
@@ -152,7 +155,7 @@ function test_integer_problem(Module) {
       }
     },
     Rows: [
-      { Index: 0, Lower: 6.5, Upper: Infinity, Primal: 6.5 }
+      { Index: 0, Lower: 6.5, Upper: Infinity, Primal: 6.5, Name: 'c1' }
     ]
   });
 }
@@ -227,7 +230,7 @@ End`);
         Name: 'b'
       }
     },
-    Rows: [ { Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11 } ]
+    Rows: [{ Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11, Name: 'c1' }]
   });
 }
 
@@ -235,7 +238,7 @@ End`);
 /**
  * @param {import("../types").Highs} Module
  */
- function test_quadratic_program_not_positive_semidefinite(Module) {
+function test_quadratic_program_not_positive_semidefinite(Module) {
   assert.throws(
     (_) => Module.solve(`Maximize
   obj: [x1^2]/2
@@ -265,7 +268,7 @@ function test_infeasible(Module) {
       }
     },
     Rows: [
-      { Index: 0, Lower: 1, Upper: Infinity }
+      { Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }
     ]
   });
 }
@@ -274,7 +277,7 @@ function test_infeasible(Module) {
 /**
  * @param {import("../types").Highs} Module
  */
- function test_infeasible_ilp(Module) {
+function test_infeasible_ilp(Module) {
   const sol = Module.solve(`Maximize
   a 
 subject to
@@ -299,7 +302,7 @@ end`);
       }
     },
     Rows: [
-      { Index: 0, Lower: 1, Upper: Infinity }
+      { Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }
     ]
   });
 }
@@ -326,7 +329,7 @@ function test_unbounded(Module) {
         Name: 'a'
       }
     },
-    Rows: [{ Index: 0, Status: 'LB', Lower: 1, Upper: Infinity, Primal: 1, Dual: 1 }
+    Rows: [{ Index: 0, Status: 'LB', Lower: 1, Upper: Infinity, Primal: 1, Dual: 1, Name: 'HiGHS_R0' }
     ]
   });
 }
@@ -376,7 +379,8 @@ End`);
       {
         Index: 0,
         Lower: 1,
-        Upper: 1
+        Upper: 1,
+        Name: 'c1'
       }
     ]
   });

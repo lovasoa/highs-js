@@ -293,6 +293,7 @@ type HighsSolution =
 type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status extends HighsModelStatus = HighsModelStatus> = {
   IsLinear: IsLinear,
   Status: Status;
+  Objective: number;
   Columns: Record<string, ColType>;
   Rows: RowType[];
 };
@@ -344,6 +345,7 @@ interface HighsMixedIntegerLinearSolutionColumn extends HighsSolutionBase {
 interface HighsLinearSolutionRow extends HighsSolutionBase {
   Dual: number;
   Status: HighsBasisStatus;
+  Name: string;
 }
 
 interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase { }

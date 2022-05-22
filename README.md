@@ -79,6 +79,7 @@ const EXPECTED_SOLUTION = {
   Rows: [
     {
       Index: 0,
+      Name: 'c1',
       Status: 'UB',
       Lower: -Infinity,
       Upper: 20,
@@ -87,6 +88,7 @@ const EXPECTED_SOLUTION = {
     },
     {
       Index: 1,
+      Name: 'c2',
       Status: 'UB',
       Lower: -Infinity,
       Upper: 30,
@@ -95,6 +97,7 @@ const EXPECTED_SOLUTION = {
     },
     {
       Index: 2,
+      Name: 'c3',
       Status: 'UB',
       Lower: 0,
       Upper: 0,
