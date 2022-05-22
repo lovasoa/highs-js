@@ -4,11 +4,11 @@ const assert = require('assert').strict;
 const fs = require("fs");
 
 const PROBLEM = `Maximize
- obj: x1 + 2 x2 + 3 x3 + x4
+ obj: x1 + 2 x2 + 4 x3 + x4
 Subject To
  c1: - x1 + x2 + x3 + 10 x4 <= 20
- c2: x1 - 3 x2 + x3 <= 30
- c3: x2 - 3.5 x4 = 0
+ c2: x1 - 4 x2 + x3 <= 30
+ c3: x2 - 0.5 x4 = 0
 Bounds
  0 <= x1 <= 40
  2 <= x4 <= 3
@@ -18,14 +18,15 @@ const SOLUTION = {
   IsLinear: true,
   IsQuadratic: false,
   Status: 'Optimal',
+  ObjectiveValue: 87.5,
   Columns: {
     x1: {
       Index: 0,
-      Status: 'UB',
+      Status: 'BS',
       Lower: 0,
       Upper: 40,
-      Primal: 40,
-      Dual: 1.29167,
+      Primal: 17.5,
+      Dual: -0,
       Name: 'x1'
     },
     x2: {
@@ -33,7 +34,7 @@ const SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
-      Primal: 10.2083,
+      Primal: 1,
       Dual: -0,
       Name: 'x2'
     },
@@ -42,17 +43,17 @@ const SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
-      Primal: 20.625,
+      Primal: 16.5,
       Dual: -0,
       Name: 'x3'
     },
     x4: {
       Index: 3,
-      Status: 'BS',
+      Status: 'LB',
       Lower: 2,
       Upper: 3,
-      Primal: 2.91667,
-      Dual: -0,
+      Primal: 2,
+      Dual: -8.75,
       Name: 'x4'
     }
   },
@@ -63,7 +64,7 @@ const SOLUTION = {
       Lower: -Infinity,
       Upper: 20,
       Primal: 20,
-      Dual: 1.64583
+      Dual: 1.5
     },
     {
       Index: 1,
@@ -71,7 +72,7 @@ const SOLUTION = {
       Lower: -Infinity,
       Upper: 30,
       Primal: 30,
-      Dual: 1.35417
+      Dual: 2.5
     },
     {
       Index: 2,
@@ -79,7 +80,7 @@ const SOLUTION = {
       Lower: 0,
       Upper: 0,
       Primal: 0,
-      Dual: 4.41667
+      Dual: 10.5
     }
   ]
 };
@@ -131,6 +132,7 @@ function test_integer_problem(Module) {
     IsLinear: false,
     IsQuadratic: false,
     Status: 'Optimal',
+    ObjectiveValue: 3.5,
     Columns: {
       a: {
         Index: 0,
@@ -166,6 +168,7 @@ function test_case_with_no_constraints(Module) {
     "IsLinear": true,
     "IsQuadratic": false,
     "Status": "Optimal",
+    "ObjectiveValue": 46,
     "Columns": {
       "x1": {
         "Index": 0,
@@ -205,6 +208,7 @@ End`);
     IsLinear: false,
     IsQuadratic: true,
     Status: 'Optimal',
+    ObjectiveValue: 60,
     Columns: {
       a: {
         Index: 0,
@@ -251,6 +255,7 @@ function test_infeasible(Module) {
     IsLinear: true,
     IsQuadratic: false,
     Status: 'Infeasible',
+    ObjectiveValue: 0,
     Columns: {
       a: {
         Index: 0,
@@ -283,6 +288,7 @@ end`);
     IsLinear: false,
     IsQuadratic: false,
     Status: 'Infeasible',
+    ObjectiveValue: Infinity,
     Columns: {
       a: {
         Index: 0,
@@ -308,6 +314,7 @@ function test_unbounded(Module) {
     IsLinear: true,
     IsQuadratic: false,
     Status: 'Unbounded',
+    ObjectiveValue: 1,
     Columns: {
       a: {
         Index: 0,

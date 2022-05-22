@@ -23,11 +23,11 @@ const highs_promise = require("highs")(highs_settings);
 
 const PROBLEM = `Maximize
  obj:
-    x1 + 2 x2 + 3 x3 + 1 x4
+    x1 + 2 x2 + 4 x3 + x4
 Subject To
  c1: - x1 + x2 + x3 + 10 x4 <= 20
- c2: x1 - 3 x2 + x3 <= 30
- c3: x2 - 3.5 x4 = 0
+ c2: x1 - 4 x2 + x3 <= 30
+ c3: x2 - 0.5 x4 = 0
 Bounds
  0 <= x1 <= 40
  2 <= x4 <= 3
@@ -35,14 +35,17 @@ End`;
 
 const EXPECTED_SOLUTION = {
   IsLinear: true,
+  IsQuadratic: false,
+  Status: 'Optimal',
+  ObjectiveValue: 87.5,
   Columns: {
     x1: {
       Index: 0,
-      Status: 'UB',
+      Status: 'BS',
       Lower: 0,
       Upper: 40,
-      Primal: 40,
-      Dual: 1.29167,
+      Primal: 17.5,
+      Dual: -0,
       Name: 'x1'
     },
     x2: {
@@ -50,7 +53,7 @@ const EXPECTED_SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
-      Primal: 10.2083,
+      Primal: 1,
       Dual: -0,
       Name: 'x2'
     },
@@ -59,17 +62,17 @@ const EXPECTED_SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
-      Primal: 20.625,
+      Primal: 16.5,
       Dual: -0,
       Name: 'x3'
     },
     x4: {
       Index: 3,
-      Status: 'BS',
+      Status: 'LB',
       Lower: 2,
       Upper: 3,
-      Primal: 2.91667,
-      Dual: -0,
+      Primal: 2,
+      Dual: -8.75,
       Name: 'x4'
     }
   },
@@ -80,7 +83,7 @@ const EXPECTED_SOLUTION = {
       Lower: -Infinity,
       Upper: 20,
       Primal: 20,
-      Dual: 1.64583
+      Dual: 1.5
     },
     {
       Index: 1,
@@ -88,15 +91,15 @@ const EXPECTED_SOLUTION = {
       Lower: -Infinity,
       Upper: 30,
       Primal: 30,
-      Dual: 1.35417
+      Dual: 2.5
     },
     {
       Index: 2,
-      Status: 'FX',
+      Status: 'UB',
       Lower: 0,
       Upper: 0,
       Primal: 0,
-      Dual: 4.41667
+      Dual: 10.5
     }
   ]
 };
