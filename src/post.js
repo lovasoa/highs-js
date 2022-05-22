@@ -200,8 +200,8 @@ function assert_ok(fn, action) {
   } catch (e) {
     err = e;
   }
-  // Allow HighsStatus::kWarning (0) and HighsStatus::kWarning (1) but 
+  // Allow HighsStatus::kOk (0) and HighsStatus::kWarning (1) but 
   // disallow other values, such as e.g. HighsStatus::kError (-1).
-  if (!(err in [0, 1]))
+  if (err !== 0 || err !== 1)
     throw new Error("Unable to " + action + ". HiGHS error " + err);
 }
