@@ -342,6 +342,7 @@ End`);
     IsLinear: true,
     IsQuadratic: false,
     Status: 'Infeasible',
+    ObjectiveValue: 0,
     Columns: {
       x0: {
         Index: 1,
