@@ -293,7 +293,7 @@ type HighsSolution =
 type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status extends HighsModelStatus = HighsModelStatus> = {
   IsLinear: IsLinear,
   Status: Status;
-  Objective: number;
+  ObjectiveValue: number;
   Columns: Record<string, ColType>;
   Rows: RowType[];
 };
