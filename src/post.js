@@ -30,8 +30,8 @@ Module.Highs_writeSolutionPretty = Module["cwrap"](
   ["number", "string"]
 );
 
-/** @type {Record<number, import("../types").HighsModelStatus>} */
-const MODEL_STATUS_CODES = {
+
+const MODEL_STATUS_CODES = /** @type {const} */ ({
   0: "Not Set",
   1: "Load error",
   2: "Model error",
@@ -48,7 +48,16 @@ const MODEL_STATUS_CODES = {
   13: "Time limit reached",
   14: "Iteration limit reached",
   15: "Unknown",
-};
+});
+
+/** @typedef {Object} Highs */
+
+var
+/** @type {()=>Highs} */ _Highs_create,
+/** @type {(Highs)=>void} */ _Highs_run,
+/** @type {(Highs)=>void} */ _Highs_destroy,
+/** @type {(Highs, number)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
+/** @type {any}*/ FS;
 
 /**
  * Solve a model in the CPLEX LP file format.
@@ -78,7 +87,7 @@ Module["solve"] = function (model_str, highs_options) {
     );
   }
   assert_ok(() => _Highs_run(highs), "solve the problem");
-  const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unrecognised HiGHS model status";
+  const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
   // Flush the content of stdout in order to have a clean stream before writing the solution in it
   stdout_lines.length = 0;
   assert_ok(
@@ -130,6 +139,7 @@ function lineValues(s) {
  */
 function lineToObj(headers, line) {
   const values = lineValues(line);
+  /** @type {Record<string, string | number>} */
   const result = {};
   for (let idx = 0; idx < values.length; idx++) {
     if (idx >= headers.length)
@@ -154,14 +164,21 @@ function parseResult(lines, status) {
     throw new Error("Unable to parse solution. Too few lines.");
 
   let headers = headersForNonEmptyColumns(lines[1], lines[2]);
-  
+
   // We identity whether the problem is a QP by the available headers: For infeasible
   // problems, "Status", "Dual", and "Primal" are missing, for integer linear programs,
   // "Status" and "Dual" are missing, and for QPs, only "Status" is missing
   const isQuadratic = !headers.includes("Status") && headers.includes("Dual");
   const isLinear = !headers.includes("Type") && !isQuadratic;
 
-  var result = { "Status": status, "Columns": {}, "Rows": [], "IsLinear": isLinear, "IsQuadratic": isQuadratic };
+  var result = {
+    "Status": /** @type {"Infeasible"} */(status),
+    "Columns": {},
+    "Rows": [],
+    "IsLinear": isLinear,
+    "IsQuadratic": isQuadratic,
+    "ObjectiveValue": NaN
+  };
 
   // Parse columns
   for (var i = 2; lines[i] != "Rows"; i++) {
@@ -187,13 +204,13 @@ function parseResult(lines, status) {
  * @returns {string[]} The headers for which there is data available
  */
 function headersForNonEmptyColumns(headerLine, firstDataLine) {
-	// Headers can correspond to empty columns. The contents of a column can be left or right
-	// aligned, so we determine if a given header should be included by looking at whether
-	// the row immediately below the header has any contents.
-	return [...headerLine.matchAll(/[^\s]+/g)].filter(match =>
-		firstDataLine[match.index] !== ' ' ||
-		firstDataLine[match.index + match[0].length - 1] !== ' '
-	).map(match => match[0])
+  // Headers can correspond to empty columns. The contents of a column can be left or right
+  // aligned, so we determine if a given header should be included by looking at whether
+  // the row immediately below the header has any contents.
+  return [...headerLine.matchAll(/[^\s]+/g)].filter(match =>
+    firstDataLine[match.index] !== ' ' ||
+    firstDataLine[match.index + match[0].length - 1] !== ' '
+  ).map(match => match[0])
 }
 
 function assert_ok(fn, action) {

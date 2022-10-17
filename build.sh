@@ -19,6 +19,7 @@ emmake make -j8 libhighs
 # If the project output is a library, you may need to add your 'main.c' file
 # here as well.
 # [-Ox] represents build optimisations (discussed in the next section).
+export EMCC_CLOSURE_ARGS="--jscomp_off=checkTypes"
 emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS="['cwrap']" \

@@ -2,3 +2,4 @@ build/*
 !build/build.sh
 !build/*json
 cbuild/
+node_modules/

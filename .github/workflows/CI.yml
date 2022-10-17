@@ -12,6 +12,7 @@ jobs:
           submodules: "recursive"
       - uses: mymindstorm/setup-emsdk@ca0cef33e53bf9149891246a1b13ef3dbd498ca5
         with: {version: '2.0.31'}
+      - run: npm ci
       - name: build
         run: npm run build
       - name: test
