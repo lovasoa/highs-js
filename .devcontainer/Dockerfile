@@ -6,20 +6,15 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install emscripten cmake
+    && apt-get -y install cmake
 
-RUN emcc
-RUN sudo ln -s /usr/share/emscripten/emcc.py /usr/share/emscripten/emcc && \
-    sudo ln -s /usr/share/emscripten/emar.py /usr/share/emscripten/emar && \
-    sudo ln -s /usr/share/emscripten/emranlib.py /usr/share/emscripten/emranlib && \
-    sudo ln -s /usr/share/emscripten/em++.py /usr/share/emscripten/em++
+RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
+    sudo /emsdk/emsdk install 3.1.24 && \
+    sudo /emsdk/emsdk activate 3.1.24
 
-RUN cd /usr/share/emscripten/ && sudo npm install acorn google-closure-compiler
+ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten:/emsdk/node/14.18.2_64bit/bin"
 
-# Remove buggy debian patch (see https://github.com/emscripten-core/emscripten/issues/15545)
-RUN sudo sed -i "s/cmd = \['closure-compiler'\]/cmd = shared.get_npm_cmd('google-closure-compiler')/g" /usr/share/emscripten/tools/building.py
-# see https://github.com/lovasoa/highs-js/issues/14
-RUN sudo sed -i "s/ECMASCRIPT_NEXT_IN/ECMASCRIPT_2020/g" /usr/share/emscripten/tools/building.py
+RUN cd /emsdk/upstream/emscripten/ && sudo npm install acorn google-closure-compiler
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
