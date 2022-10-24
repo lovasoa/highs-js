@@ -10,7 +10,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
     sudo /emsdk/emsdk install 3.1.24 && \
-    sudo /emsdk/emsdk activate 3.1.24
+    sudo /emsdk/emsdk activate 3.1.24 && \
+    sudo ln -s /emsdk/upstream/emscripten /usr/share/emscripten
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten:/emsdk/node/14.18.2_64bit/bin"
 
