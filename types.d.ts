@@ -20,6 +20,11 @@ type HighsOptions = Readonly<
     parallel: "off" | "choose" | "on";
 
     /**
+     * default: "choose"
+     */
+    run_crossover: "off" | "choose" | "on";
+
+    /**
      * Time limit
      * default: inf
      */
@@ -98,18 +103,6 @@ type HighsOptions = Readonly<
     threads: number;
 
     /**
-     * Debugging level in HiGHS
-     * default: 0
-     */
-    highs_debug_level: number;
-
-    /**
-     * Analysis level in HiGHS
-     * default: 0
-     */
-    highs_analysis_level: number;
-
-    /**
      * Strategy for simplex solver
      * default: 1
      */
@@ -152,18 +145,6 @@ type HighsOptions = Readonly<
     simplex_update_limit: number;
 
     /**
-     * Iteration limit for IPM solver
-     * default: 2147483647
-     */
-    ipm_iteration_limit: number;
-
-    /**
-     * Minimum level of concurrency in parallel simplex
-     * default: 1
-     */
-    simplex_min_concurrency: number;
-
-    /**
      * Maximum level of concurrency in parallel simplex
      * default: 8
      */
@@ -200,10 +181,28 @@ type HighsOptions = Readonly<
     write_solution_to_file: boolean;
 
     /**
-     * Write the solution in style: 0=>Raw (computer-readable); 1=>Pretty (human-readable)
+     * Style of solution file (raw = computer-readable, pretty = human-readable): -1 => HiGHS old raw (deprecated); 0 => HiGHS raw; 1 => HiGHS pretty; 2 => Glpsol raw; 3 => Glpsol pretty; 4 => HiGHS sparse raw
      * default: 0
      */
-    write_solution_style: number;
+    write_solution_style: -1 | 0 | 1 | 2 | 3 | 4;
+
+    /**
+     * Location of cost row for Glpsol file: -2 => Last; -1 => None; 0 => None if empty, otherwise data file location; 1 <= n <= num_row => Location n; n > num_row => Last
+     * default: 0
+     */
+    glpsol_cost_row_location: number;
+
+    /**
+     * Write model file
+     * default: ""
+     */
+    write_model_file: string;
+
+    /**
+     * Write the model to a file
+     * default: false
+     */
+    write_model_to_file: boolean;
 
     /**
      * Whether symmetry should be detected
@@ -224,10 +223,33 @@ type HighsOptions = Readonly<
     mip_max_stall_nodes: number;
 
     /**
+     * Whether improving MIP solutions should be saved
+     * default: false
+     */
+    mip_improving_solution_save: boolean;
+
+    /**
+     * Whether improving MIP solutions should be reported in sparse format
+     * default: false
+     */
+    mip_improving_solution_report_sparse: boolean;
+
+    /**
+     * File for reporting improving MIP solutions: not reported if ""
+     * default: ""
+     */
+    mip_improving_solution_file: string;
+
+    /**
      * MIP solver max number of leave nodes
      * default: 2147483647
      */
     mip_max_leaves: number;
+
+    /**
+     * Limit on the number of improving solutions found to stop the MIP solver prematurely.
+     */
+    mip_max_improving_sols: number;
 
     /**
      * maximal age of dynamic LP rows before they are removed from the LP relaxation
@@ -254,10 +276,10 @@ type HighsOptions = Readonly<
     mip_pscost_minreliable: number;
 
     /**
-     * MIP solver reporting level
-     * default: 1
+     * Minimal number of entries in the MIP solver cliquetable before neighbourhood queries of the conflict graph use parallel processing
+     * default: 100000
      */
-    mip_report_level: number;
+    mip_min_cliquetable_entries_for_parallelism: number;
 
     /**
      * MIP feasibility tolerance
@@ -266,32 +288,49 @@ type HighsOptions = Readonly<
     mip_feasibility_tolerance: number;
 
     /**
-     * effort spent for MIP heuristics
-     * default: 0.05
+     * Effort spent for MIP heuristics
+     * default 0.05
      */
     mip_heuristic_effort: number;
+
+    /**
+     * Tolerance on relative gap, |ub-lb|/|ub|, to determine whether optimality has been reached for a MIP instance
+     * default: 0.0001
+     */
+    mip_rel_gap: number;
+
+    /**
+     * Tolerance on absolute gap of MIP, |ub-lb|, to determine whether optimality has been reached for a MIP instance
+     * default: 1e-06
+     */
+    mip_abs_gap: number;
   }>
 >;
 type HighsSolution =
   | GenericHighsSolution<
-    true,
-    HighsLinearSolutionColumn,
-    HighsLinearSolutionRow
-  >
+      true,
+      HighsLinearSolutionColumn,
+      HighsLinearSolutionRow
+    >
   | GenericHighsSolution<
-    false,
-    HighsMixedIntegerLinearSolutionColumn,
-    HighsMixedIntegerLinearSolutionRow
-  >
+      false,
+      HighsMixedIntegerLinearSolutionColumn,
+      HighsMixedIntegerLinearSolutionRow
+    >
   | GenericHighsSolution<
-    boolean,
-    HighsInfeasibleSolutionColumn,
-    HighsInfeasibleSolutionRow,
-    "Infeasible"
-  >;
+      boolean,
+      HighsInfeasibleSolutionColumn,
+      HighsInfeasibleSolutionRow,
+      "Infeasible"
+    >;
 
-type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status extends HighsModelStatus = HighsModelStatus> = {
-  IsLinear: IsLinear,
+type GenericHighsSolution<
+  IsLinear extends boolean,
+  ColType,
+  RowType,
+  Status extends HighsModelStatus = HighsModelStatus
+> = {
+  IsLinear: IsLinear;
   Status: Status;
   ObjectiveValue: number;
   Columns: Record<string, ColType>;
@@ -322,9 +361,9 @@ interface HighsInfeasibleSolutionBase {
   Upper: number | null;
 }
 
-interface HighsInfeasibleSolutionRow extends HighsInfeasibleSolutionBase { }
+interface HighsInfeasibleSolutionRow extends HighsInfeasibleSolutionBase {}
 interface HighsInfeasibleSolutionColumn extends HighsInfeasibleSolutionBase {
-  Type: "Integer" | "Continuous"
+  Type: "Integer" | "Continuous";
 }
 
 interface HighsSolutionBase extends HighsInfeasibleSolutionBase {
@@ -348,7 +387,7 @@ interface HighsLinearSolutionRow extends HighsSolutionBase {
   Name: string;
 }
 
-interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase { }
+interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase {}
 
 type HighsBasisStatus =
   /** Fixed */
