@@ -27,6 +27,7 @@ const SOLUTION = {
       Upper: 40,
       Primal: 17.5,
       Dual: -0,
+      Type: 'Continuous',
       Name: 'x1'
     },
     x2: {
@@ -36,6 +37,7 @@ const SOLUTION = {
       Upper: Infinity,
       Primal: 1,
       Dual: -0,
+      Type: 'Continuous',
       Name: 'x2'
     },
     x3: {
@@ -45,6 +47,7 @@ const SOLUTION = {
       Upper: Infinity,
       Primal: 16.5,
       Dual: -0,
+      Type: 'Continuous',
       Name: 'x3'
     },
     x4: {
@@ -54,6 +57,7 @@ const SOLUTION = {
       Upper: 3,
       Primal: 2,
       Dual: -8.75,
+      Type: 'Continuous',
       Name: 'x4'
     }
   },
@@ -115,7 +119,7 @@ function test_options(Module) {
  */
 function test_invalid_model(Module) {
   assert.throws(
-    (_) => Module.solve("blah blah not a good file"),
+    (_) => Module.solve("Maximize blah blah not a good file"),
     /Unable to read LP model/
   );
 }
@@ -180,6 +184,7 @@ function test_case_with_no_constraints(Module) {
         "Upper": 40,
         "Primal": 40,
         "Dual": 1,
+        "Type": "Continuous",
         "Name": "x1"
       },
       "x2": {
@@ -189,6 +194,7 @@ function test_case_with_no_constraints(Module) {
         "Upper": 3,
         "Primal": 3,
         "Dual": 2,
+        "Type": "Continuous",
         "Name": "x2"
       }
     },
@@ -219,6 +225,7 @@ End`);
         Upper: Infinity,
         Primal: 10,
         Dual: 0,
+        Type: 'Continuous',
         Name: 'a'
       },
       b: {
@@ -227,6 +234,7 @@ End`);
         Upper: Infinity,
         Primal: 0,
         Dual: 10,
+        Type: 'Continuous',
         Name: 'b'
       }
     },
@@ -253,7 +261,7 @@ function test_quadratic_program_not_positive_semidefinite(Module) {
  * @param {import("../types").Highs} Module
  */
 function test_infeasible(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0`);
+  const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0 end`);
   assert.deepStrictEqual(sol, {
     IsLinear: true,
     IsQuadratic: false,
@@ -264,6 +272,7 @@ function test_infeasible(Module) {
         Index: 0,
         Lower: 0,
         Upper: 0,
+        Type: 'Continuous',
         Name: 'a'
       }
     },
@@ -312,7 +321,7 @@ end`);
  * @param {import("../types").Highs} Module
  */
 function test_unbounded(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1`);
+  const sol = Module.solve(`Maximize a subject to a >= 1 end`);
   assert.deepStrictEqual(sol, {
     IsLinear: true,
     IsQuadratic: false,
@@ -326,6 +335,7 @@ function test_unbounded(Module) {
         Primal: 1,
         Dual: -0,
         Status: 'BS',
+        Type: 'Continuous',
         Name: 'a'
       }
     },
@@ -358,23 +368,24 @@ End`);
         Index: 1,
         Lower: 0,
         Name: 'x0',
+        Type: 'Continuous',
         Upper: Infinity
       },
       x1: {
         Index: 0,
         Lower: 0,
         Name: 'x1',
+        Type: 'Continuous',
         Upper: 1
       },
       x2: {
         Index: 2,
         Lower: 1.1,
         Name: 'x2',
+        Type: 'Continuous',
         Upper: 1
       }
     },
-    IsLinear: true,
-    IsQuadratic: false,
     Rows: [
       {
         Index: 0,
@@ -392,13 +403,13 @@ End`);
  */
 function test_big(Module) {
   const pb = fs.readFileSync(__dirname + "/life_goe.mod.lp");
-  Module.solve(pb);
+  Module.solve(pb.toString());
 }
 
 function test_many_solves(Module) {
   // See https://github.com/lovasoa/highs-js/issues/10
   for (let i = 0; i < 5000; i++) {
-    Module.solve(`Maximize a subject to a <= 1`);
+    Module.solve(`Maximize a subject to a <= 1 end`);
   }
 }
 
