@@ -3,6 +3,14 @@
   "version": "0.7.3",
   "description": "Mixed integer linear programming library, built by compiling a high-performance C++ solver developed by the University of Edinburgh (HiGHS) to WebAssembly.",
   "main": "build/highs.js",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./types.d.ts",
+      "default": "./build/highs.js"
+    },
+    "./runtime": "./build/highs.wasm"
+  },
   "types": "types.d.ts",
   "directories": {
     "test": "test"
