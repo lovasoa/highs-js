@@ -140,7 +140,7 @@ const highs = await highs_loader({
 ```
 ## Passing custom options
 
-HiGHS is configurable through [a large number of options](https://www.maths.ed.ac.uk/hall/HiGHS/HighsOptions.html).
+HiGHS is configurable through [a large number of options](https://ergo-code.github.io/HiGHS/dev/options/definitions/).
 
 You can pass options as the second parameter to `solve` : 
 
