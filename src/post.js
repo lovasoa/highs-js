@@ -94,8 +94,8 @@ Module["solve"] = function (model_str, highs_options) {
     () => Module.Highs_writeSolutionPretty(highs, ""),
     "write and extract solution"
   );
+  const output = parseResult(highs, stdout_lines, status);
   _Highs_destroy(highs);
-  const output = parseResult(stdout_lines, status);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
   stderr_lines.length = 0;
@@ -156,10 +156,11 @@ function lineToObj(headers, line) {
 /**
  * Parse HiGHS output lines
  * @param {string[]} lines stdout from highs
+ * @param {import("../types").Highs} highs status
  * @param {import("../types").HighsModelStatus} status status
  * @returns {import("../types").HighsSolution} The solution
  */
-function parseResult(lines, status) {
+function parseResult(highs, lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
 
@@ -168,8 +169,8 @@ function parseResult(lines, status) {
   // We identity whether the problem is a QP by the available headers: For infeasible
   // problems, "Status", "Dual", and "Primal" are missing, for integer linear programs,
   // "Status" and "Dual" are missing, and for QPs, only "Status" is missing
-  const isQuadratic = !headers.includes("Status") && headers.includes("Dual");
-  const isLinear = !headers.includes("Type") && !isQuadratic;
+  const isQuadratic = highs.getModel().isQp();
+  const isLinear = !isQuadratic;
 
   var result = {
     "Status": /** @type {"Infeasible"} */(status),
