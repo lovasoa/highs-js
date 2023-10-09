@@ -94,7 +94,7 @@ Module["solve"] = function (model_str, highs_options) {
     () => Module.Highs_writeSolutionPretty(highs, ""),
     "write and extract solution"
   );
-  const output = parseResult(highs, stdout_lines, status);
+  const output = parseResult(stdout_lines, status);
   _Highs_destroy(highs);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
@@ -156,11 +156,10 @@ function lineToObj(headers, line) {
 /**
  * Parse HiGHS output lines
  * @param {string[]} lines stdout from highs
- * @param {import("../types").Highs} highs status
  * @param {import("../types").HighsModelStatus} status status
  * @returns {import("../types").HighsSolution} The solution
  */
-function parseResult(highs, lines, status) {
+function parseResult(lines, status) {
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
 
