@@ -258,7 +258,13 @@ function test_quadratic_program_not_positive_semidefinite(Module) {
  * @param {import("../types").Highs} Module
  */
 function test_infeasible(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0`);
+  const sol = Module.solve(`Maximize
+  a
+  subject to
+  a >= 1
+  bounds
+  a <= 0
+  End`);
   assert.deepStrictEqual(sol, {
     Status: 'Infeasible',
     ObjectiveValue: 0,
@@ -316,7 +322,10 @@ end`);
  * @param {import("../types").Highs} Module
  */
 function test_unbounded(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1`);
+  const sol = Module.solve(`Maximize a
+  subject to
+  a >= 1
+  end`);
   assert.deepStrictEqual(sol, {
     Status: 'Unbounded',
     ObjectiveValue: 1,
@@ -400,7 +409,11 @@ function test_big(Module) {
 function test_many_solves(Module) {
   // See https://github.com/lovasoa/highs-js/issues/10
   for (let i = 0; i < 5000; i++) {
-    Module.solve(`Maximize a subject to a <= 1`);
+    Module.solve(`Maximize
+    a
+    subject to
+    a <= 1
+    end`);
   }
 }
 
