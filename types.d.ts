@@ -301,6 +301,7 @@ type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status ext
 
 type HighsModel = {
   isQp(): boolean;
+  isMip(): boolean;
 }
 
 type HighsModelStatus =
