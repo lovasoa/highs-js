@@ -1,6 +1,5 @@
 type Highs = {
   solve(problem: string, options?: HighsOptions): HighsSolution;
-  getModel(): HighsModel;
 };
 
 type HighsOptions = Readonly<
@@ -297,11 +296,6 @@ type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status ext
   Columns: Record<string, ColType>;
   Rows: RowType[];
 };
-
-type HighsModel = {
-  isQp(): boolean;
-  isMip(): boolean;
-}
 
 type HighsModelStatus =
   | "Not Set"
