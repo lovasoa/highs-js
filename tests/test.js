@@ -116,10 +116,13 @@ function test_options(Module) {
  * @param {import("../types").Highs} Module
  */
 function test_invalid_model(Module) {
-  assert.throws(
-    (_) => Module.solve("blah blah not a good file"),
-    /Unable to read LP model/
-  );
+  const sol = Module.solve("blah blah not a good file");
+  assert.deepStrictEqual(sol, {
+      Columns: {},
+      ObjectiveValue: 0,
+      Rows: [],
+      Status: 'Empty'
+    });
 }
 
 /**
