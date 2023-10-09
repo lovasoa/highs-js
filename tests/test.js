@@ -298,8 +298,6 @@ General
   a
 end`);
   assert.deepStrictEqual(sol, {
-    IsLinear: false,
-    IsQuadratic: false,
     Status: 'Infeasible',
     ObjectiveValue: Infinity,
     Columns: {
