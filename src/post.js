@@ -165,15 +165,10 @@ function parseResult(lines, status) {
 
   let headers = headersForNonEmptyColumns(lines[1], lines[2]);
 
-  const isQuadratic = highs.getModel().isQp();
-  const isLinear = highs.getModel().isMip();
-
   var result = {
     "Status": /** @type {"Infeasible"} */(status),
     "Columns": {},
     "Rows": [],
-    "IsLinear": isLinear,
-    "IsQuadratic": isQuadratic,
     "ObjectiveValue": NaN
   };
 
