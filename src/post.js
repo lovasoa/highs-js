@@ -94,8 +94,8 @@ Module["solve"] = function (model_str, highs_options) {
     () => Module.Highs_writeSolutionPretty(highs, ""),
     "write and extract solution"
   );
-  const output = parseResult(stdout_lines, status);
   _Highs_destroy(highs);
+  const output = parseResult(stdout_lines, status);
   // Flush the content of stdout and stderr because these streams are not used anymore
   stdout_lines.length = 0;
   stderr_lines.length = 0;
