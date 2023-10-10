@@ -34,8 +34,6 @@ Bounds
 End`;
 
 const EXPECTED_SOLUTION = {
-  IsLinear: true,
-  IsQuadratic: false,
   Status: 'Optimal',
   ObjectiveValue: 87.5,
   Columns: {
@@ -44,6 +42,7 @@ const EXPECTED_SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: 40,
+      Type: 'Continuous',
       Primal: 17.5,
       Dual: -0,
       Name: 'x1'
@@ -53,6 +52,7 @@ const EXPECTED_SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
+      Type: 'Continuous',
       Primal: 1,
       Dual: -0,
       Name: 'x2'
@@ -62,6 +62,7 @@ const EXPECTED_SOLUTION = {
       Status: 'BS',
       Lower: 0,
       Upper: Infinity,
+      Type: 'Continuous',
       Primal: 16.5,
       Dual: -0,
       Name: 'x3'
@@ -71,6 +72,7 @@ const EXPECTED_SOLUTION = {
       Status: 'LB',
       Lower: 2,
       Upper: 3,
+      Type: 'Continuous',
       Primal: 2,
       Dual: -8.75,
       Name: 'x4'

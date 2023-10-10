@@ -165,18 +165,10 @@ function parseResult(lines, status) {
 
   let headers = headersForNonEmptyColumns(lines[1], lines[2]);
 
-  // We identity whether the problem is a QP by the available headers: For infeasible
-  // problems, "Status", "Dual", and "Primal" are missing, for integer linear programs,
-  // "Status" and "Dual" are missing, and for QPs, only "Status" is missing
-  const isQuadratic = !headers.includes("Status") && headers.includes("Dual");
-  const isLinear = !headers.includes("Type") && !isQuadratic;
-
   var result = {
     "Status": /** @type {"Infeasible"} */(status),
     "Columns": {},
     "Rows": [],
-    "IsLinear": isLinear,
-    "IsQuadratic": isQuadratic,
     "ObjectiveValue": NaN
   };
 

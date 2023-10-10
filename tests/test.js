@@ -15,8 +15,6 @@ Bounds
 End`;
 
 const SOLUTION = {
-  IsLinear: true,
-  IsQuadratic: false,
   Status: 'Optimal',
   ObjectiveValue: 87.5,
   Columns: {
@@ -24,6 +22,7 @@ const SOLUTION = {
       Index: 0,
       Status: 'BS',
       Lower: 0,
+      Type: 'Continuous',
       Upper: 40,
       Primal: 17.5,
       Dual: -0,
@@ -33,6 +32,7 @@ const SOLUTION = {
       Index: 1,
       Status: 'BS',
       Lower: 0,
+      Type: 'Continuous',
       Upper: Infinity,
       Primal: 1,
       Dual: -0,
@@ -42,6 +42,7 @@ const SOLUTION = {
       Index: 2,
       Status: 'BS',
       Lower: 0,
+      Type: 'Continuous',
       Upper: Infinity,
       Primal: 16.5,
       Dual: -0,
@@ -51,6 +52,7 @@ const SOLUTION = {
       Index: 3,
       Status: 'LB',
       Lower: 2,
+      Type: 'Continuous',
       Upper: 3,
       Primal: 2,
       Dual: -8.75,
@@ -113,10 +115,28 @@ function test_options(Module) {
 /**
  * @param {import("../types").Highs} Module
  */
+function test_empty_model(Module) {
+  // Arguably, this example should not be considered valid at all, but
+  // HiGHS parses it as an empty model; see
+  // https://github.com/ERGO-Code/HiGHS/issues/1451
+  const sol = Module.solve("blah blah not a good file");
+  assert.deepStrictEqual(sol, {
+      Columns: {},
+      ObjectiveValue: 0,
+      Rows: [],
+      Status: 'Empty'
+    });
+}
+
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_invalid_model(Module) {
   assert.throws(
-    (_) => Module.solve("blah blah not a good file"),
-    /Unable to read LP model/
+    (_) => Module.solve(`Minimize
+        ] 2 [
+      End`),
+      /Unable to read LP model/
   );
 }
 
@@ -132,8 +152,6 @@ function test_integer_problem(Module) {
  a
  End`);
   assert.deepStrictEqual(sol, {
-    IsLinear: false,
-    IsQuadratic: false,
     Status: 'Optimal',
     ObjectiveValue: 3.5,
     Columns: {
@@ -168,8 +186,6 @@ function test_case_with_no_constraints(Module) {
   2 <= x2 <= 3
  End`);
   assert.deepStrictEqual(sol, {
-    "IsLinear": true,
-    "IsQuadratic": false,
     "Status": "Optimal",
     "ObjectiveValue": 46,
     "Columns": {
@@ -178,6 +194,7 @@ function test_case_with_no_constraints(Module) {
         "Status": "UB",
         "Lower": 0,
         "Upper": 40,
+        "Type": "Continuous",
         "Primal": 40,
         "Dual": 1,
         "Name": "x1"
@@ -186,6 +203,7 @@ function test_case_with_no_constraints(Module) {
         "Index": 1,
         "Status": "UB",
         "Lower": 2,
+        "Type": "Continuous",
         "Upper": 3,
         "Primal": 3,
         "Dual": 2,
@@ -208,14 +226,14 @@ Subject To
   c1: a + b >= 10
 End`);
   assert.deepStrictEqual(sol, {
-    IsLinear: false,
-    IsQuadratic: true,
     Status: 'Optimal',
     ObjectiveValue: 60,
     Columns: {
       a: {
         Index: 0,
         Lower: 0,
+        Status: "BS",
+        Type: 'Continuous',
         Upper: Infinity,
         Primal: 10,
         Dual: 0,
@@ -224,13 +242,15 @@ End`);
       b: {
         Index: 1,
         Lower: 0,
+        Status: "LB",
+        Type: 'Continuous',
         Upper: Infinity,
         Primal: 0,
         Dual: 10,
         Name: 'b'
       }
     },
-    Rows: [{ Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11, Name: 'c1' }]
+    Rows: [{ Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11, Status: "LB", Name: 'c1' }]
   });
 }
 
@@ -253,10 +273,14 @@ function test_quadratic_program_not_positive_semidefinite(Module) {
  * @param {import("../types").Highs} Module
  */
 function test_infeasible(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1 bounds a <= 0`);
+  const sol = Module.solve(`Maximize
+  a
+  subject to
+  a >= 1
+  bounds
+  a <= 0
+  End`);
   assert.deepStrictEqual(sol, {
-    IsLinear: true,
-    IsQuadratic: false,
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -264,6 +288,7 @@ function test_infeasible(Module) {
         Index: 0,
         Lower: 0,
         Upper: 0,
+        Type: 'Continuous',
         Name: 'a'
       }
     },
@@ -288,8 +313,6 @@ General
   a
 end`);
   assert.deepStrictEqual(sol, {
-    IsLinear: false,
-    IsQuadratic: false,
     Status: 'Infeasible',
     ObjectiveValue: Infinity,
     Columns: {
@@ -312,16 +335,18 @@ end`);
  * @param {import("../types").Highs} Module
  */
 function test_unbounded(Module) {
-  const sol = Module.solve(`Maximize a subject to a >= 1`);
+  const sol = Module.solve(`Maximize a
+  subject to
+  a >= 1
+  end`);
   assert.deepStrictEqual(sol, {
-    IsLinear: true,
-    IsQuadratic: false,
     Status: 'Unbounded',
     ObjectiveValue: 1,
     Columns: {
       a: {
         Index: 0,
         Lower: 0,
+        Type: 'Continuous',
         Upper: Infinity,
         Primal: 1,
         Dual: -0,
@@ -349,8 +374,6 @@ Bounds
 1.1 <= x2 <= 1
 End`);
   assert.deepStrictEqual(sol, {
-    IsLinear: true,
-    IsQuadratic: false,
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -358,23 +381,24 @@ End`);
         Index: 1,
         Lower: 0,
         Name: 'x0',
+        Type: 'Continuous',
         Upper: Infinity
       },
       x1: {
         Index: 0,
         Lower: 0,
         Name: 'x1',
+        Type: 'Continuous',
         Upper: 1
       },
       x2: {
         Index: 2,
         Lower: 1.1,
         Name: 'x2',
+        Type: 'Continuous',
         Upper: 1
       }
     },
-    IsLinear: true,
-    IsQuadratic: false,
     Rows: [
       {
         Index: 0,
@@ -398,13 +422,18 @@ function test_big(Module) {
 function test_many_solves(Module) {
   // See https://github.com/lovasoa/highs-js/issues/10
   for (let i = 0; i < 5000; i++) {
-    Module.solve(`Maximize a subject to a <= 1`);
+    Module.solve(`Maximize
+    a
+    subject to
+    a <= 1
+    end`);
   }
 }
 
 async function test() {
   const Module = await highs();
   test_optimal(Module);
+  test_empty_model(Module);
   test_invalid_model(Module);
   test_options(Module);
   test_integer_problem(Module);
