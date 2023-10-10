@@ -115,7 +115,10 @@ function test_options(Module) {
 /**
  * @param {import("../types").Highs} Module
  */
-function test_invalid_model(Module) {
+function test_empty_model(Module) {
+  // Arguably, this example should not be considered valid at all, but
+  // HiGHS parses it as an empty model; see
+  // https://github.com/ERGO-Code/HiGHS/issues/1451
   const sol = Module.solve("blah blah not a good file");
   assert.deepStrictEqual(sol, {
       Columns: {},
@@ -123,6 +126,18 @@ function test_invalid_model(Module) {
       Rows: [],
       Status: 'Empty'
     });
+}
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_invalid_model(Module) {
+  assert.throws(
+    (_) => Module.solve(`Minimize
+        ] 2 [
+      End`),
+      /Unable to read LP model/
+  );
 }
 
 /**
@@ -418,6 +433,7 @@ function test_many_solves(Module) {
 async function test() {
   const Module = await highs();
   test_optimal(Module);
+  test_empty_model(Module);
   test_invalid_model(Module);
   test_options(Module);
   test_integer_problem(Module);
