@@ -47,6 +47,7 @@
     "build/highs.js",
     "build/highs.wasm",
     "package.json",
+    "types.d.ts",
     "README.md"
   ]
 }
