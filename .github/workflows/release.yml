@@ -11,11 +11,11 @@ jobs:
     name: Create a release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: "recursive"
-      - uses: mymindstorm/setup-emsdk@v12
-        with: { version: "3.1.47" }
+      - uses: mymindstorm/setup-emsdk@v14
+        with: { version: "3.1.71" }
       - run: npm ci
       - name: build
         run: npm run build
@@ -23,13 +23,13 @@ jobs:
         run: npm test
       - run: cp build/highs.* demo/
       - name: Deploy demo 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.0
+        uses: JamesIves/github-pages-deploy-action@4.6.8
         with:
           branch: gh-pages
           folder: demo
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
