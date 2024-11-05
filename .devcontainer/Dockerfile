@@ -1,8 +1,8 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.205.2/containers/javascript-node/.devcontainer/base.Dockerfile
 
 # [Choice] Node.js version (use -bullseye variants on local arm64/Apple Silicon): 16, 14, 12, 16-bullseye, 14-bullseye, 12-bullseye, 16-buster, 14-buster, 12-buster
-ARG VARIANT="16-bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
+ARG VARIANT="20-bookworm"
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:1-${VARIANT}
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -13,7 +13,7 @@ RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
     sudo /emsdk/emsdk activate 3.1.24 && \
     sudo ln -s /emsdk/upstream/emscripten /usr/share/emscripten
 
-ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten:/emsdk/node/14.18.2_64bit/bin"
+ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten:/emsdk/node/20.18.0_64bit/bin"
 
 RUN cd /emsdk/upstream/emscripten/ && sudo npm install acorn google-closure-compiler
 
