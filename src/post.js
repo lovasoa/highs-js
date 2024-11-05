@@ -30,7 +30,6 @@ Module.Highs_writeSolutionPretty = Module["cwrap"](
   ["number", "string"]
 );
 
-
 const MODEL_STATUS_CODES = /** @type {const} */ ({
   0: "Not Set",
   1: "Load error",
@@ -52,12 +51,11 @@ const MODEL_STATUS_CODES = /** @type {const} */ ({
 
 /** @typedef {Object} Highs */
 
-var
-/** @type {()=>Highs} */ _Highs_create,
-/** @type {(Highs)=>void} */ _Highs_run,
-/** @type {(Highs)=>void} */ _Highs_destroy,
-/** @type {(Highs, number)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
-/** @type {any}*/ FS;
+var /** @type {()=>Highs} */ _Highs_create,
+  /** @type {(arg0:Highs)=>void} */ _Highs_run,
+  /** @type {(arg0:Highs)=>void} */ _Highs_destroy,
+  /** @type {(arg0:Highs, arg1:number)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
+  /** @type {any}*/ FS;
 
 /**
  * Solve a model in the CPLEX LP file format.
@@ -80,14 +78,18 @@ Module["solve"] = function (model_str, highs_options) {
     if (type === "number") setoption = setNumericOption;
     else if (type === "boolean") setoption = Highs_setBoolOptionValue;
     else if (type === "string") setoption = Highs_setStringOptionValue;
-    else throw new Error(`Unsupported option value type ${option_value} for '${option_name}'`);
+    else
+      throw new Error(
+        `Unsupported option value type ${option_value} for '${option_name}'`
+      );
     assert_ok(
       () => setoption(highs, option_name, option_value),
       `set option '${option_name}'`
     );
   }
   assert_ok(() => _Highs_run(highs), "solve the problem");
-  const status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
+  const status =
+    MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
   // Flush the content of stdout in order to have a clean stream before writing the solution in it
   stdout_lines.length = 0;
   assert_ok(
@@ -124,7 +126,7 @@ const known_columns = {
 };
 
 /**
- * @param {string} s 
+ * @param {string} s
  * @returns {string[]} The values (words) of a line
  */
 function lineValues(s) {
@@ -132,9 +134,9 @@ function lineValues(s) {
 }
 
 /**
- * 
- * @param {string[]} headers 
- * @param {string} line 
+ *
+ * @param {string[]} headers
+ * @param {string} line
  * @returns {Record<string, string | number>}
  */
 function lineToObj(headers, line) {
@@ -166,15 +168,16 @@ function parseResult(lines, status) {
   let headers = headersForNonEmptyColumns(lines[1], lines[2]);
 
   var result = {
-    "Status": /** @type {"Infeasible"} */(status),
+    "Status": /** @type {"Infeasible"} */ (status),
     "Columns": {},
     "Rows": [],
-    "ObjectiveValue": NaN
+    "ObjectiveValue": NaN,
   };
 
   // Parse columns
   for (var i = 2; lines[i] != "Rows"; i++) {
     const obj = lineToObj(headers, lines[i]);
+    if (!obj["Type"]) obj["Type"] = "Continuous";
     result["Columns"][obj["Name"]] = obj;
   }
 
@@ -185,7 +188,9 @@ function parseResult(lines, status) {
   }
 
   // Parse objective value
-  result["ObjectiveValue"] = parseNum(lines[j + 3].match(/Objective value: (.+)/)[1]);
+  result["ObjectiveValue"] = parseNum(
+    lines[j + 3].match(/Objective value: (.+)/)[1]
+  );
   return result;
 }
 
@@ -199,10 +204,13 @@ function headersForNonEmptyColumns(headerLine, firstDataLine) {
   // Headers can correspond to empty columns. The contents of a column can be left or right
   // aligned, so we determine if a given header should be included by looking at whether
   // the row immediately below the header has any contents.
-  return [...headerLine.matchAll(/[^\s]+/g)].filter(match =>
-    firstDataLine[match.index] !== ' ' ||
-    firstDataLine[match.index + match[0].length - 1] !== ' '
-  ).map(match => match[0])
+  return [...headerLine.matchAll(/[^\s]+/g)]
+    .filter(
+      (match) =>
+        firstDataLine[match.index] !== " " ||
+        firstDataLine[match.index + match[0].length - 1] !== " "
+    )
+    .map((match) => match[0]);
 }
 
 function assert_ok(fn, action) {
@@ -212,7 +220,7 @@ function assert_ok(fn, action) {
   } catch (e) {
     err = e;
   }
-  // Allow HighsStatus::kOk (0) and HighsStatus::kWarning (1) but 
+  // Allow HighsStatus::kOk (0) and HighsStatus::kWarning (1) but
   // disallow other values, such as e.g. HighsStatus::kError (-1).
   if (err !== 0 && err !== 1)
     throw new Error("Unable to " + action + ". HiGHS error " + err);
