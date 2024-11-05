@@ -1,7 +1,7 @@
 /** @type {import("../types").default} */
-const highs = require("../build/highs.js");
+const highs = require('../build/highs.js');
 const assert = require('assert').strict;
-const fs = require("fs");
+const fs = require('fs');
 
 const PROBLEM = `Maximize
  obj: x1 + 2 x2 + 4 x3 + x4
@@ -91,7 +91,7 @@ const SOLUTION = {
 };
 
 /**
- * @param {import("../types").Highs} Module 
+ * @param {import("../types").Highs} Module
  */
 function test_optimal(Module) {
   const sol = Module.solve(PROBLEM);
@@ -103,11 +103,11 @@ function test_optimal(Module) {
  */
 function test_options(Module) {
   const sol = Module.solve(PROBLEM, {
-    "primal_feasibility_tolerance": 1e-9,// option type: double
-    "time_limit": 1000, // option type: double
-    "allowed_cost_scale_factor": 2, // option type: integer
-    "use_implied_bounds_from_presolve": true,
-    "presolve": "off",
+    primal_feasibility_tolerance: 1e-9, // option type: double
+    time_limit: 1000, // option type: double
+    allowed_cost_scale_factor: 2, // option type: integer
+    use_implied_bounds_from_presolve: true,
+    presolve: 'off'
   });
   assert.deepStrictEqual(sol, SOLUTION);
 }
@@ -119,13 +119,15 @@ function test_empty_model(Module) {
   // Arguably, this example should not be considered valid at all, but
   // HiGHS parses it as an empty model; see
   // https://github.com/ERGO-Code/HiGHS/issues/1451
-  const sol = Module.solve("blah blah not a good file");
+  const sol = Module.solve(`Minimize
+    42
+  End`);
   assert.deepStrictEqual(sol, {
-      Columns: {},
-      ObjectiveValue: 0,
-      Rows: [],
-      Status: 'Empty'
-    });
+    Columns: {},
+    ObjectiveValue: 0,
+    Rows: [],
+    Status: 'Empty'
+  });
 }
 
 /**
@@ -133,10 +135,11 @@ function test_empty_model(Module) {
  */
 function test_invalid_model(Module) {
   assert.throws(
-    (_) => Module.solve(`Minimize
+    _ =>
+      Module.solve(`Minimize
         ] 2 [
       End`),
-      /Unable to read LP model/
+    /Unable to read LP model/
   );
 }
 
@@ -172,9 +175,7 @@ function test_integer_problem(Module) {
         Name: 'b'
       }
     },
-    Rows: [
-      { Index: 0, Lower: 6.5, Upper: Infinity, Primal: 6.5, Name: 'c1' }
-    ]
+    Rows: [{ Index: 0, Lower: 6.5, Upper: Infinity, Primal: 6.5, Name: 'c1' }]
   });
 }
 
@@ -186,35 +187,33 @@ function test_case_with_no_constraints(Module) {
   2 <= x2 <= 3
  End`);
   assert.deepStrictEqual(sol, {
-    "Status": "Optimal",
-    "ObjectiveValue": 46,
-    "Columns": {
-      "x1": {
-        "Index": 0,
-        "Status": "UB",
-        "Lower": 0,
-        "Upper": 40,
-        "Type": "Continuous",
-        "Primal": 40,
-        "Dual": 1,
-        "Name": "x1"
+    Status: 'Optimal',
+    ObjectiveValue: 46,
+    Columns: {
+      x1: {
+        Index: 0,
+        Status: 'UB',
+        Lower: 0,
+        Upper: 40,
+        Type: 'Continuous',
+        Primal: 40,
+        Dual: 1,
+        Name: 'x1'
       },
-      "x2": {
-        "Index": 1,
-        "Status": "UB",
-        "Lower": 2,
-        "Type": "Continuous",
-        "Upper": 3,
-        "Primal": 3,
-        "Dual": 2,
-        "Name": "x2"
+      x2: {
+        Index: 1,
+        Status: 'UB',
+        Lower: 2,
+        Type: 'Continuous',
+        Upper: 3,
+        Primal: 3,
+        Dual: 2,
+        Name: 'x2'
       }
     },
-    "Rows": [],
-  })
-
+    Rows: []
+  });
 }
-
 
 /**
  * @param {import("../types").Highs} Module
@@ -232,7 +231,7 @@ End`);
       a: {
         Index: 0,
         Lower: 0,
-        Status: "BS",
+        Status: 'BS',
         Type: 'Continuous',
         Upper: Infinity,
         Primal: 10,
@@ -242,7 +241,7 @@ End`);
       b: {
         Index: 1,
         Lower: 0,
-        Status: "LB",
+        Status: 'LB',
         Type: 'Continuous',
         Upper: Infinity,
         Primal: 0,
@@ -250,24 +249,22 @@ End`);
         Name: 'b'
       }
     },
-    Rows: [{ Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11, Status: "LB", Name: 'c1' }]
+    Rows: [{ Index: 0, Lower: 10, Upper: Infinity, Primal: 10, Dual: 11, Status: 'LB', Name: 'c1' }]
   });
 }
-
 
 /**
  * @param {import("../types").Highs} Module
  */
 function test_quadratic_program_not_positive_semidefinite(Module) {
-  assert.throws(
-    (_) => Module.solve(`Maximize
+  assert.throws(_ =>
+    Module.solve(`Maximize
   obj: [x1^2]/2
  Bounds
   0 <= x1 <= 40
  End`)
   );
 }
-
 
 /**
  * @param {import("../types").Highs} Module
@@ -292,12 +289,9 @@ function test_infeasible(Module) {
         Name: 'a'
       }
     },
-    Rows: [
-      { Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }
-    ]
+    Rows: [{ Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }]
   });
 }
-
 
 /**
  * @param {import("../types").Highs} Module
@@ -324,12 +318,9 @@ end`);
         Name: 'a'
       }
     },
-    Rows: [
-      { Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }
-    ]
+    Rows: [{ Index: 0, Lower: 1, Upper: Infinity, Name: 'HiGHS_R0' }]
   });
 }
-
 
 /**
  * @param {import("../types").Highs} Module
@@ -354,11 +345,9 @@ function test_unbounded(Module) {
         Name: 'a'
       }
     },
-    Rows: [{ Index: 0, Status: 'LB', Lower: 1, Upper: Infinity, Primal: 1, Dual: 1, Name: 'HiGHS_R0' }
-    ]
+    Rows: [{ Index: 0, Status: 'LB', Lower: 1, Upper: Infinity, Primal: 1, Dual: 1, Name: 'HiGHS_R0' }]
   });
 }
-
 
 /**
  * @param {import("../types").Highs} Module
@@ -410,12 +399,11 @@ End`);
   });
 }
 
-
 /**
  * @param {import("../types").Highs} Module
  */
 function test_big(Module) {
-  const pb = fs.readFileSync(__dirname + "/life_goe.mod.lp");
+  const pb = fs.readFileSync(__dirname + '/life_goe.mod.lp');
   Module.solve(pb);
 }
 
@@ -446,7 +434,7 @@ async function test() {
   test_read_model_warning(Module);
   test_big(Module);
   test_many_solves(Module);
-  console.log("test succeeded");
+  console.log('test succeeded');
 }
 
-test()
+test();
