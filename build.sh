@@ -6,7 +6,7 @@ mkdir -p build
 cd build
 
 # Run emconfigure with the normal configure command as an argument.
-emcmake cmake ../HiGHS -DOPENMP=OFF -DFAST_BUILD=OFF -DSHARED=OFF
+emcmake cmake ../HiGHS -DZLIB=OFF -DFAST_BUILD=OFF -DBUILD_SHARED_LIBS=OFF
 
 # Run emmake with the normal make to generate wasm object files.
 emmake make -j8 libhighs
@@ -22,7 +22,7 @@ emmake make -j8 libhighs
 export EMCC_CLOSURE_ARGS="--jscomp_off=checkTypes"
 emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
-	-s EXTRA_EXPORTED_RUNTIME_METHODS="['cwrap']" \
+	-s EXPORTED_RUNTIME_METHODS="['cwrap']" \
 	-s MODULARIZE=1 \
 	-s ALLOW_MEMORY_GROWTH=1 \
 	-flto \
