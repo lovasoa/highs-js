@@ -418,6 +418,13 @@ function test_many_solves(Module) {
   }
 }
 
+function test_exceeds_stack(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/41
+  const pb = fs.readFileSync(__dirname + '/exceeds_stack.lp');
+  Module.solve(pb);
+}
+
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
@@ -434,6 +441,7 @@ async function test() {
   test_read_model_warning(Module);
   test_big(Module);
   test_many_solves(Module);
+  test_exceeds_stack(Module);
   console.log('test succeeded');
 }
 
