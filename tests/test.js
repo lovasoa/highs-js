@@ -418,6 +418,12 @@ function test_many_solves(Module) {
   }
 }
 
+function test_getModelStatus_args(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/42
+  const pb = fs.readFileSync(__dirname + '/large_test_model.lp');
+  Module.solve(pb);
+}
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
@@ -432,6 +438,7 @@ async function test() {
   test_infeasible_ilp(Module);
   test_unbounded(Module);
   test_read_model_warning(Module);
+  test_getModelStatus_args(Module);
   test_big(Module);
   test_many_solves(Module);
   console.log('test succeeded');
