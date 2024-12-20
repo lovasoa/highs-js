@@ -25,6 +25,7 @@ emcc -O3 \
 	-s EXPORTED_RUNTIME_METHODS="['cwrap']" \
 	-s MODULARIZE=1 \
 	-s ALLOW_MEMORY_GROWTH=1 \
+	-s STACK_SIZE=4194304 \
 	-flto \
 	--closure 1 \
 	--pre-js "$root/src/pre.js" \
