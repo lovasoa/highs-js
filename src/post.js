@@ -1,4 +1,5 @@
 const MODEL_FILENAME = "m.lp";
+const LP_MAX_LINE_LENGTH = 560;
 
 Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
@@ -58,50 +59,107 @@ var /** @type {()=>Highs} */ _Highs_create,
   /** @type {any}*/ FS;
 
 /**
+ * Validate an LP string for known issues that cause opaque HiGHS parse failures.
+ * Only validates when the input is a string (Buffer inputs are skipped).
+ * @param {string} model_str
+ */
+function validateLP(model_str) {
+  if (typeof model_str !== "string") return;
+
+  // Check for NaN literals (word-boundary match to avoid false positives on variable names)
+  const nanMatch = model_str.match(/\bNaN\b/);
+  if (nanMatch) {
+    const pos = nanMatch.index;
+    const context = model_str.substring(
+      Math.max(0, pos - 30),
+      Math.min(model_str.length, pos + 30)
+    );
+    throw new Error(
+      `LP string contains NaN at position ${pos}: ...${context}...`
+    );
+  }
+
+  // Check for lines exceeding HiGHS's internal buffer (LP_MAX_LINE_LENGTH = 560)
+  const lines = model_str.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].length > LP_MAX_LINE_LENGTH) {
+      const preview = lines[i].substring(0, 80);
+      throw new Error(
+        `LP line ${i + 1} is ${lines[i].length} characters, exceeding HiGHS's ` +
+          `${LP_MAX_LINE_LENGTH}-character line buffer. ` +
+          `Use continuation lines to split long expressions. ` +
+          `Line preview: "${preview}..."`
+      );
+    }
+  }
+
+  // Check for missing End marker (case-insensitive)
+  if (!/^\s*end\s*$/im.test(model_str)) {
+    throw new Error(
+      "LP string is missing the required 'End' marker"
+    );
+  }
+}
+
+/**
  * Solve a model in the CPLEX LP file format.
  * @param {string} model_str The problem to solve in the .lp format
- * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/v1.8.0/src/lp_data/HighsOptions.h
+ * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/v1.14.0/highs/lp_data/HighsOptions.h
  * @returns {import("../types").HighsSolution} The solution
  */
 Module["solve"] = function (model_str, highs_options) {
-  FS.writeFile(MODEL_FILENAME, model_str);
-  const highs = _Highs_create();
-  assert_ok(
-    () => Module.Highs_readModel(highs, MODEL_FILENAME),
-    "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
-  );
-  const options = highs_options || {};
-  for (const option_name in options) {
-    const option_value = options[option_name];
-    const type = typeof option_value;
-    let setoption;
-    if (type === "number") setoption = setNumericOption;
-    else if (type === "boolean") setoption = Highs_setBoolOptionValue;
-    else if (type === "string") setoption = Highs_setStringOptionValue;
-    else
-      throw new Error(
-        `Unsupported option value type ${option_value} for '${option_name}'`
-      );
-    assert_ok(
-      () => setoption(highs, option_name, option_value),
-      `set option '${option_name}'`
-    );
-  }
-  assert_ok(() => _Highs_run(highs), "solve the problem");
-  const status =
-    MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
-  // Flush the content of stdout in order to have a clean stream before writing the solution in it
-  stdout_lines.length = 0;
-  assert_ok(
-    () => Module.Highs_writeSolutionPretty(highs, ""),
-    "write and extract solution"
-  );
-  _Highs_destroy(highs);
-  const output = parseResult(stdout_lines, status);
-  // Flush the content of stdout and stderr because these streams are not used anymore
+  // Clear buffers at the start to prevent stale data from prior solves
   stdout_lines.length = 0;
   stderr_lines.length = 0;
-  return output;
+
+  validateLP(model_str);
+
+  FS.writeFile(MODEL_FILENAME, model_str);
+  const highs = _Highs_create();
+  try {
+    assert_ok(
+      () => Module.Highs_readModel(highs, MODEL_FILENAME),
+      "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
+    );
+    const options = highs_options || {};
+    for (const option_name in options) {
+      const option_value = options[option_name];
+      const type = typeof option_value;
+      let setoption;
+      if (type === "number") setoption = setNumericOption;
+      else if (type === "boolean") setoption = Highs_setBoolOptionValue;
+      else if (type === "string") setoption = Highs_setStringOptionValue;
+      else
+        throw new Error(
+          `Unsupported option value type ${option_value} for '${option_name}'`
+        );
+      assert_ok(
+        () => setoption(highs, option_name, option_value),
+        `set option '${option_name}'`
+      );
+    }
+    assert_ok(() => _Highs_run(highs), "solve the problem");
+    const status =
+      MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
+
+    // Snapshot solver logs before clearing stdout for solution parsing
+    const solverOutput = stderr_lines.slice();
+
+    // Flush stdout before writing solution to get a clean stream
+    stdout_lines.length = 0;
+    assert_ok(
+      () => Module.Highs_writeSolutionPretty(highs, ""),
+      "write and extract solution"
+    );
+
+    const output = parseResult(stdout_lines, status);
+    output["Output"] = solverOutput;
+    return output;
+  } finally {
+    _Highs_destroy(highs);
+    stdout_lines.length = 0;
+    stderr_lines.length = 0;
+  }
 };
 
 function setNumericOption(highs, option_name, option_value) {
@@ -222,6 +280,11 @@ function assert_ok(fn, action) {
   }
   // Allow HighsStatus::kOk (0) and HighsStatus::kWarning (1) but
   // disallow other values, such as e.g. HighsStatus::kError (-1).
-  if (err !== 0 && err !== 1)
-    throw new Error("Unable to " + action + ". HiGHS error " + err);
+  if (err !== 0 && err !== 1) {
+    let message = "Unable to " + action + ". HiGHS error " + err;
+    if (stderr_lines.length > 0) {
+      message += "\nSolver output:\n" + stderr_lines.join("\n");
+    }
+    throw new Error(message);
+  }
 }

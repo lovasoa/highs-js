@@ -567,6 +567,8 @@ type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status ext
   ObjectiveValue: number;
   Columns: Record<string, ColType>;
   Rows: RowType[];
+  /** Solver log output captured during the solve. Contains diagnostic messages, timing info, and solver progress. */
+  Output?: string[];
 };
 
 type HighsModelStatus =

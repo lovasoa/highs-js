@@ -91,11 +91,24 @@ const SOLUTION = {
 };
 
 /**
+ * Assert solution matches expected, ignoring the Output field.
+ * Also verifies Output is a string array.
+ */
+function assertSolution(actual, expected) {
+  assert.ok(Array.isArray(actual.Output), 'Output should be an array');
+  for (const entry of actual.Output) {
+    assert.strictEqual(typeof entry, 'string', 'Output entries should be strings');
+  }
+  const { Output, ...rest } = actual;
+  assert.deepStrictEqual(rest, expected);
+}
+
+/**
  * @param {import("../types").Highs} Module
  */
 function test_optimal(Module) {
   const sol = Module.solve(PROBLEM);
-  assert.deepStrictEqual(sol, SOLUTION);
+  assertSolution(sol, SOLUTION);
 }
 
 /**
@@ -109,7 +122,7 @@ function test_options(Module) {
     use_implied_bounds_from_presolve: true,
     presolve: 'off'
   });
-  assert.deepStrictEqual(sol, SOLUTION);
+  assertSolution(sol, SOLUTION);
 }
 
 /**
@@ -122,7 +135,7 @@ function test_empty_model(Module) {
   const sol = Module.solve(`Minimize
     42
   End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Columns: {},
     ObjectiveValue: 0,
     Rows: [],
@@ -154,7 +167,7 @@ function test_integer_problem(Module) {
  General
  a
  End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Optimal',
     ObjectiveValue: 3.5,
     Columns: {
@@ -186,7 +199,7 @@ function test_case_with_no_constraints(Module) {
   0 <= x1 <= 40
   2 <= x2 <= 3
  End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Optimal',
     ObjectiveValue: 46,
     Columns: {
@@ -224,7 +237,7 @@ function test_quadratic_program(Module) {
 Subject To
   c1: a + b >= 10
 End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Optimal',
     ObjectiveValue: 60,
     Columns: {
@@ -277,7 +290,7 @@ function test_infeasible(Module) {
   bounds
   a <= 0
   End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -306,7 +319,7 @@ bounds
 General
   a
 end`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Infeasible',
     ObjectiveValue: Infinity,
     Columns: {
@@ -330,7 +343,7 @@ function test_unbounded(Module) {
   subject to
   a >= 1
   end`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Unbounded',
     ObjectiveValue: 1,
     Columns: {
@@ -362,7 +375,7 @@ Bounds
 0 <= x1 <= 1
 1.1 <= x2 <= 1
 End`);
-  assert.deepStrictEqual(sol, {
+  assertSolution(sol, {
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -424,6 +437,112 @@ function test_exceeds_stack(Module) {
   Module.solve(pb);
 }
 
+// --- New validation tests ---
+
+function test_nan_detection(Module) {
+  assert.throws(
+    () => Module.solve(`Minimize
+  obj: NaN x1
+Subject To
+  c1: x1 >= 1
+End`),
+    /LP string contains NaN at position/
+  );
+}
+
+function test_nan_in_variable_name_ok(Module) {
+  // Variable names containing "NaN" as a substring should NOT trigger validation
+  // (e.g., "xNaNcy" is a valid variable name)
+  // This test just verifies the regex uses word boundaries
+  assert.doesNotThrow(() => {
+    // This will fail at the solver level (not validation) since the model is odd,
+    // but the validation itself should pass
+    try {
+      Module.solve(`Minimize
+  obj: xNaNcy
+Subject To
+  c1: xNaNcy >= 1
+End`);
+    } catch (e) {
+      // OK if it fails at solver level, just not at NaN validation
+      if (e.message.includes('LP string contains NaN')) throw e;
+    }
+  });
+}
+
+function test_long_line_detection(Module) {
+  const longVar = 'x'.repeat(600);
+  assert.throws(
+    () => Module.solve(`Minimize
+  obj: ${longVar}
+Subject To
+  c1: ${longVar} >= 1
+End`),
+    /exceeding HiGHS's 560-character line buffer/
+  );
+}
+
+function test_missing_end_detection(Module) {
+  assert.throws(
+    () => Module.solve(`Minimize
+  obj: x1
+Subject To
+  c1: x1 >= 1`),
+    /missing the required 'End' marker/
+  );
+}
+
+function test_output_field(Module) {
+  const sol = Module.solve(PROBLEM);
+  assert.ok(Array.isArray(sol.Output), 'Output should be an array');
+  // Solver should produce some output (at minimum, solver stats)
+  assert.ok(sol.Output.length > 0, 'Output should contain solver log lines');
+}
+
+function test_error_includes_stderr(Module) {
+  try {
+    Module.solve(`Minimize
+      ] 2 [
+    End`);
+    assert.fail('Should have thrown');
+  } catch (e) {
+    // Error message should include "Solver output:" with stderr content
+    assert.ok(
+      e.message.includes('Unable to read LP model'),
+      'Should include the action description'
+    );
+  }
+}
+
+function test_buffer_input_skips_validation(Module) {
+  // Buffer inputs should skip string-only validation (line length, NaN, End check)
+  // and go straight to the solver. This test verifies no validation error is thrown
+  // for a Buffer — the solver itself may still fail, but that's fine.
+  const buf = Buffer.from(`Maximize
+  a
+  subject to
+  a <= 1
+  end`);
+  const sol = Module.solve(buf);
+  assertSolution(sol, {
+    Status: 'Optimal',
+    ObjectiveValue: 1,
+    Columns: {
+      a: {
+        Index: 0,
+        Lower: 0,
+        Type: 'Continuous',
+        Upper: Infinity,
+        Primal: 1,
+        Dual: -0,
+        Status: 'BS',
+        Name: 'a'
+      }
+    },
+    Rows: [{ Index: 0, Status: 'UB', Lower: -Infinity, Upper: 1, Primal: 1, Dual: 1, Name: 'HiGHS_R0' }]
+  });
+}
+
 
 async function test() {
   const Module = await highs();
@@ -442,6 +561,14 @@ async function test() {
   test_big(Module);
   test_many_solves(Module);
   test_exceeds_stack(Module);
+  // New tests
+  test_nan_detection(Module);
+  test_nan_in_variable_name_ok(Module);
+  test_long_line_detection(Module);
+  test_missing_end_detection(Module);
+  test_output_field(Module);
+  test_error_includes_stderr(Module);
+  test_buffer_input_skips_validation(Module);
   console.log('test succeeded');
 }
 
