@@ -7,6 +7,13 @@
 This is a javascript mixed integer linear programming library.
 It is built by compiling a high-performance C++ solver developed by the University of Edinburgh, ([HiGHS](https://highs.dev)), to WebAssembly using emscripten.
 
+## Versioning
+
+The package version starts with the embedded HiGHS version. For example,
+`1.14.0` contains HiGHS `v1.14.0`. If we release highs-js-only API changes or
+bug fixes without changing HiGHS, we append a `js.N` suffix, such as
+`1.14.0-js.1`.
+
 ## Demo
 
 See the online demo at: https://lovasoa.github.io/highs-js/
