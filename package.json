@@ -38,7 +38,6 @@
     "url": "https://github.com/lovasoa/highs-js/issues"
   },
   "homepage": "https://lovasoa.github.io/highs-js/",
-  "runkitExampleFilename": "example.js",
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.13",
     "typescript": "^6.0.3"
