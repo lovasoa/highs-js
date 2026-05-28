@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
   pages: write
 
 jobs:
@@ -29,6 +30,11 @@ jobs:
             ${{ runner.os }}-cmake-
       - uses: mymindstorm/setup-emsdk@v16
         with: { version: "5.0.7" }
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
       - run: npm ci
       - name: build
         run: npm run build
@@ -50,8 +56,4 @@ jobs:
           draft: false
           prerelease: false
       - name: publish the package to NPM
-        run: |
-          npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
-          npm publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish
