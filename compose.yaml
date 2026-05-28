@@ -1,0 +1,22 @@
+# Run the project checks in the same image used by the VS Code devcontainer.
+#
+# Usage:
+#   docker compose run --rm tests
+services:
+  tests:
+    build:
+      context: .devcontainer
+      dockerfile: Dockerfile
+      args:
+        # Keep this in sync with .devcontainer/devcontainer.json.
+        VARIANT: 24-trixie
+    working_dir: /work
+    volumes:
+      # Mount the checkout so the container tests the current working tree.
+      - .:/work
+      # Persist Emscripten's generated system libraries across `run --rm`.
+      - emscripten-cache:/emsdk/upstream/emscripten/cache
+    command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && npm test"
+
+volumes:
+  emscripten-cache:

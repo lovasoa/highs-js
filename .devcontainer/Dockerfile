@@ -15,6 +15,9 @@ RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten"
 
+# Keep npm current instead of relying on the version bundled in the base image.
+RUN npm install -g npm@latest
+
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
