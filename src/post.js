@@ -60,7 +60,7 @@ var /** @type {()=>Highs} */ _Highs_create,
 /**
  * Solve a model in the CPLEX LP file format.
  * @param {string} model_str The problem to solve in the .lp format
- * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/v1.8.0/src/lp_data/HighsOptions.h
+ * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/v1.14.0/src/lp_data/HighsOptions.h
  * @returns {import("../types").HighsSolution} The solution
  */
 Module["solve"] = function (model_str, highs_options) {
@@ -162,6 +162,8 @@ function lineToObj(headers, line) {
  * @returns {import("../types").HighsSolution} The solution
  */
 function parseResult(lines, status) {
+  lines = lines.filter((line) => !line.startsWith("WARNING:"));
+
   if (lines.length < 3)
     throw new Error("Unable to parse solution. Too few lines.");
 

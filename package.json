@@ -1,6 +1,6 @@
 {
   "name": "highs",
-  "version": "1.8.0",
+  "version": "1.14.0",
   "description": "Mixed integer linear programming library, built by compiling a high-performance C++ solver developed by the University of Edinburgh (HiGHS) to WebAssembly.",
   "main": "build/highs.js",
   "type": "commonjs",
@@ -40,8 +40,8 @@
   "homepage": "https://lovasoa.github.io/highs-js/",
   "runkitExampleFilename": "example.js",
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.1",
-    "typescript": "^5.6.3"
+    "@tsconfig/recommended": "^1.0.13",
+    "typescript": "^6.0.3"
   },
   "files": [
     "build/highs.js",

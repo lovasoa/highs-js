@@ -15,8 +15,6 @@ RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten:/emsdk/node/20.18.0_64bit/bin"
 
-RUN cd /emsdk/upstream/emscripten/ && sudo npm install acorn google-closure-compiler
-
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
