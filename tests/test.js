@@ -115,6 +115,23 @@ function test_options(Module) {
 /**
  * @param {import("../types").Highs} Module
  */
+function test_solve_with_output_disabled(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/51
+  assert.deepStrictEqual(Module.solve(PROBLEM, { output_flag: false }), SOLUTION);
+  assert.deepStrictEqual(Module.solve(PROBLEM, { log_to_console: false }), SOLUTION);
+}
+
+async function test_print_callback() {
+  // See https://github.com/lovasoa/highs-js/issues/47
+  const logs = [];
+  const Module = await highs({ print: (line) => logs.push(line) });
+  Module.solve(PROBLEM);
+  assert(logs.length > 0);
+}
+
+/**
+ * @param {import("../types").Highs} Module
+ */
 function test_empty_model(Module) {
   // Arguably, this example should not be considered valid at all, but
   // HiGHS parses it as an empty model; see
@@ -431,6 +448,7 @@ async function test() {
   test_empty_model(Module);
   test_invalid_model(Module);
   test_options(Module);
+  test_solve_with_output_disabled(Module);
   test_integer_problem(Module);
   test_case_with_no_constraints(Module);
   test_quadratic_program(Module);
@@ -442,6 +460,7 @@ async function test() {
   test_big(Module);
   test_many_solves(Module);
   test_exceeds_stack(Module);
+  await test_print_callback();
   console.log('test succeeded');
 }
 

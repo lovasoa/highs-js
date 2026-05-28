@@ -1,4 +1,5 @@
 const MODEL_FILENAME = "m.lp";
+const SOLUTION_FILENAME = "solution.txt";
 
 Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
@@ -90,17 +91,14 @@ Module["solve"] = function (model_str, highs_options) {
   assert_ok(() => _Highs_run(highs), "solve the problem");
   const status =
     MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
-  // Flush the content of stdout in order to have a clean stream before writing the solution in it
-  stdout_lines.length = 0;
   assert_ok(
-    () => Module.Highs_writeSolutionPretty(highs, ""),
+    () => Module.Highs_writeSolutionPretty(highs, SOLUTION_FILENAME),
     "write and extract solution"
   );
+  const solution = FS.readFile(SOLUTION_FILENAME, { encoding: "utf8" });
   _Highs_destroy(highs);
-  const output = parseResult(stdout_lines, status);
-  // Flush the content of stdout and stderr because these streams are not used anymore
-  stdout_lines.length = 0;
-  stderr_lines.length = 0;
+  const output = parseResult(solution.split(/\r?\n/), status);
+  FS.unlink(SOLUTION_FILENAME);
   return output;
 };
 
