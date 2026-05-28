@@ -54,7 +54,7 @@ const MODEL_STATUS_CODES = /** @type {const} */ ({
 var /** @type {()=>Highs} */ _Highs_create,
   /** @type {(arg0:Highs)=>void} */ _Highs_run,
   /** @type {(arg0:Highs)=>void} */ _Highs_destroy,
-  /** @type {(arg0:Highs, arg1:number)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
+  /** @type {(arg0:Highs)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
   /** @type {any}*/ FS;
 
 /**
@@ -89,7 +89,7 @@ Module["solve"] = function (model_str, highs_options) {
   }
   assert_ok(() => _Highs_run(highs), "solve the problem");
   const status =
-    MODEL_STATUS_CODES[_Highs_getModelStatus(highs, 0)] || "Unknown";
+    MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
   // Flush the content of stdout in order to have a clean stream before writing the solution in it
   stdout_lines.length = 0;
   assert_ok(
