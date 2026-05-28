@@ -9,10 +9,10 @@ It is built by compiling a high-performance C++ solver developed by the Universi
 
 ## Versioning
 
-The package version starts with the embedded HiGHS version. For example,
-`1.14.0` contains HiGHS `v1.14.0`. If we release highs-js-only API changes or
-bug fixes without changing HiGHS, we append a `js.N` suffix, such as
-`1.14.0-js.1`.
+The package major and minor version match the embedded HiGHS major and minor
+version. For example, `1.14.x` contains HiGHS `v1.14.x`. The patch version may
+differ when highs-js releases JavaScript API changes or bug fixes without
+changing the embedded HiGHS version.
 
 ## Demo
 
