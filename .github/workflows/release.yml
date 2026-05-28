@@ -15,11 +15,11 @@ jobs:
     name: Create a release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: "recursive"
       - name: Cache CMake build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             HiGHS/src/CMakeFiles
@@ -27,8 +27,8 @@ jobs:
           key: ${{ runner.os }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-cmake-
-      - uses: mymindstorm/setup-emsdk@v14
-        with: { version: "3.1.71" }
+      - uses: mymindstorm/setup-emsdk@v16
+        with: { version: "5.0.7" }
       - run: npm ci
       - name: build
         run: npm run build
@@ -41,7 +41,7 @@ jobs:
           branch: gh-pages
           folder: demo
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             build/highs.wasm
