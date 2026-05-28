@@ -1,14 +1,12 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.205.2/containers/javascript-node
+// https://github.com/devcontainers/images/tree/main/src/javascript-node
 {
 	"name": "Node.js",
 	"build": {
 		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick a Node version: 16, 14, 12.
-		// Append -bullseye or -buster to pin to an OS version.
-		// Use -bullseye variants on local arm64/Apple Silicon.
+		// Update 'VARIANT' to pick a Node version.
 		"args": {
-			"VARIANT": "20-bookworm"
+			"VARIANT": "24-trixie"
 		}
 	},
 	"customizations": {
