@@ -441,6 +441,31 @@ function test_exceeds_stack(Module) {
   Module.solve(pb);
 }
 
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_mip_presolve_is_not_suboptimal(Module) {
+  // See https://github.com/lovasoa/highs-js/issues/53
+  // HiGHS 1.14.0 presolved this to x=0, z=5 (objective 15) and reported it as
+  // "Optimal". The optimum is x=4.5, z=0 (objective 9). Since the status was
+  // "Optimal" either way, a caller had no way to detect the wrong answer.
+  const pb = `Minimize
+ obj: 2 x + 3 z
+Subject To
+ c1: x + z >= 4.5
+Bounds
+ x <= 10
+ z <= 10
+General
+ z
+End`;
+  const sol = Module.solve(pb);
+  assert.strictEqual(sol.Status, 'Optimal');
+  assert.strictEqual(sol.ObjectiveValue, 9);
+  // The invariant that actually broke: presolve must not change the optimum.
+  assert.deepStrictEqual(sol, Module.solve(pb, { presolve: 'off' }));
+}
+
 
 async function test() {
   const Module = await highs();
@@ -460,6 +485,7 @@ async function test() {
   test_big(Module);
   test_many_solves(Module);
   test_exceeds_stack(Module);
+  test_mip_presolve_is_not_suboptimal(Module);
   await test_print_callback();
   console.log('test succeeded');
 }
