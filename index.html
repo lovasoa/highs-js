@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HiGHS-js linear programming</title>
     <script src="demo.js" async defer></script>
-    <script src="https://embed.runkit.com" data-element-id="runkit" async defer></script>
     <link rel="prefetch" href="highs.js">
     <link rel="prefetch" href="highs.wasm">
     <link rel="prefetch" href="worker.js">
@@ -55,20 +54,18 @@ End
         </section>
         <hr>
         <article>
-            <header><h2>Try the API</h2></header>
-            <div id="runkit" style="white-space: pre-wrap; font-family: monospace;">
-                var highs = await require("highs")();
+            <header><h2>Node.js example</h2></header>
+            <pre><code>var highs = await require("highs")();
 
-                highs.solve(`Maximize
-                obj: x + 2 y
-                Subject To
-                c1: x + y <= 20
-                c2: x - y >= -30
-                Bounds
-                0 <= x
-                0 <= y
-                End`);
-            </div>
+highs.solve(`Maximize
+ obj: x + 2 y
+Subject To
+ c1: x + y &lt;= 20
+ c2: x - y &gt;= -30
+Bounds
+ 0 &lt;= x
+ 0 &lt;= y
+End`);</code></pre>
         </article>
         <hr>
         <section>
@@ -86,4 +83,3 @@ End
 </body>
 
 </html>
-
