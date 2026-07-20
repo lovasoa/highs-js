@@ -127,6 +127,30 @@ The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/l
 
 For a more complete example, see the [`demo`](./demo/) folder.
 
+### Ranging (sensitivity analysis)
+
+Passing the `ranging: 'on'` option adds a `Ranging` field to the returned
+solution, exposing the results of HiGHS's `getRanging` method: cost, column
+bound and row bound ranging.
+
+```js
+const sol = highs.solve(PROBLEM, { ranging: 'on' });
+console.log(sol.Ranging);
+// {
+//   cost: [ /* one record per column */ ],
+//   column_bound: [ /* one record per column */ ],
+//   row_bound: [ /* one record per row */ ]
+// }
+```
+
+Each record describes how far the cost or bound can move up and down before the
+optimal basis changes (`up_value`/`dn_value`), together with the resulting
+objective (`up_objective`/`dn_objective`) and the indices of the variables
+entering and leaving the basis at each limit (`up_in_variable`/`up_out_variable`
+and `dn_in_variable`/`dn_out_variable`; a negative index means no such
+variable). The `cost` and `column_bound` arrays are indexed by column, and
+`row_bound` by row, in the same order as `Columns` and `Rows`.
+
 ### Loading the wasm file
 
 This package requires a wasm file.

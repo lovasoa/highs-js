@@ -467,6 +467,48 @@ End`;
 }
 
 
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_ranging(Module) {
+  // Passing `ranging: 'on'` exposes the results of HiGHS's Highs_getRanging
+  // (cost, column bound and row bound sensitivity analysis) on the solution.
+  const sol = Module.solve(PROBLEM, { ranging: 'on' });
+
+  // The rest of the solution is unchanged by requesting ranging.
+  const { Ranging, ...withoutRanging } = sol;
+  assert.deepStrictEqual(withoutRanging, SOLUTION);
+
+  assert.deepStrictEqual(Ranging, {
+    cost: [
+      { up_value: 2.4, up_objective: 112, up_in_variable: 3, up_out_variable: 3, dn_value: -4, dn_objective: 0, dn_in_variable: 5, dn_out_variable: 2 },
+      { up_value: 19.5, up_objective: 105, up_in_variable: 3, up_out_variable: 3, dn_value: -Infinity, dn_objective: -Infinity, dn_in_variable: -1, dn_out_variable: -1 },
+      { up_value: Infinity, up_objective: Infinity, up_in_variable: -1, up_out_variable: -1, dn_value: 1.9411764705882355, dn_objective: 53.529411764705884, dn_in_variable: 3, dn_out_variable: 3 },
+      { up_value: 9.75, up_objective: 105, up_in_variable: 3, up_out_variable: 3, dn_value: -Infinity, dn_objective: -Infinity, dn_in_variable: -1, dn_out_variable: -1 }
+    ],
+    column_bound: [
+      { up_value: 23.75, up_objective: 78.75, up_in_variable: 3, up_out_variable: 3, dn_value: 1, dn_objective: 5, dn_in_variable: 5, dn_out_variable: 2 },
+      { up_value: 1.5, up_objective: 78.75, up_in_variable: 3, up_out_variable: 3, dn_value: 1, dn_objective: 87.5, dn_in_variable: -1, dn_out_variable: -1 },
+      { up_value: 16.5, up_objective: 87.5, up_in_variable: -1, up_out_variable: -1, dn_value: 12.25, dn_objective: 78.75, dn_in_variable: 3, dn_out_variable: 3 },
+      { up_value: 3, up_objective: 78.75, up_in_variable: 3, up_out_variable: 3, dn_value: 0, dn_objective: 105, dn_in_variable: 3, dn_out_variable: 1 }
+    ],
+    row_bound: [
+      { up_value: 55, up_objective: 140, up_in_variable: 3, up_out_variable: 0, dn_value: -13, dn_objective: 38, dn_in_variable: -1, dn_out_variable: 2 },
+      { up_value: 75, up_objective: 200, up_in_variable: 5, up_out_variable: 0, dn_value: -3, dn_objective: 5, dn_in_variable: -1, dn_out_variable: 2 },
+      { up_value: 9, up_objective: 182, up_in_variable: 5, up_out_variable: 0, dn_value: -1, dn_objective: 77, dn_in_variable: 3, dn_out_variable: 1 }
+    ]
+  });
+}
+
+/**
+ * @param {import("../types").Highs} Module
+ */
+function test_no_ranging_by_default(Module) {
+  // Without the `ranging` option, no Ranging key is added to the result.
+  const sol = Module.solve(PROBLEM);
+  assert.strictEqual('Ranging' in sol, false);
+}
+
 async function test() {
   const Module = await highs();
   test_optimal(Module);
@@ -486,6 +528,8 @@ async function test() {
   test_many_solves(Module);
   test_exceeds_stack(Module);
   test_mip_presolve_is_not_suboptimal(Module);
+  test_ranging(Module);
+  test_no_ranging_by_default(Module);
   await test_print_callback();
   console.log('test succeeded');
 }
