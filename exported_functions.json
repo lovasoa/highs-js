@@ -10,5 +10,10 @@
   "_Highs_setStringOptionValue",
   "_Highs_setIntOptionValue",
   "_Highs_setDoubleOptionValue",
-  "_Highs_setBoolOptionValue"
+  "_Highs_setBoolOptionValue",
+  "_Highs_getNumCol",
+  "_Highs_getNumRow",
+  "_Highs_getRanging",
+  "_malloc",
+  "_free"
 ]

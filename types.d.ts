@@ -567,6 +567,51 @@ type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status ext
   ObjectiveValue: number;
   Columns: Record<string, ColType>;
   Rows: RowType[];
+  /**
+   * Cost, bound and RHS ranging (sensitivity analysis) information.
+   * Only present when the `ranging: 'on'` option is passed to `solve`.
+   */
+  Ranging?: HighsRanging;
+};
+
+/**
+ * Ranging (sensitivity analysis) information produced by HiGHS when the
+ * `ranging: 'on'` option is used. Each array is indexed by column or row in
+ * the same order as the model, matching the `Index` field of the
+ * corresponding entries in `Columns` and `Rows`.
+ */
+type HighsRanging = {
+  /** Objective coefficient (cost) ranging, one record per column. */
+  cost: HighsRangingRecord[];
+  /** Column bound ranging, one record per column. */
+  column_bound: HighsRangingRecord[];
+  /** Row bound (RHS) ranging, one record per row. */
+  row_bound: HighsRangingRecord[];
+};
+
+/**
+ * A single ranging record describing how far a cost or bound can move (up and
+ * down) before the optimal basis changes. `*_in_variable` / `*_out_variable`
+ * are the indices of the variables entering / leaving the basis at each limit
+ * (a negative value means no such variable).
+ */
+type HighsRangingRecord = {
+  /** Upper range of the value. */
+  up_value: number;
+  /** Objective value at the upper range. */
+  up_objective: number;
+  /** Index of the variable entering the basis at the upper range. */
+  up_in_variable: number;
+  /** Index of the variable leaving the basis at the upper range. */
+  up_out_variable: number;
+  /** Lower range of the value. */
+  dn_value: number;
+  /** Objective value at the lower range. */
+  dn_objective: number;
+  /** Index of the variable entering the basis at the lower range. */
+  dn_in_variable: number;
+  /** Index of the variable leaving the basis at the lower range. */
+  dn_out_variable: number;
 };
 
 type HighsModelStatus =
