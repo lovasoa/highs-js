@@ -135,7 +135,7 @@ function getRanging(highs) {
   const num_row = Highs_getNumRow(highs);
 
   // Each ranging record is made of four arrays: value and objective are
-  // doubles, in_var and ou_var are (32 bit) integers. Allocate one buffer per
+  // doubles, in_var and out_var are (32 bit) integers. Allocate one buffer per
   // array and remember how to read it back.
   const buffers = [];
   /**
@@ -166,14 +166,14 @@ function getRanging(highs) {
   /**
    * Allocate the four arrays that make up a single ranging record.
    * @param {number} length Number of entries (columns or rows)
-   * @returns {{value:number, objective:number, in_var:number, ou_var:number}}
+   * @returns {{value:number, objective:number, in_var:number, out_var:number}}
    */
   function allocRecord(length) {
     return {
       value: allocArray(length, "f64"),
       objective: allocArray(length, "f64"),
       in_var: allocArray(length, "i32"),
-      ou_var: allocArray(length, "i32"),
+      out_var: allocArray(length, "i32"),
     };
   }
 
@@ -189,12 +189,12 @@ function getRanging(highs) {
       () =>
         Highs_getRanging(
           highs,
-          col_cost_up.value, col_cost_up.objective, col_cost_up.in_var, col_cost_up.ou_var,
-          col_cost_dn.value, col_cost_dn.objective, col_cost_dn.in_var, col_cost_dn.ou_var,
-          col_bound_up.value, col_bound_up.objective, col_bound_up.in_var, col_bound_up.ou_var,
-          col_bound_dn.value, col_bound_dn.objective, col_bound_dn.in_var, col_bound_dn.ou_var,
-          row_bound_up.value, row_bound_up.objective, row_bound_up.in_var, row_bound_up.ou_var,
-          row_bound_dn.value, row_bound_dn.objective, row_bound_dn.in_var, row_bound_dn.ou_var
+          col_cost_up.value, col_cost_up.objective, col_cost_up.in_var, col_cost_up.out_var,
+          col_cost_dn.value, col_cost_dn.objective, col_cost_dn.in_var, col_cost_dn.out_var,
+          col_bound_up.value, col_bound_up.objective, col_bound_up.in_var, col_bound_up.out_var,
+          col_bound_dn.value, col_bound_dn.objective, col_bound_dn.in_var, col_bound_dn.out_var,
+          row_bound_up.value, row_bound_up.objective, row_bound_up.in_var, row_bound_up.out_var,
+          row_bound_dn.value, row_bound_dn.objective, row_bound_dn.in_var, row_bound_dn.out_var
         ),
       "compute ranging (requires an optimal basic solution)"
     );
@@ -202,8 +202,8 @@ function getRanging(highs) {
     /**
      * Turn a pair of up/down record pointers into an array of records, one per
      * column or row.
-     * @param {{value:number, objective:number, in_var:number, ou_var:number}} up
-     * @param {{value:number, objective:number, in_var:number, ou_var:number}} dn
+     * @param {{value:number, objective:number, in_var:number, out_var:number}} up
+     * @param {{value:number, objective:number, in_var:number, out_var:number}} dn
      * @param {number} length
      * @returns {import("../types").HighsRangingRecord[]}
      */
@@ -211,22 +211,22 @@ function getRanging(highs) {
       const up_value = readArray(up.value, length, "f64");
       const up_objective = readArray(up.objective, length, "f64");
       const up_in_var = readArray(up.in_var, length, "i32");
-      const up_ou_var = readArray(up.ou_var, length, "i32");
+      const up_out_var = readArray(up.out_var, length, "i32");
       const dn_value = readArray(dn.value, length, "f64");
       const dn_objective = readArray(dn.objective, length, "f64");
       const dn_in_var = readArray(dn.in_var, length, "i32");
-      const dn_ou_var = readArray(dn.ou_var, length, "i32");
+      const dn_out_var = readArray(dn.out_var, length, "i32");
       const records = new Array(length);
       for (let i = 0; i < length; i++) {
         records[i] = {
           "up_value": up_value[i],
           "up_objective": up_objective[i],
           "up_in_variable": up_in_var[i],
-          "up_out_variable": up_ou_var[i],
+          "up_out_variable": up_out_var[i],
           "dn_value": dn_value[i],
           "dn_objective": dn_objective[i],
           "dn_in_variable": dn_in_var[i],
-          "dn_out_variable": dn_ou_var[i],
+          "dn_out_variable": dn_out_var[i],
         };
       }
       return records;
