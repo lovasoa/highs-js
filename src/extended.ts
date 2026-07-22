@@ -693,7 +693,7 @@
       return withArena(function (arena) {
         const output = arena.outInts(1);
         const status = numericFunction("Highs_getOptionName", 3)(pointer, index, output);
-        const namePointer = heap32()[output >> 2];
+        const namePointer = heap32()[output >> 2] >>> 0;
         if (!namePointer) return rawResult(status, "");
         try {
           return rawResult(status, utf8(namePointer));
