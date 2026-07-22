@@ -90,7 +90,7 @@
   ): NativeCallable {
     return nativeFunction(
       name,
-      returnType || "number",
+      returnType,
       new Array(argumentCount).fill("number")
     );
   }
@@ -103,7 +103,7 @@
   ): NativeCallable {
     return nativeFunction(
       name,
-      returnType || "number",
+      returnType,
       new Array(before || 0)
         .fill("number")
         .concat(["string"], new Array(after || 0).fill("number"))
@@ -509,29 +509,29 @@
   }
 
   class RawModel {
-    private _pointer: number;
-    private _disposed: boolean;
+    #pointer: number;
+    #disposed: boolean;
     _inCallback: boolean;
     _callbackId: number;
     _callbackError: unknown;
     _callbackNumCols = 0;
 
     constructor(pointer) {
-      this._pointer = pointer;
-      this._disposed = false;
+      this.#pointer = pointer;
+      this.#disposed = false;
       this._inCallback = false;
       this._callbackId = 0;
       this._callbackError = undefined;
     }
 
     get disposed() {
-      return this._disposed;
+      return this.#disposed;
     }
 
     _require(callbackSafe = false) {
-      if (this._disposed) throw disposedError();
+      if (this.#disposed) throw disposedError();
       if (this._inCallback && !callbackSafe) throw reentrancyError();
-      return this._pointer;
+      return this.#pointer;
     }
 
     clear() {
@@ -1126,21 +1126,30 @@
       const pointer = this._require(false);
       if (callback != null && typeof callback !== "function")
         throw validationError("callback must be a function or undefined");
-      if (this._callbackId) {
-        callbacks.delete(this._callbackId);
-        this._callbackId = 0;
+      const previousId = this._callbackId;
+      if (!callback) {
+        const status = numericFunction("Highs_setCallback", 3)(pointer, 0, 0);
+        if (status !== STATUS_ERROR) {
+          if (previousId) callbacks.delete(previousId);
+          this._callbackId = 0;
+        }
+        return rawStatus(status);
       }
-      if (!callback)
-        return rawStatus(numericFunction("Highs_setCallback", 3)(pointer, 0, 0));
-      this._callbackId = nextCallbackId++;
-      callbacks.set(this._callbackId, { raw: this, callback: callback });
-      return rawStatus(
-        numericFunction("Highs_setCallback", 3)(
-          pointer,
-          ensureCallbackFunction(),
-          this._callbackId
-        )
+
+      const callbackId = nextCallbackId++;
+      callbacks.set(callbackId, { raw: this, callback: callback });
+      const status = numericFunction("Highs_setCallback", 3)(
+        pointer,
+        ensureCallbackFunction(),
+        callbackId
       );
+      if (status === STATUS_ERROR) {
+        callbacks.delete(callbackId);
+      } else {
+        if (previousId) callbacks.delete(previousId);
+        this._callbackId = callbackId;
+      }
+      return rawStatus(status);
     }
 
     startCallback(type) {
@@ -1151,11 +1160,12 @@
     }
 
     dispose() {
-      if (this._disposed) return;
+      if (this.#disposed) return;
+      const pointer = this._require(false);
       if (this._callbackId) callbacks.delete(this._callbackId);
-      numericFunction("Highs_destroy", 1, null)(this._pointer);
-      this._pointer = 0;
-      this._disposed = true;
+      numericFunction("Highs_destroy", 1, null)(pointer);
+      this.#pointer = 0;
+      this.#disposed = true;
     }
 
     _simple(name) {
@@ -2295,11 +2305,17 @@
     if (!entry) return;
     const raw = entry.raw;
     const callback = entry.callback;
+    let eventActive = true;
+    function requireActiveEvent() {
+      if (!eventActive)
+        throw validationError("callback controls expire when the callback returns");
+    }
     raw._inCallback = true;
     try {
       const shape = { numCols: raw._callbackNumCols };
       const data: any = {};
       [
+        ["log_type", "int"],
         ["running_time", "double"],
         ["simplex_iteration_count", "int"],
         ["ipm_iteration_count", "int"],
@@ -2345,11 +2361,12 @@
         }
       }
 
-      callback({
+      const callbackResult = callback({
         type: type,
         message: utf8(messagePointer),
         data: data,
         setSolution: function (solution) {
+          requireActiveEvent();
           try {
             if (solution && solution.indices) {
               validateIndexArray(solution.indices, null, "indices", shape.numCols);
@@ -2382,18 +2399,28 @@
           }
         },
         repairSolution: function () {
+          requireActiveEvent();
           return rawStatus(
             numericFunction("Highs_repairCallbackSolution", 1)(dataIn)
           );
         },
         interrupt: function () {
+          requireActiveEvent();
           heap32()[dataIn >> 2] = 1;
         },
       });
+      if (
+        callbackResult &&
+        (typeof callbackResult === "object" ||
+          typeof callbackResult === "function") &&
+        typeof callbackResult.then === "function"
+      )
+        throw validationError("callbacks must be synchronous and return undefined");
     } catch (error) {
       raw._callbackError = error;
       heap32()[dataIn >> 2] = 1;
     } finally {
+      eventActive = false;
       raw._inCallback = false;
     }
   }
@@ -2507,20 +2534,23 @@
     run(callbackMap) {
       const raw = this.raw;
       const activeTypes = [];
-      if (callbackMap && Object.keys(callbackMap).length) {
-        raw.setCallback(function (event) {
-          const callback = callbackMap[event.type];
-          if (callback) callback(event);
-        });
-        Object.keys(callbackMap).forEach(function (key) {
-          const type = Number(key);
-          validateCallbackType(type);
-          const result = raw.startCallback(type);
-          if (result.status === STATUS_ERROR) throw nativeError("startCallback");
-          activeTypes.push(type);
-        });
-      }
       try {
+        if (callbackMap && Object.keys(callbackMap).length) {
+          const registration = raw.setCallback(function (event) {
+            const callback = callbackMap[event.type];
+            if (callback) return callback(event);
+            return undefined;
+          });
+          if (registration.status === STATUS_ERROR)
+            throw nativeError("setCallback");
+          Object.keys(callbackMap).forEach(function (key) {
+            const type = Number(key);
+            validateCallbackType(type);
+            const result = raw.startCallback(type);
+            if (result.status === STATUS_ERROR) throw nativeError("startCallback");
+            activeTypes.push(type);
+          });
+        }
         const result = raw.run();
         const metadata = this._setLast(result.status, "run");
         return {

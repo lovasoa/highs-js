@@ -52,6 +52,17 @@ async function exerciseContract() {
 
   model.readModel({ format: "lp", data: "Minimize\nEnd" });
   model.options.set("output_flag", false);
+  model.run({
+    [highs.constants.callbackType.logging](event) {
+      event.interrupt();
+      return undefined;
+    },
+  });
+
+  model.run({
+    // @ts-expect-error callbacks must not return a Promise
+    [highs.constants.callbackType.logging]: async () => undefined,
+  });
 
   // Untagged selections are deliberately ambiguous and unsupported.
   // @ts-expect-error

@@ -72,10 +72,12 @@ export interface RawStatus {
   readonly status: HighsStatus;
 }
 
-export interface RawResult<T> extends RawStatus {
-  /** Present when status is kHighsStatusOk or kHighsStatusWarning. */
-  readonly value?: T;
-}
+export type RawResult<T> =
+  | { readonly status: -1; readonly value?: never }
+  | {
+      readonly status: SuccessfulHighsStatus;
+      readonly value: T;
+    };
 
 export interface CallMetadata {
   readonly status: SuccessfulHighsStatus;
@@ -480,6 +482,7 @@ export interface CallbackEvent {
 
 export interface CallbackData
   extends Readonly<Record<string, unknown>> {
+  readonly log_type?: number;
   readonly running_time?: number;
   readonly simplex_iteration_count?: number;
   readonly ipm_iteration_count?: number;
@@ -503,7 +506,7 @@ export interface CallbackData
 }
 
 /** Callback execution is synchronous; returning a Promise is unsupported. */
-export type HighsCallback = (event: CallbackEvent) => void;
+export type HighsCallback = (event: CallbackEvent) => undefined;
 
 export interface Model {
   readonly raw: RawModelApi;
