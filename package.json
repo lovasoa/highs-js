@@ -3,21 +3,28 @@
   "version": "1.15.2",
   "description": "Mixed integer linear programming library, built by compiling a high-performance C++ solver developed by the University of Edinburgh (HiGHS) to WebAssembly.",
   "main": "build/highs.js",
+  "module": "build/highs.mjs",
   "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./types.d.ts",
+      "types": "./highs.d.ts",
+      "import": "./build/highs.mjs",
+      "require": "./build/highs.js",
       "default": "./build/highs.js"
     },
-    "./runtime": "./build/highs.wasm"
+    "./runtime": "./build/highs.wasm",
+    "./legacy-types": "./types.d.ts"
   },
-  "types": "types.d.ts",
+  "types": "highs.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "tsc && node tests/test.js",
-    "build": "./build.sh"
+    "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && node tests/test.js && node --test tests/extended/*.test.cjs",
+    "build": "./build.sh",
+    "check:api": "node scripts/generate-highs-api.mjs --check",
+    "bench:runtime": "node benchmarks/runtime.mjs",
+    "bench:size": "node benchmarks/measure-size.mjs"
   },
   "repository": {
     "type": "git",
@@ -44,9 +51,13 @@
   },
   "files": [
     "build/highs.js",
+    "build/highs.mjs",
     "build/highs.wasm",
     "package.json",
+    "highs.d.ts",
     "types.d.ts",
+    "api/highs-c-api.generated.json",
+    "docs",
     "README.md"
   ]
 }

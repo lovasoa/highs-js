@@ -29,13 +29,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cmake-
       - uses: mymindstorm/setup-emsdk@v16
-        with: { version: "5.0.7" }
+        with: { version: "6.0.3" }
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
       - run: npm ci
+      - name: verify generated C API inventory
+        run: npm run check:api
       - name: build
         run: npm run build
       - name: test
@@ -52,6 +54,7 @@ jobs:
           files: |
             build/highs.wasm
             build/highs.js
+            build/highs.mjs
           fail_on_unmatched_files: true
           draft: false
           prerelease: false

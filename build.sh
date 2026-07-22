@@ -1,12 +1,26 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-root="$(dirname $(realpath "$0"))"
-mkdir -p build
-cd build
+root="$(dirname "$(realpath "$0")")"
+mkdir -p "$root/build"
+
+# Fail before the expensive native build if the generated ABI inventory or
+# linker exports have drifted from the vendored HiGHS header.
+node "$root/scripts/generate-highs-api.mjs" --check
+
+# The extended runtime is authored in TypeScript and emitted as an Emscripten
+# post-JS file. Keeping this as a separate compile step makes the handwritten
+# marshalling code type-checkable without changing the generated loader.
+"$root/node_modules/.bin/tsc" -p "$root/tsconfig.runtime.json"
+
+cd "$root/build"
 
 # Run emconfigure with the normal configure command as an argument.
-emcmake cmake ../HiGHS -DZLIB=OFF -DFAST_BUILD=OFF -DBUILD_SHARED_LIBS=OFF
+emcmake cmake ../HiGHS \
+	-DZLIB=OFF \
+	-DFAST_BUILD=OFF \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DHIGHS_NO_DEFAULT_THREADS=ON
 
 # Run emmake with the normal make to generate wasm object files.
 emmake make -j8 libhighs
@@ -21,11 +35,35 @@ emmake make -j8 libhighs
 # [-Ox] represents build optimisations (discussed in the next section).
 emcc -O3 \
 	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
-	-s EXPORTED_RUNTIME_METHODS="['cwrap']" \
+	-s EXPORTED_RUNTIME_METHODS="['cwrap','addFunction','removeFunction','UTF8ToString']" \
 	-s MODULARIZE=1 \
 	-s ALLOW_MEMORY_GROWTH=1 \
+	-s ALLOW_TABLE_GROWTH=1 \
 	-s STACK_SIZE=4194304 \
 	-flto \
+	-I "$root/HiGHS/highs" \
 	--pre-js "$root/src/pre.js" \
 	--post-js "$root/src/post.js" \
+	--post-js "$root/build/generated/extended.js" \
+	"$root/src/highs_js_bridge.cpp" \
 	lib/*.a -o highs.js
+
+# Build a native ES module loader that references the same highs.wasm filename.
+# Both commands use the same object graph and link flags, so the second link
+# replaces highs.wasm with the same single-threaded binary.
+emcc -O3 \
+	-s EXPORTED_FUNCTIONS="@$root/exported_functions.json" \
+	-s EXPORTED_RUNTIME_METHODS="['cwrap','addFunction','removeFunction','UTF8ToString']" \
+	-s MODULARIZE=1 \
+	-s EXPORT_ES6=1 \
+	-s ENVIRONMENT="web,worker,node" \
+	-s ALLOW_MEMORY_GROWTH=1 \
+	-s ALLOW_TABLE_GROWTH=1 \
+	-s STACK_SIZE=4194304 \
+	-flto \
+	-I "$root/HiGHS/highs" \
+	--pre-js "$root/src/pre.js" \
+	--post-js "$root/src/post.js" \
+	--post-js "$root/build/generated/extended.js" \
+	"$root/src/highs_js_bridge.cpp" \
+	lib/*.a -o highs.mjs

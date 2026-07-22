@@ -22,7 +22,11 @@ jobs:
       - uses: mymindstorm/setup-emsdk@v16
         with: { version: "6.0.3" }
       - run: npm ci
+      - name: verify generated C API inventory
+        run: npm run check:api
       - name: build
         run: npm run build
       - name: test
         run: npm test
+      - name: verify package contents
+        run: npm pack --dry-run
