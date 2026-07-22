@@ -55,7 +55,6 @@ async function exerciseContract() {
   model.run({
     [highs.constants.callbackType.logging](event) {
       event.interrupt();
-      return undefined;
     },
   });
 

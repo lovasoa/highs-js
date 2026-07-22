@@ -81,7 +81,7 @@ export type RawResult<T> =
 
 export interface CallMetadata {
   readonly status: SuccessfulHighsStatus;
-  /** Diagnostic messages captured for kHighsStatusWarning. */
+  /** Stable wrapper summaries for kHighsStatusWarning. */
   readonly warnings: readonly string[];
 }
 

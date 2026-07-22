@@ -155,10 +155,16 @@ try {
 }
 ```
 
-Raw mutators return `{status: -1 | 0 | 1}`. Raw getters that can fail return
-`{status, value?}`; `value` is present for OK and warning results. The raw API
-is C-shaped, but is not a pointer escape hatch: it still validates and copies
-memory and uses JavaScript data structures.
+Raw mutators return `{status: -1 | 0 | 1}`. Raw getters that can fail return a
+discriminated result: `{status: -1}` for an error, or `{status: 0 | 1, value}`
+for OK and warning results. The raw API is C-shaped, but is not a pointer
+escape hatch: it still validates and copies memory and uses JavaScript data
+structures.
+
+The legacy Emscripten module still contains underscored linker symbols needed
+by the established `solve()` implementation. They are retained for runtime
+compatibility, but are not part of the documented raw API; persistent handles
+use native JavaScript private fields and never expose their pointer.
 
 ## Memory ownership
 

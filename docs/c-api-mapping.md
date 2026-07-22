@@ -143,8 +143,8 @@ semantics.
 | `ensureRowwise()` | `Highs_ensureRowwise` |
 | `changeObjectiveSense()` | `Highs_changeObjectiveSense` |
 | `changeObjectiveOffset()` | `Highs_changeObjectiveOffset` |
-| `getObjectiveSense()` | `Highs_getObjectiveSense` |
-| `getObjectiveOffset()` | `Highs_getObjectiveOffset` |
+| `rawModel.getObjectiveSense()` | `Highs_getObjectiveSense` |
+| `rawModel.getObjectiveOffset()` | `Highs_getObjectiveOffset` |
 | `changeColIntegrality()` | `Highs_changeColIntegrality` |
 | `changeColsIntegrality()` | `Highs_changeColsIntegralityByRange`, `Highs_changeColsIntegralityBySet`, or `Highs_changeColsIntegralityByMask` |
 | `clearIntegrality()` | `Highs_clearIntegrality` |

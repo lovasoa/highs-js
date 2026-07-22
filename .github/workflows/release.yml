@@ -45,6 +45,7 @@ jobs:
           HIGHS_REQUIRE_EXTENDED: "1"
         run: npm test
       - run: cp build/highs.* demo/
+      - run: cp -R docs demo/docs
       - name: Deploy demo 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
