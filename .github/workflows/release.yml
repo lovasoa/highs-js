@@ -41,6 +41,8 @@ jobs:
       - name: build
         run: npm run build
       - name: test
+        env:
+          HIGHS_REQUIRE_EXTENDED: "1"
         run: npm test
       - run: cp build/highs.* demo/
       - name: Deploy demo 🚀
