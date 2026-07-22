@@ -13,20 +13,20 @@ Validate coverage and deterministic generation with:
 node scripts/generate-highs-api.mjs --check
 ```
 
-Inspect the complete expanded inventory, exports, and declaration aggregate
-without changing the worktree with:
+Inspect the complete expanded inventory and exports without changing the
+worktree with:
 
 ```sh
 node scripts/generate-highs-api.mjs --out-dir /tmp/highs-js-api-generated
 ```
 
-Once the native callback and safe-name bridge symbols exist, update the three
-canonical aggregates with:
+After reviewing manifest changes, update the canonical inventory and linker
+exports with:
 
 ```sh
-node scripts/generate-highs-api.mjs --write-aggregates
+node scripts/generate-highs-api.mjs --write-exports
 ```
 
-The aggregate declaration keeps the complete legacy type surface and changes
-the loader result to `Highs & HighsModernRuntime`; this is intentional so old
-programs continue to type-check while new code receives the persistent API.
+`highs.d.ts` is the hand-reviewed canonical declaration for the extended API.
+`types.d.ts` remains the untouched `./legacy-types` compatibility entry and is
+never generated or overwritten by this script.

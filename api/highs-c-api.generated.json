@@ -438,7 +438,7 @@
       "exposure": "raw-runtime",
       "rawName": "lpCall",
       "js": [
-        "RawHighsApi.lpCall"
+        "RawRuntimeApi.lpCall"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -472,7 +472,7 @@
       "exposure": "raw-runtime",
       "rawName": "mipCall",
       "js": [
-        "RawHighsApi.mipCall"
+        "RawRuntimeApi.mipCall"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -514,7 +514,7 @@
       "exposure": "raw-runtime",
       "rawName": "qpCall",
       "js": [
-        "RawHighsApi.qpCall"
+        "RawRuntimeApi.qpCall"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -565,7 +565,8 @@
       "exposure": "raw-runtime",
       "rawName": "version",
       "js": [
-        "RawHighsApi.version"
+        "RawRuntimeApi.version",
+        "Highs.version"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -578,9 +579,10 @@
       "signature": "HighsInt Highs_versionMajor()",
       "family": "runtime",
       "exposure": "raw-runtime",
-      "rawName": "versionMajor",
+      "rawName": "version",
       "js": [
-        "RawHighsApi.versionMajor"
+        "RawRuntimeApi.version",
+        "Highs.version.major"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -593,9 +595,10 @@
       "signature": "HighsInt Highs_versionMinor()",
       "family": "runtime",
       "exposure": "raw-runtime",
-      "rawName": "versionMinor",
+      "rawName": "version",
       "js": [
-        "RawHighsApi.versionMinor"
+        "RawRuntimeApi.version",
+        "Highs.version.minor"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -608,9 +611,10 @@
       "signature": "HighsInt Highs_versionPatch()",
       "family": "runtime",
       "exposure": "raw-runtime",
-      "rawName": "versionPatch",
+      "rawName": "version",
       "js": [
-        "RawHighsApi.versionPatch"
+        "RawRuntimeApi.version",
+        "Highs.version.patch"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -623,9 +627,10 @@
       "signature": "const char* Highs_githash()",
       "family": "runtime",
       "exposure": "raw-runtime",
-      "rawName": "githash",
+      "rawName": "version",
       "js": [
-        "RawHighsApi.githash"
+        "RawRuntimeApi.version",
+        "Highs.version.gitHash"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -843,10 +848,10 @@
       "signature": "HighsInt Highs_writeSolutionPretty(const void* highs, const char* filename)",
       "family": "data-io",
       "exposure": "model-data-adapter",
-      "rawName": "exportSolutionPretty",
+      "rawName": "exportSolution",
       "js": [
-        "RawModel.exportSolutionPretty",
-        "Model.exportSolutionPretty"
+        "RawModel.exportSolution(true)",
+        "Model.exportSolution(true)"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1108,7 +1113,7 @@
       "rawName": "readOptions",
       "js": [
         "RawModel.readOptions",
-        "Model.readOptions"
+        "Model.options.read"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1126,9 +1131,10 @@
       "signature": "HighsInt Highs_setBoolOptionValue(void* highs, const char* option, const HighsInt value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "setBoolOptionValue",
+      "rawName": "setOptionValue",
       "js": [
-        "RawModel.setBoolOptionValue"
+        "RawModel.setOptionValue",
+        "Model.options.set"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1145,9 +1151,10 @@
       "signature": "HighsInt Highs_setIntOptionValue(void* highs, const char* option, const HighsInt value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "setIntOptionValue",
+      "rawName": "setOptionValue",
       "js": [
-        "RawModel.setIntOptionValue"
+        "RawModel.setOptionValue",
+        "Model.options.set"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1164,9 +1171,10 @@
       "signature": "HighsInt Highs_setDoubleOptionValue(void* highs, const char* option, const double value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "setDoubleOptionValue",
+      "rawName": "setOptionValue",
       "js": [
-        "RawModel.setDoubleOptionValue"
+        "RawModel.setOptionValue",
+        "Model.options.set"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1183,9 +1191,10 @@
       "signature": "HighsInt Highs_setStringOptionValue(void* highs, const char* option, const char* value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "setStringOptionValue",
+      "rawName": "setOptionValue",
       "js": [
-        "RawModel.setStringOptionValue"
+        "RawModel.setOptionValue",
+        "Model.options.set"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1202,9 +1211,10 @@
       "signature": "HighsInt Highs_getBoolOptionValue(const void* highs, const char* option, HighsInt* value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getBoolOptionValue",
+      "rawName": "getOptionValue",
       "js": [
-        "RawModel.getBoolOptionValue"
+        "RawModel.getOptionValue",
+        "Model.options.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1221,9 +1231,10 @@
       "signature": "HighsInt Highs_getIntOptionValue(const void* highs, const char* option, HighsInt* value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getIntOptionValue",
+      "rawName": "getOptionValue",
       "js": [
-        "RawModel.getIntOptionValue"
+        "RawModel.getOptionValue",
+        "Model.options.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1240,9 +1251,10 @@
       "signature": "HighsInt Highs_getDoubleOptionValue(const void* highs, const char* option, double* value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getDoubleOptionValue",
+      "rawName": "getOptionValue",
       "js": [
-        "RawModel.getDoubleOptionValue"
+        "RawModel.getOptionValue",
+        "Model.options.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1259,9 +1271,10 @@
       "signature": "HighsInt Highs_getStringOptionValue(const void* highs, const char* option, char* value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getStringOptionValue",
+      "rawName": "getOptionValue",
       "js": [
-        "RawModel.getStringOptionValue"
+        "RawModel.getOptionValue",
+        "Model.options.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1315,8 +1328,8 @@
       "exposure": "model-data-adapter",
       "rawName": "exportOptions",
       "js": [
-        "RawModel.exportOptions",
-        "Model.exportOptions"
+        "RawModel.exportOptions(false)",
+        "Model.options.export(false)"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1332,10 +1345,10 @@
       "signature": "HighsInt Highs_writeOptionsDeviations(const void* highs, const char* filename)",
       "family": "data-io",
       "exposure": "model-data-adapter",
-      "rawName": "exportOptionDeviations",
+      "rawName": "exportOptions",
       "js": [
-        "RawModel.exportOptionDeviations",
-        "Model.exportOptionDeviations"
+        "RawModel.exportOptions(true)",
+        "Model.options.export(true)"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1390,9 +1403,10 @@
       "signature": "HighsInt Highs_getBoolOptionValues(const void* highs, const char* option, HighsInt* current_value, HighsInt* default_value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getBoolOptionValues",
+      "rawName": "getOptionValues",
       "js": [
-        "RawModel.getBoolOptionValues"
+        "RawModel.getOptionValues",
+        "Model.options.describe"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1412,9 +1426,10 @@
       "signature": "HighsInt Highs_getIntOptionValues(const void* highs, const char* option, HighsInt* current_value, HighsInt* min_value, HighsInt* max_value, HighsInt* default_value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getIntOptionValues",
+      "rawName": "getOptionValues",
       "js": [
-        "RawModel.getIntOptionValues"
+        "RawModel.getOptionValues",
+        "Model.options.describe"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1434,9 +1449,10 @@
       "signature": "HighsInt Highs_getDoubleOptionValues(const void* highs, const char* option, double* current_value, double* min_value, double* max_value, double* default_value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getDoubleOptionValues",
+      "rawName": "getOptionValues",
       "js": [
-        "RawModel.getDoubleOptionValues"
+        "RawModel.getOptionValues",
+        "Model.options.describe"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1454,9 +1470,10 @@
       "signature": "HighsInt Highs_getStringOptionValues(const void* highs, const char* option, char* current_value, char* default_value)",
       "family": "options",
       "exposure": "raw-model",
-      "rawName": "getStringOptionValues",
+      "rawName": "getOptionValues",
       "js": [
-        "RawModel.getStringOptionValues"
+        "RawModel.getOptionValues",
+        "Model.options.describe"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1473,9 +1490,10 @@
       "signature": "HighsInt Highs_getIntInfoValue(const void* highs, const char* info, HighsInt* value)",
       "family": "info",
       "exposure": "raw-model",
-      "rawName": "getIntInfoValue",
+      "rawName": "getInfoValue",
       "js": [
-        "RawModel.getIntInfoValue"
+        "RawModel.getInfoValue",
+        "Model.info.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1492,9 +1510,10 @@
       "signature": "HighsInt Highs_getDoubleInfoValue(const void* highs, const char* info, double* value)",
       "family": "info",
       "exposure": "raw-model",
-      "rawName": "getDoubleInfoValue",
+      "rawName": "getInfoValue",
       "js": [
-        "RawModel.getDoubleInfoValue"
+        "RawModel.getInfoValue",
+        "Model.info.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1511,9 +1530,10 @@
       "signature": "HighsInt Highs_getInt64InfoValue(const void* highs, const char* info, int64_t* value)",
       "family": "info",
       "exposure": "raw-model",
-      "rawName": "getInt64InfoValue",
+      "rawName": "getInfoValue",
       "js": [
-        "RawModel.getInt64InfoValue"
+        "RawModel.getInfoValue",
+        "Model.info.get"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1902,10 +1922,10 @@
       "signature": "HighsInt Highs_setCallback(void* highs, HighsCCallbackType user_callback, void* user_callback_data)",
       "family": "callbacks",
       "exposure": "model-callback-adapter",
-      "rawName": "startCallback",
+      "rawName": "setCallback",
       "js": [
-        "RawModel.startCallback",
-        "Model.startCallback"
+        "RawModel.setCallback",
+        "Model.run callback setup"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1924,7 +1944,7 @@
       "rawName": "startCallback",
       "js": [
         "RawModel.startCallback",
-        "Model.startCallback"
+        "Model.run callback setup"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -1943,7 +1963,7 @@
       "rawName": "stopCallback",
       "js": [
         "RawModel.stopCallback",
-        "Model.stopCallback"
+        "Model.run callback cleanup"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2217,9 +2237,10 @@
       "signature": "HighsInt Highs_changeColsIntegralityByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const HighsInt* integrality)",
       "family": "change-integrality",
       "exposure": "raw-model",
-      "rawName": "changeColsIntegralityByRange",
+      "rawName": "changeColsIntegrality",
       "js": [
-        "RawModel.changeColsIntegralityByRange"
+        "RawModel.changeColsIntegrality",
+        "Model.changeColsIntegrality"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2237,9 +2258,10 @@
       "signature": "HighsInt Highs_changeColsIntegralityBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const HighsInt* integrality)",
       "family": "change-integrality",
       "exposure": "raw-model",
-      "rawName": "changeColsIntegralityBySet",
+      "rawName": "changeColsIntegrality",
       "js": [
-        "RawModel.changeColsIntegralityBySet"
+        "RawModel.changeColsIntegrality",
+        "Model.changeColsIntegrality"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2256,9 +2278,10 @@
       "signature": "HighsInt Highs_changeColsIntegralityByMask(void* highs, const HighsInt* mask, const HighsInt* integrality)",
       "family": "change-integrality",
       "exposure": "raw-model",
-      "rawName": "changeColsIntegralityByMask",
+      "rawName": "changeColsIntegrality",
       "js": [
-        "RawModel.changeColsIntegralityByMask"
+        "RawModel.changeColsIntegrality",
+        "Model.changeColsIntegrality"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2312,9 +2335,10 @@
       "signature": "HighsInt Highs_changeColsCostByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const double* cost)",
       "family": "change-cost",
       "exposure": "raw-model",
-      "rawName": "changeColsCostByRange",
+      "rawName": "changeColsCost",
       "js": [
-        "RawModel.changeColsCostByRange"
+        "RawModel.changeColsCost",
+        "Model.changeColsCost"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2332,9 +2356,10 @@
       "signature": "HighsInt Highs_changeColsCostBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* cost)",
       "family": "change-cost",
       "exposure": "raw-model",
-      "rawName": "changeColsCostBySet",
+      "rawName": "changeColsCost",
       "js": [
-        "RawModel.changeColsCostBySet"
+        "RawModel.changeColsCost",
+        "Model.changeColsCost"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2351,9 +2376,10 @@
       "signature": "HighsInt Highs_changeColsCostByMask(void* highs, const HighsInt* mask, const double* cost)",
       "family": "change-cost",
       "exposure": "raw-model",
-      "rawName": "changeColsCostByMask",
+      "rawName": "changeColsCost",
       "js": [
-        "RawModel.changeColsCostByMask"
+        "RawModel.changeColsCost",
+        "Model.changeColsCost"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2392,9 +2418,10 @@
       "signature": "HighsInt Highs_changeColsBoundsByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeColsBoundsByRange",
+      "rawName": "changeColsBounds",
       "js": [
-        "RawModel.changeColsBoundsByRange"
+        "RawModel.changeColsBounds",
+        "Model.changeColsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2413,9 +2440,10 @@
       "signature": "HighsInt Highs_changeColsBoundsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeColsBoundsBySet",
+      "rawName": "changeColsBounds",
       "js": [
-        "RawModel.changeColsBoundsBySet"
+        "RawModel.changeColsBounds",
+        "Model.changeColsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2433,9 +2461,10 @@
       "signature": "HighsInt Highs_changeColsBoundsByMask(void* highs, const HighsInt* mask, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeColsBoundsByMask",
+      "rawName": "changeColsBounds",
       "js": [
-        "RawModel.changeColsBoundsByMask"
+        "RawModel.changeColsBounds",
+        "Model.changeColsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2474,9 +2503,10 @@
       "signature": "HighsInt Highs_changeRowsBoundsByRange(void* highs, const HighsInt from_row, const HighsInt to_row, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeRowsBoundsByRange",
+      "rawName": "changeRowsBounds",
       "js": [
-        "RawModel.changeRowsBoundsByRange"
+        "RawModel.changeRowsBounds",
+        "Model.changeRowsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2495,9 +2525,10 @@
       "signature": "HighsInt Highs_changeRowsBoundsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeRowsBoundsBySet",
+      "rawName": "changeRowsBounds",
       "js": [
-        "RawModel.changeRowsBoundsBySet"
+        "RawModel.changeRowsBounds",
+        "Model.changeRowsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2515,9 +2546,10 @@
       "signature": "HighsInt Highs_changeRowsBoundsByMask(void* highs, const HighsInt* mask, const double* lower, const double* upper)",
       "family": "change-bounds",
       "exposure": "raw-model",
-      "rawName": "changeRowsBoundsByMask",
+      "rawName": "changeRowsBounds",
       "js": [
-        "RawModel.changeRowsBoundsByMask"
+        "RawModel.changeRowsBounds",
+        "Model.changeRowsBounds"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2598,9 +2630,10 @@
       "signature": "HighsInt Highs_getColsByRange(const void* highs, const HighsInt from_col, const HighsInt to_col, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getColsByRange",
+      "rawName": "getCols",
       "js": [
-        "RawModel.getColsByRange"
+        "RawModel.getCols",
+        "Model.getCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2625,9 +2658,10 @@
       "signature": "HighsInt Highs_getColsBySet(const void* highs, const HighsInt num_set_entries, const HighsInt* set, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getColsBySet",
+      "rawName": "getCols",
       "js": [
-        "RawModel.getColsBySet"
+        "RawModel.getCols",
+        "Model.getCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2651,9 +2685,10 @@
       "signature": "HighsInt Highs_getColsByMask(const void* highs, const HighsInt* mask, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getColsByMask",
+      "rawName": "getCols",
       "js": [
-        "RawModel.getColsByMask"
+        "RawModel.getCols",
+        "Model.getCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2677,9 +2712,10 @@
       "signature": "HighsInt Highs_getRowsByRange(const void* highs, const HighsInt from_row, const HighsInt to_row, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getRowsByRange",
+      "rawName": "getRows",
       "js": [
-        "RawModel.getRowsByRange"
+        "RawModel.getRows",
+        "Model.getRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2703,9 +2739,10 @@
       "signature": "HighsInt Highs_getRowsBySet(const void* highs, const HighsInt num_set_entries, const HighsInt* set, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getRowsBySet",
+      "rawName": "getRows",
       "js": [
-        "RawModel.getRowsBySet"
+        "RawModel.getRows",
+        "Model.getRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2728,9 +2765,10 @@
       "signature": "HighsInt Highs_getRowsByMask(const void* highs, const HighsInt* mask, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
       "family": "sparse-extraction",
       "exposure": "raw-model",
-      "rawName": "getRowsByMask",
+      "rawName": "getRows",
       "js": [
-        "RawModel.getRowsByMask"
+        "RawModel.getRows",
+        "Model.getRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2848,9 +2886,10 @@
       "signature": "HighsInt Highs_deleteColsByRange(void* highs, const HighsInt from_col, const HighsInt to_col)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteColsByRange",
+      "rawName": "deleteCols",
       "js": [
-        "RawModel.deleteColsByRange"
+        "RawModel.deleteCols",
+        "Model.deleteCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2867,9 +2906,10 @@
       "signature": "HighsInt Highs_deleteColsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteColsBySet",
+      "rawName": "deleteCols",
       "js": [
-        "RawModel.deleteColsBySet"
+        "RawModel.deleteCols",
+        "Model.deleteCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2885,9 +2925,10 @@
       "signature": "HighsInt Highs_deleteColsByMask(void* highs, HighsInt* mask)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteColsByMask",
+      "rawName": "deleteCols",
       "js": [
-        "RawModel.deleteColsByMask"
+        "RawModel.deleteCols",
+        "Model.deleteCols"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2904,9 +2945,10 @@
       "signature": "HighsInt Highs_deleteRowsByRange(void* highs, const HighsInt from_row, const HighsInt to_row)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteRowsByRange",
+      "rawName": "deleteRows",
       "js": [
-        "RawModel.deleteRowsByRange"
+        "RawModel.deleteRows",
+        "Model.deleteRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2923,9 +2965,10 @@
       "signature": "HighsInt Highs_deleteRowsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteRowsBySet",
+      "rawName": "deleteRows",
       "js": [
-        "RawModel.deleteRowsBySet"
+        "RawModel.deleteRows",
+        "Model.deleteRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -2941,9 +2984,10 @@
       "signature": "HighsInt Highs_deleteRowsByMask(void* highs, HighsInt* mask)",
       "family": "delete",
       "exposure": "raw-model",
-      "rawName": "deleteRowsByMask",
+      "rawName": "deleteRows",
       "js": [
-        "RawModel.deleteRowsByMask"
+        "RawModel.deleteRows",
+        "Model.deleteRows"
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
@@ -3032,9 +3076,10 @@
       "signature": "HighsInt Highs_getNumCol(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getNumCol",
+      "rawName": "getDimensions",
       "js": [
-        "RawModel.getNumCol"
+        "RawModel.getDimensions",
+        "Model.getDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3049,9 +3094,10 @@
       "signature": "HighsInt Highs_getNumRow(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getNumRow",
+      "rawName": "getDimensions",
       "js": [
-        "RawModel.getNumRow"
+        "RawModel.getDimensions",
+        "Model.getDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3066,9 +3112,10 @@
       "signature": "HighsInt Highs_getNumNz(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getNumNz",
+      "rawName": "getDimensions",
       "js": [
-        "RawModel.getNumNz"
+        "RawModel.getDimensions",
+        "Model.getDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3083,9 +3130,10 @@
       "signature": "HighsInt Highs_getHessianNumNz(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getHessianNumNz",
+      "rawName": "getDimensions",
       "js": [
-        "RawModel.getHessianNumNz"
+        "RawModel.getDimensions",
+        "Model.getDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3100,9 +3148,10 @@
       "signature": "HighsInt Highs_getPresolvedNumCol(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getPresolvedNumCol",
+      "rawName": "getPresolvedDimensions",
       "js": [
-        "RawModel.getPresolvedNumCol"
+        "RawModel.getPresolvedDimensions",
+        "Model.getPresolvedDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3117,9 +3166,10 @@
       "signature": "HighsInt Highs_getPresolvedNumRow(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getPresolvedNumRow",
+      "rawName": "getPresolvedDimensions",
       "js": [
-        "RawModel.getPresolvedNumRow"
+        "RawModel.getPresolvedDimensions",
+        "Model.getPresolvedDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",
@@ -3134,9 +3184,10 @@
       "signature": "HighsInt Highs_getPresolvedNumNz(const void* highs)",
       "family": "model-scalars",
       "exposure": "raw-model",
-      "rawName": "getPresolvedNumNz",
+      "rawName": "getPresolvedDimensions",
       "js": [
-        "RawModel.getPresolvedNumNz"
+        "RawModel.getPresolvedDimensions",
+        "Model.getPresolvedDimensions"
       ],
       "wasmExport": true,
       "returnPolicy": "direct-value",

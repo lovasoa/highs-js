@@ -6,36 +6,32 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = join(root, "api/highs-c-api.json");
-const legacyTypesPath = join(root, "types.d.ts");
 const exportsPath = join(root, "exported_functions.json");
-const fragmentDirectory = join(root, "src/types");
-const generatedStart = "/* BEGIN GENERATED MODERN HIGHS API. DO NOT EDIT. */";
-const generatedEnd = "/* END GENERATED MODERN HIGHS API. */";
+const expandedPath = join(root, "api/highs-c-api.generated.json");
 
 function fail(message) {
   throw new Error(message);
 }
 
 function parseArguments(argv) {
-  const result = { check: false, writeAggregates: false, writeExports: false, outDir: null };
+  const result = { check: false, writeExports: false, outDir: null };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--check") result.check = true;
-    else if (argument === "--write-aggregates") result.writeAggregates = true;
     else if (argument === "--write-exports") result.writeExports = true;
     else if (argument === "--out-dir") result.outDir = argv[++index];
     else if (argument === "--help") {
       console.log(
-        "Usage: node scripts/generate-highs-api.mjs [--check] [--out-dir DIR] [--write-exports] [--write-aggregates]",
+        "Usage: node scripts/generate-highs-api.mjs [--check] [--out-dir DIR] [--write-exports]",
       );
       process.exit(0);
     } else fail(`Unknown argument: ${argument}`);
   }
-  if (result.outDir && (result.writeAggregates || result.writeExports)) {
+  if (result.outDir && result.writeExports) {
     fail("--out-dir and write modes are mutually exclusive");
   }
-  if (!result.check && !result.outDir && !result.writeAggregates && !result.writeExports) {
-    fail("Choose --check, --out-dir DIR, --write-exports, or --write-aggregates");
+  if (!result.check && !result.outDir && !result.writeExports) {
+    fail("Choose --check, --out-dir DIR, or --write-exports");
   }
   return result;
 }
@@ -128,7 +124,7 @@ function expandManifest(policy, declarations, constants) {
       : defaultRawName(declaration.cName);
     const defaultJs =
       group.exposure === "raw-runtime" && rawName
-        ? [`RawHighsApi.${rawName}`]
+        ? [`RawRuntimeApi.${rawName}`]
         : group.exposure === "raw-model" && rawName
           ? [`RawModel.${rawName}`]
           : [];
@@ -166,37 +162,6 @@ function renderExports(policy, expanded) {
   return `${JSON.stringify([...new Set(names)].sort(), null, 2)}\n`;
 }
 
-async function readFragments() {
-  const names = ["modern-api.d.ts"];
-  return Promise.all(
-    names.map(async (name) => ({ name, content: await readFile(join(fragmentDirectory, name), "utf8") })),
-  );
-}
-
-function stripGeneratedTypes(value) {
-  const start = value.indexOf(generatedStart);
-  if (start < 0) return value;
-  const end = value.indexOf(generatedEnd, start);
-  if (end < 0) fail(`Found ${generatedStart} without ${generatedEnd}`);
-  return `${value.slice(0, start)}${value.slice(end + generatedEnd.length)}`.replace(/\n{3,}/g, "\n\n");
-}
-
-function renderTypes(legacyTypes, fragments) {
-  let base = stripGeneratedTypes(legacyTypes);
-  const loaderPattern = /Promise<Highs(?:\s*&\s*HighsModernRuntime)?>;/;
-  if (!loaderPattern.test(base)) fail("Could not locate the legacy loader return type");
-  base = base.replace(loaderPattern, "Promise<Highs & HighsModernRuntime>;");
-  const insertionPoint = base.indexOf("/** Loads HiGHS */");
-  if (insertionPoint < 0) fail("Could not locate the legacy loader declaration");
-  const block = [
-    generatedStart,
-    ...fragments.map(({ name, content }) => `/* Source: src/types/${name} */\n${content.trim()}`),
-    generatedEnd,
-    "",
-  ].join("\n\n");
-  return `${base.slice(0, insertionPoint)}${block}${base.slice(insertionPoint)}`;
-}
-
 async function writeOutput(path, content) {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, content);
@@ -205,20 +170,20 @@ async function writeOutput(path, content) {
 const arguments_ = parseArguments(process.argv.slice(2));
 const policy = JSON.parse(await readFile(manifestPath, "utf8"));
 const header = await readFile(join(root, policy.header), "utf8");
-const legacyTypes = await readFile(legacyTypesPath, "utf8");
-const fragments = await readFragments();
 const declarations = parseHeader(header, policy.deprecatedBoundary);
 const constants = parseConstants(header, policy.deprecatedBoundary);
 const expanded = expandManifest(policy, declarations, constants);
 const expandedJson = `${JSON.stringify(expanded, null, 2)}\n`;
 const generatedExports = renderExports(policy, expanded);
-const generatedTypes = renderTypes(legacyTypes, fragments);
 
 if (arguments_.check) {
   const second = expandManifest(policy, parseHeader(header, policy.deprecatedBoundary), parseConstants(header, policy.deprecatedBoundary));
   if (`${JSON.stringify(second, null, 2)}\n` !== expandedJson) fail("Manifest generation is not deterministic");
   if (renderExports(policy, second) !== generatedExports) fail("Export generation is not deterministic");
-  if (renderTypes(legacyTypes, fragments) !== generatedTypes) fail("Type generation is not deterministic");
+  if ((await readFile(expandedPath, "utf8")) !== expandedJson)
+    fail("api/highs-c-api.generated.json has drifted; run --write-exports");
+  if ((await readFile(exportsPath, "utf8")) !== generatedExports)
+    fail("exported_functions.json has drifted; run --write-exports");
   JSON.parse(generatedExports);
   console.log(
     `Validated ${expanded.functionCount} stable C functions and ${expanded.constantCount} numeric constants; ${expanded.functions.filter((entry) => entry.wasmExport).length} WASM exports; deterministic output.`,
@@ -229,16 +194,9 @@ if (arguments_.outDir) {
   const outputRoot = resolve(root, arguments_.outDir);
   await writeOutput(join(outputRoot, "highs-c-api.generated.json"), expandedJson);
   await writeOutput(join(outputRoot, "exported_functions.json"), generatedExports);
-  await writeOutput(join(outputRoot, "types.d.ts"), generatedTypes);
-}
-
-if (arguments_.writeAggregates) {
-  await writeOutput(join(root, "api/highs-c-api.generated.json"), expandedJson);
-  await writeOutput(exportsPath, generatedExports);
-  await writeOutput(legacyTypesPath, generatedTypes);
 }
 
 if (arguments_.writeExports) {
-  await writeOutput(join(root, "api/highs-c-api.generated.json"), expandedJson);
+  await writeOutput(expandedPath, expandedJson);
   await writeOutput(exportsPath, generatedExports);
 }
