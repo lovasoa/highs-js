@@ -20,7 +20,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cmake-
       - uses: mymindstorm/setup-emsdk@v16
-        with: { version: "5.0.7" }
+        with: { version: "6.0.3" }
       - run: npm ci
       - name: build
         run: npm run build

@@ -9,8 +9,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install cmake
 
 RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
-    sudo /emsdk/emsdk install 5.0.7 && \
-    sudo /emsdk/emsdk activate 5.0.7 && \
+    sudo /emsdk/emsdk install 6.0.3 && \
+    sudo /emsdk/emsdk activate 6.0.3 && \
     sudo ln -s /emsdk/upstream/emscripten /usr/share/emscripten
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten"
