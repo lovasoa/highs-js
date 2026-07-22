@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HiGHS JavaScript extended API</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font: 16px/1.5 system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0 auto;
+        max-width: 72rem;
+        padding: 2rem;
+      }
+
+      textarea,
+      pre {
+        box-sizing: border-box;
+        min-height: 20rem;
+        overflow: auto;
+        padding: 1rem;
+        width: 100%;
+      }
+
+      textarea {
+        font: 0.9rem/1.4 ui-monospace, monospace;
+      }
+
+      pre {
+        background: Canvas;
+        border: 1px solid GrayText;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      }
+
+      #mode {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HiGHS extended JavaScript API</h1>
+    <p>
+      This example solves in a Web Worker. It uses a persistent native model
+      when supported and automatically falls back to the legacy API.
+    </p>
+    <p id="mode">Loading solver…</p>
+    <div class="grid">
+      <label>
+        LP model
+        <textarea id="problem" spellcheck="false">Maximize
+ obj: x1 + 2 x2 + 4 x3 + x4
+Subject To
+ c1: - x1 + x2 + x3 + 10 x4 &lt;= 20
+ c2: x1 - 4 x2 + x3 &lt;= 30
+ c3: x2 - 0.5 x4 = 0
+Bounds
+ 0 &lt;= x1 &lt;= 40
+ 2 &lt;= x4 &lt;= 3
+End</textarea
+        >
+      </label>
+      <section>
+        <h2>Result</h2>
+        <pre id="result" aria-live="polite">Waiting…</pre>
+      </section>
+    </div>
+    <script src="demo.js"></script>
+  </body>
+</html>

@@ -18,6 +18,9 @@ changing the embedded HiGHS version.
 
 See the online demo at: https://lovasoa.github.io/highs-js/
 
+The [extended API demo](https://lovasoa.github.io/highs-js/extended/) shows
+persistent model reuse in a Web Worker.
+
 ## Usage
 
 ```js
@@ -126,6 +129,35 @@ async function test() {
 The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/lpsolve/doc/CPLEX-format.htm).
 
 For a more complete example, see the [`demo`](./demo/) folder.
+
+### Persistent and raw APIs
+
+The legacy `solve(problem, options)` API above remains supported unchanged.
+For repeated solves, typed sparse input, mutation, callbacks, basis analysis,
+IIS/ranging, and the rest of the stable HiGHS C API, create a persistent model:
+
+```js
+import loadHighs from "highs";
+
+const highs = await loadHighs();
+const model = highs.createModel({ format: "lp", data: PROBLEM });
+try {
+  model.options.set({ output_flag: false, presolve: "on" });
+  const run = model.run();
+  const solution = model.getSolution(); // detached Float64Array values
+  console.log(run.modelStatus, solution.colValue);
+} finally {
+  model.dispose();
+}
+```
+
+CommonJS (`require("highs")`) and native ESM (`import ... from "highs"`) use
+the same `highs.wasm` binary. The WebAssembly build is deliberately
+single-threaded. New APIs reject thread/concurrency and file/path options; use
+the data-only model, options, and solution I/O methods instead.
+
+See the [extended API guide](./docs/api.md), [migration guide](./docs/migration.md),
+and [complete JavaScript-to-C mapping](./docs/c-api-mapping.md).
 
 ### Loading the wasm file
 
