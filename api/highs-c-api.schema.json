@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lovasoa.github.io/highs-js/schemas/highs-c-api.schema.json",
+  "title": "highs-js C API exposure manifest",
+  "type": "object",
+  "required": ["schemaVersion", "header", "groups", "overrides"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "header": {"type": "string"},
+    "deprecatedBoundary": {"type": "string"},
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "exposure", "functions"],
+        "properties": {
+          "family": {"type": "string"},
+          "exposure": {"enum": ["raw-runtime", "raw-model", "model-data-adapter", "model-callback-adapter", "internal", "excluded"]},
+          "wasmExport": {"type": "boolean"},
+          "functions": {"type": "array", "items": {"type": "string", "pattern": "^Highs_"}, "minItems": 1},
+          "reason": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "overrides": {"type": "object"}
+  },
+  "additionalProperties": true
+}

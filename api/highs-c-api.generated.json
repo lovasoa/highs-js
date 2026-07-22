@@ -1,0 +1,3549 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "HiGHS/highs/interfaces/highs_c_api.h",
+  "deprecatedFunctionsIncluded": false,
+  "functionCount": 152,
+  "constantCount": 80,
+  "constants": [
+    {
+      "cName": "kHighsMaximumStringLength",
+      "value": 512,
+      "jsName": "kHighsMaximumStringLength"
+    },
+    {
+      "cName": "kHighsStatusError",
+      "value": -1,
+      "jsName": "kHighsStatusError"
+    },
+    {
+      "cName": "kHighsStatusOk",
+      "value": 0,
+      "jsName": "kHighsStatusOk"
+    },
+    {
+      "cName": "kHighsStatusWarning",
+      "value": 1,
+      "jsName": "kHighsStatusWarning"
+    },
+    {
+      "cName": "kHighsVarTypeContinuous",
+      "value": 0,
+      "jsName": "kHighsVarTypeContinuous"
+    },
+    {
+      "cName": "kHighsVarTypeInteger",
+      "value": 1,
+      "jsName": "kHighsVarTypeInteger"
+    },
+    {
+      "cName": "kHighsVarTypeSemiContinuous",
+      "value": 2,
+      "jsName": "kHighsVarTypeSemiContinuous"
+    },
+    {
+      "cName": "kHighsVarTypeSemiInteger",
+      "value": 3,
+      "jsName": "kHighsVarTypeSemiInteger"
+    },
+    {
+      "cName": "kHighsVarTypeImplicitInteger",
+      "value": 4,
+      "jsName": "kHighsVarTypeImplicitInteger"
+    },
+    {
+      "cName": "kHighsOptionTypeBool",
+      "value": 0,
+      "jsName": "kHighsOptionTypeBool"
+    },
+    {
+      "cName": "kHighsOptionTypeInt",
+      "value": 1,
+      "jsName": "kHighsOptionTypeInt"
+    },
+    {
+      "cName": "kHighsOptionTypeDouble",
+      "value": 2,
+      "jsName": "kHighsOptionTypeDouble"
+    },
+    {
+      "cName": "kHighsOptionTypeString",
+      "value": 3,
+      "jsName": "kHighsOptionTypeString"
+    },
+    {
+      "cName": "kHighsInfoTypeInt64",
+      "value": -1,
+      "jsName": "kHighsInfoTypeInt64"
+    },
+    {
+      "cName": "kHighsInfoTypeInt",
+      "value": 1,
+      "jsName": "kHighsInfoTypeInt"
+    },
+    {
+      "cName": "kHighsInfoTypeDouble",
+      "value": 2,
+      "jsName": "kHighsInfoTypeDouble"
+    },
+    {
+      "cName": "kHighsObjSenseMinimize",
+      "value": 1,
+      "jsName": "kHighsObjSenseMinimize"
+    },
+    {
+      "cName": "kHighsObjSenseMaximize",
+      "value": -1,
+      "jsName": "kHighsObjSenseMaximize"
+    },
+    {
+      "cName": "kHighsMatrixFormatColwise",
+      "value": 1,
+      "jsName": "kHighsMatrixFormatColwise"
+    },
+    {
+      "cName": "kHighsMatrixFormatRowwise",
+      "value": 2,
+      "jsName": "kHighsMatrixFormatRowwise"
+    },
+    {
+      "cName": "kHighsHessianFormatTriangular",
+      "value": 1,
+      "jsName": "kHighsHessianFormatTriangular"
+    },
+    {
+      "cName": "kHighsHessianFormatSquare",
+      "value": 2,
+      "jsName": "kHighsHessianFormatSquare"
+    },
+    {
+      "cName": "kHighsSolutionStatusNone",
+      "value": 0,
+      "jsName": "kHighsSolutionStatusNone"
+    },
+    {
+      "cName": "kHighsSolutionStatusInfeasible",
+      "value": 1,
+      "jsName": "kHighsSolutionStatusInfeasible"
+    },
+    {
+      "cName": "kHighsSolutionStatusFeasible",
+      "value": 2,
+      "jsName": "kHighsSolutionStatusFeasible"
+    },
+    {
+      "cName": "kHighsBasisValidityInvalid",
+      "value": 0,
+      "jsName": "kHighsBasisValidityInvalid"
+    },
+    {
+      "cName": "kHighsBasisValidityValid",
+      "value": 1,
+      "jsName": "kHighsBasisValidityValid"
+    },
+    {
+      "cName": "kHighsPresolveStatusNotPresolved",
+      "value": -1,
+      "jsName": "kHighsPresolveStatusNotPresolved"
+    },
+    {
+      "cName": "kHighsPresolveStatusNotReduced",
+      "value": 0,
+      "jsName": "kHighsPresolveStatusNotReduced"
+    },
+    {
+      "cName": "kHighsPresolveStatusInfeasible",
+      "value": 1,
+      "jsName": "kHighsPresolveStatusInfeasible"
+    },
+    {
+      "cName": "kHighsPresolveStatusUnboundedOrInfeasible",
+      "value": 2,
+      "jsName": "kHighsPresolveStatusUnboundedOrInfeasible"
+    },
+    {
+      "cName": "kHighsPresolveStatusReduced",
+      "value": 3,
+      "jsName": "kHighsPresolveStatusReduced"
+    },
+    {
+      "cName": "kHighsPresolveStatusReducedToEmpty",
+      "value": 4,
+      "jsName": "kHighsPresolveStatusReducedToEmpty"
+    },
+    {
+      "cName": "kHighsPresolveStatusTimeout",
+      "value": 5,
+      "jsName": "kHighsPresolveStatusTimeout"
+    },
+    {
+      "cName": "kHighsPresolveStatusNullError",
+      "value": 6,
+      "jsName": "kHighsPresolveStatusNullError"
+    },
+    {
+      "cName": "kHighsPresolveStatusOptionsError",
+      "value": 7,
+      "jsName": "kHighsPresolveStatusOptionsError"
+    },
+    {
+      "cName": "kHighsPresolveStatusOutOfMemory",
+      "value": 8,
+      "jsName": "kHighsPresolveStatusOutOfMemory"
+    },
+    {
+      "cName": "kHighsModelStatusNotset",
+      "value": 0,
+      "jsName": "kHighsModelStatusNotset"
+    },
+    {
+      "cName": "kHighsModelStatusLoadError",
+      "value": 1,
+      "jsName": "kHighsModelStatusLoadError"
+    },
+    {
+      "cName": "kHighsModelStatusModelError",
+      "value": 2,
+      "jsName": "kHighsModelStatusModelError"
+    },
+    {
+      "cName": "kHighsModelStatusPresolveError",
+      "value": 3,
+      "jsName": "kHighsModelStatusPresolveError"
+    },
+    {
+      "cName": "kHighsModelStatusSolveError",
+      "value": 4,
+      "jsName": "kHighsModelStatusSolveError"
+    },
+    {
+      "cName": "kHighsModelStatusPostsolveError",
+      "value": 5,
+      "jsName": "kHighsModelStatusPostsolveError"
+    },
+    {
+      "cName": "kHighsModelStatusModelEmpty",
+      "value": 6,
+      "jsName": "kHighsModelStatusModelEmpty"
+    },
+    {
+      "cName": "kHighsModelStatusOptimal",
+      "value": 7,
+      "jsName": "kHighsModelStatusOptimal"
+    },
+    {
+      "cName": "kHighsModelStatusInfeasible",
+      "value": 8,
+      "jsName": "kHighsModelStatusInfeasible"
+    },
+    {
+      "cName": "kHighsModelStatusUnboundedOrInfeasible",
+      "value": 9,
+      "jsName": "kHighsModelStatusUnboundedOrInfeasible"
+    },
+    {
+      "cName": "kHighsModelStatusUnbounded",
+      "value": 10,
+      "jsName": "kHighsModelStatusUnbounded"
+    },
+    {
+      "cName": "kHighsModelStatusObjectiveBound",
+      "value": 11,
+      "jsName": "kHighsModelStatusObjectiveBound"
+    },
+    {
+      "cName": "kHighsModelStatusObjectiveTarget",
+      "value": 12,
+      "jsName": "kHighsModelStatusObjectiveTarget"
+    },
+    {
+      "cName": "kHighsModelStatusTimeLimit",
+      "value": 13,
+      "jsName": "kHighsModelStatusTimeLimit"
+    },
+    {
+      "cName": "kHighsModelStatusIterationLimit",
+      "value": 14,
+      "jsName": "kHighsModelStatusIterationLimit"
+    },
+    {
+      "cName": "kHighsModelStatusUnknown",
+      "value": 15,
+      "jsName": "kHighsModelStatusUnknown"
+    },
+    {
+      "cName": "kHighsModelStatusSolutionLimit",
+      "value": 16,
+      "jsName": "kHighsModelStatusSolutionLimit"
+    },
+    {
+      "cName": "kHighsModelStatusInterrupt",
+      "value": 17,
+      "jsName": "kHighsModelStatusInterrupt"
+    },
+    {
+      "cName": "kHighsBasisStatusLower",
+      "value": 0,
+      "jsName": "kHighsBasisStatusLower"
+    },
+    {
+      "cName": "kHighsBasisStatusBasic",
+      "value": 1,
+      "jsName": "kHighsBasisStatusBasic"
+    },
+    {
+      "cName": "kHighsBasisStatusUpper",
+      "value": 2,
+      "jsName": "kHighsBasisStatusUpper"
+    },
+    {
+      "cName": "kHighsBasisStatusZero",
+      "value": 3,
+      "jsName": "kHighsBasisStatusZero"
+    },
+    {
+      "cName": "kHighsBasisStatusNonbasic",
+      "value": 4,
+      "jsName": "kHighsBasisStatusNonbasic"
+    },
+    {
+      "cName": "kHighsCallbackLogging",
+      "value": 0,
+      "jsName": "kHighsCallbackLogging"
+    },
+    {
+      "cName": "kHighsCallbackSimplexInterrupt",
+      "value": 1,
+      "jsName": "kHighsCallbackSimplexInterrupt"
+    },
+    {
+      "cName": "kHighsCallbackIpmInterrupt",
+      "value": 2,
+      "jsName": "kHighsCallbackIpmInterrupt"
+    },
+    {
+      "cName": "kHighsCallbackMipSolution",
+      "value": 3,
+      "jsName": "kHighsCallbackMipSolution"
+    },
+    {
+      "cName": "kHighsCallbackMipImprovingSolution",
+      "value": 4,
+      "jsName": "kHighsCallbackMipImprovingSolution"
+    },
+    {
+      "cName": "kHighsCallbackMipLogging",
+      "value": 5,
+      "jsName": "kHighsCallbackMipLogging"
+    },
+    {
+      "cName": "kHighsCallbackMipInterrupt",
+      "value": 6,
+      "jsName": "kHighsCallbackMipInterrupt"
+    },
+    {
+      "cName": "kHighsCallbackMipGetCutPool",
+      "value": 7,
+      "jsName": "kHighsCallbackMipGetCutPool"
+    },
+    {
+      "cName": "kHighsCallbackMipDefineLazyConstraints",
+      "value": 8,
+      "jsName": "kHighsCallbackMipDefineLazyConstraints"
+    },
+    {
+      "cName": "kHighsCallbackCallbackMipUserSolution",
+      "value": 9,
+      "jsName": "kHighsCallbackCallbackMipUserSolution"
+    },
+    {
+      "cName": "kHighsIisStrategyLight",
+      "value": 0,
+      "jsName": "kHighsIisStrategyLight"
+    },
+    {
+      "cName": "kHighsIisStrategyFromLpRowPriority",
+      "value": 6,
+      "jsName": "kHighsIisStrategyFromLpRowPriority"
+    },
+    {
+      "cName": "kHighsIisStrategyFromLpColPriority",
+      "value": 14,
+      "jsName": "kHighsIisStrategyFromLpColPriority"
+    },
+    {
+      "cName": "kHighsIisBoundFree",
+      "value": 1,
+      "jsName": "kHighsIisBoundFree"
+    },
+    {
+      "cName": "kHighsIisBoundLower",
+      "value": 2,
+      "jsName": "kHighsIisBoundLower"
+    },
+    {
+      "cName": "kHighsIisBoundUpper",
+      "value": 3,
+      "jsName": "kHighsIisBoundUpper"
+    },
+    {
+      "cName": "kHighsIisBoundBoxed",
+      "value": 4,
+      "jsName": "kHighsIisBoundBoxed"
+    },
+    {
+      "cName": "kHighsIisStatusNotInConflict",
+      "value": -1,
+      "jsName": "kHighsIisStatusNotInConflict"
+    },
+    {
+      "cName": "kHighsIisStatusMaybeInConflict",
+      "value": 0,
+      "jsName": "kHighsIisStatusMaybeInConflict"
+    },
+    {
+      "cName": "kHighsIisStatusInConflict",
+      "value": 1,
+      "jsName": "kHighsIisStatusInConflict"
+    }
+  ],
+  "functions": [
+    {
+      "cName": "Highs_lpCall",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt a_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value",
+        "double* col_value",
+        "double* col_dual",
+        "double* row_value",
+        "double* row_dual",
+        "HighsInt* col_basis_status",
+        "HighsInt* row_basis_status",
+        "HighsInt* model_status"
+      ],
+      "signature": "HighsInt Highs_lpCall(const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt a_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value, double* col_value, double* col_dual, double* row_value, double* row_dual, HighsInt* col_basis_status, HighsInt* row_basis_status, HighsInt* model_status)",
+      "family": "one-shot",
+      "exposure": "raw-runtime",
+      "rawName": "lpCall",
+      "js": [
+        "RawHighsApi.lpCall"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_mipCall",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt a_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value",
+        "const HighsInt* integrality",
+        "double* col_value",
+        "double* row_value",
+        "HighsInt* model_status"
+      ],
+      "signature": "HighsInt Highs_mipCall(const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt a_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value, const HighsInt* integrality, double* col_value, double* row_value, HighsInt* model_status)",
+      "family": "one-shot",
+      "exposure": "raw-runtime",
+      "rawName": "mipCall",
+      "js": [
+        "RawHighsApi.mipCall"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_qpCall",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt q_num_nz",
+        "const HighsInt a_format",
+        "const HighsInt q_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value",
+        "const HighsInt* q_start",
+        "const HighsInt* q_index",
+        "const double* q_value",
+        "double* col_value",
+        "double* col_dual",
+        "double* row_value",
+        "double* row_dual",
+        "HighsInt* col_basis_status",
+        "HighsInt* row_basis_status",
+        "HighsInt* model_status"
+      ],
+      "signature": "HighsInt Highs_qpCall(const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt q_num_nz, const HighsInt a_format, const HighsInt q_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value, const HighsInt* q_start, const HighsInt* q_index, const double* q_value, double* col_value, double* col_dual, double* row_value, double* row_dual, HighsInt* col_basis_status, HighsInt* row_basis_status, HighsInt* model_status)",
+      "family": "one-shot",
+      "exposure": "raw-runtime",
+      "rawName": "qpCall",
+      "js": [
+        "RawHighsApi.qpCall"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_create",
+      "returnType": "void*",
+      "parameters": [],
+      "signature": "void* Highs_create()",
+      "family": "ownership",
+      "exposure": "internal",
+      "rawName": "create",
+      "js": [
+        "raw.createModel",
+        "createModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "owned-handle",
+      "arrayPolicy": "copy-detached",
+      "reason": "Instance ownership is wrapped so destroy is guaranteed."
+    },
+    {
+      "cName": "Highs_destroy",
+      "returnType": "void",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "void Highs_destroy(void* highs)",
+      "family": "ownership",
+      "exposure": "internal",
+      "rawName": "destroy",
+      "js": [
+        "RawModel.dispose",
+        "Model.dispose"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "no-value",
+      "arrayPolicy": "copy-detached",
+      "reason": "Never expose the native pointer or manual destroy."
+    },
+    {
+      "cName": "Highs_version",
+      "returnType": "const char*",
+      "parameters": [],
+      "signature": "const char* Highs_version()",
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "rawName": "version",
+      "js": [
+        "RawHighsApi.version"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_versionMajor",
+      "returnType": "HighsInt",
+      "parameters": [],
+      "signature": "HighsInt Highs_versionMajor()",
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "rawName": "versionMajor",
+      "js": [
+        "RawHighsApi.versionMajor"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_versionMinor",
+      "returnType": "HighsInt",
+      "parameters": [],
+      "signature": "HighsInt Highs_versionMinor()",
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "rawName": "versionMinor",
+      "js": [
+        "RawHighsApi.versionMinor"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_versionPatch",
+      "returnType": "HighsInt",
+      "parameters": [],
+      "signature": "HighsInt Highs_versionPatch()",
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "rawName": "versionPatch",
+      "js": [
+        "RawHighsApi.versionPatch"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_githash",
+      "returnType": "const char*",
+      "parameters": [],
+      "signature": "const char* Highs_githash()",
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "rawName": "githash",
+      "js": [
+        "RawHighsApi.githash"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_readModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_readModel(void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "readModel",
+      "js": [
+        "RawModel.readModel",
+        "Model.readModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "publicInput": "{ data, format: 'lp' | 'mps' }",
+      "reason": "A hidden temporary MEMFS file adapts data; paths are not public."
+    },
+    {
+      "cName": "Highs_writeModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writeModel(void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportModel",
+      "js": [
+        "RawModel.exportModel",
+        "Model.exportModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "publicInput": "'lp' | 'mps'",
+      "reason": "A hidden temporary MEMFS file is copied out as detached data."
+    },
+    {
+      "cName": "Highs_writePresolvedModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writePresolvedModel(void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportPresolvedModel",
+      "js": [
+        "RawModel.exportPresolvedModel",
+        "Model.exportPresolvedModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_clear",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_clear(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "clear",
+      "js": [
+        "RawModel.clear"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_clearModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_clearModel(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "clearModel",
+      "js": [
+        "RawModel.clearModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_clearSolver",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_clearSolver(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "clearSolver",
+      "js": [
+        "RawModel.clearSolver"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_releaseMemory",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_releaseMemory(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "releaseMemory",
+      "js": [
+        "RawModel.releaseMemory"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_presolve",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_presolve(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "presolve",
+      "js": [
+        "RawModel.presolve"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_run",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_run(void* highs)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "run",
+      "js": [
+        "RawModel.run"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_postsolve",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double* col_value",
+        "const double* col_dual",
+        "const double* row_dual"
+      ],
+      "signature": "HighsInt Highs_postsolve(void* highs, const double* col_value, const double* col_dual, const double* row_dual)",
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "rawName": "postsolve",
+      "js": [
+        "RawModel.postsolve"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_writeSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writeSolution(const void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportSolution",
+      "js": [
+        "RawModel.exportSolution",
+        "Model.exportSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_writeSolutionPretty",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writeSolutionPretty(const void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportSolutionPretty",
+      "js": [
+        "RawModel.exportSolutionPretty",
+        "Model.exportSolutionPretty"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passLp",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt a_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value"
+      ],
+      "signature": "HighsInt Highs_passLp(void* highs, const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt a_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value)",
+      "family": "model-input",
+      "exposure": "raw-model",
+      "rawName": "passLp",
+      "js": [
+        "RawModel.passLp"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passMip",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt a_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value",
+        "const HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_passMip(void* highs, const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt a_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value, const HighsInt* integrality)",
+      "family": "model-input",
+      "exposure": "raw-model",
+      "rawName": "passMip",
+      "js": [
+        "RawModel.passMip"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const HighsInt num_nz",
+        "const HighsInt q_num_nz",
+        "const HighsInt a_format",
+        "const HighsInt q_format",
+        "const HighsInt sense",
+        "const double offset",
+        "const double* col_cost",
+        "const double* col_lower",
+        "const double* col_upper",
+        "const double* row_lower",
+        "const double* row_upper",
+        "const HighsInt* a_start",
+        "const HighsInt* a_index",
+        "const double* a_value",
+        "const HighsInt* q_start",
+        "const HighsInt* q_index",
+        "const double* q_value",
+        "const HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_passModel(void* highs, const HighsInt num_col, const HighsInt num_row, const HighsInt num_nz, const HighsInt q_num_nz, const HighsInt a_format, const HighsInt q_format, const HighsInt sense, const double offset, const double* col_cost, const double* col_lower, const double* col_upper, const double* row_lower, const double* row_upper, const HighsInt* a_start, const HighsInt* a_index, const double* a_value, const HighsInt* q_start, const HighsInt* q_index, const double* q_value, const HighsInt* integrality)",
+      "family": "model-input",
+      "exposure": "raw-model",
+      "rawName": "passModel",
+      "js": [
+        "RawModel.passModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passHessian",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt dim",
+        "const HighsInt num_nz",
+        "const HighsInt format",
+        "const HighsInt* start",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_passHessian(void* highs, const HighsInt dim, const HighsInt num_nz, const HighsInt format, const HighsInt* start, const HighsInt* index, const double* value)",
+      "family": "model-input",
+      "exposure": "raw-model",
+      "rawName": "passHessian",
+      "js": [
+        "RawModel.passHessian"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passLinearObjectives",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt num_linear_objective",
+        "const double* weight",
+        "const double* offset",
+        "const double* coefficients",
+        "const double* abs_tolerance",
+        "const double* rel_tolerance",
+        "const HighsInt* priority"
+      ],
+      "signature": "HighsInt Highs_passLinearObjectives(const void* highs, const HighsInt num_linear_objective, const double* weight, const double* offset, const double* coefficients, const double* abs_tolerance, const double* rel_tolerance, const HighsInt* priority)",
+      "family": "linear-objectives",
+      "exposure": "raw-model",
+      "rawName": "passLinearObjectives",
+      "js": [
+        "RawModel.passLinearObjectives"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addLinearObjective",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const double weight",
+        "const double offset",
+        "const double* coefficients",
+        "const double abs_tolerance",
+        "const double rel_tolerance",
+        "const HighsInt priority"
+      ],
+      "signature": "HighsInt Highs_addLinearObjective(const void* highs, const double weight, const double offset, const double* coefficients, const double abs_tolerance, const double rel_tolerance, const HighsInt priority)",
+      "family": "linear-objectives",
+      "exposure": "raw-model",
+      "rawName": "addLinearObjective",
+      "js": [
+        "RawModel.addLinearObjective"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_clearLinearObjectives",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_clearLinearObjectives(const void* highs)",
+      "family": "linear-objectives",
+      "exposure": "raw-model",
+      "rawName": "clearLinearObjectives",
+      "js": [
+        "RawModel.clearLinearObjectives"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passRowName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt row",
+        "const char* name"
+      ],
+      "signature": "HighsInt Highs_passRowName(const void* highs, const HighsInt row, const char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "passRowName",
+      "js": [
+        "RawModel.passRowName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passColName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "const char* name"
+      ],
+      "signature": "HighsInt Highs_passColName(const void* highs, const HighsInt col, const char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "passColName",
+      "js": [
+        "RawModel.passColName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passModelName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* name"
+      ],
+      "signature": "HighsInt Highs_passModelName(const void* highs, const char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "passModelName",
+      "js": [
+        "RawModel.passModelName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_readOptions",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_readOptions(const void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "readOptions",
+      "js": [
+        "RawModel.readOptions",
+        "Model.readOptions"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "publicInput": "string"
+    },
+    {
+      "cName": "Highs_setBoolOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* option",
+        "const HighsInt value"
+      ],
+      "signature": "HighsInt Highs_setBoolOptionValue(void* highs, const char* option, const HighsInt value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "setBoolOptionValue",
+      "js": [
+        "RawModel.setBoolOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setIntOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* option",
+        "const HighsInt value"
+      ],
+      "signature": "HighsInt Highs_setIntOptionValue(void* highs, const char* option, const HighsInt value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "setIntOptionValue",
+      "js": [
+        "RawModel.setIntOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setDoubleOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* option",
+        "const double value"
+      ],
+      "signature": "HighsInt Highs_setDoubleOptionValue(void* highs, const char* option, const double value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "setDoubleOptionValue",
+      "js": [
+        "RawModel.setDoubleOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setStringOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const char* option",
+        "const char* value"
+      ],
+      "signature": "HighsInt Highs_setStringOptionValue(void* highs, const char* option, const char* value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "setStringOptionValue",
+      "js": [
+        "RawModel.setStringOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBoolOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "HighsInt* value"
+      ],
+      "signature": "HighsInt Highs_getBoolOptionValue(const void* highs, const char* option, HighsInt* value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getBoolOptionValue",
+      "js": [
+        "RawModel.getBoolOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getIntOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "HighsInt* value"
+      ],
+      "signature": "HighsInt Highs_getIntOptionValue(const void* highs, const char* option, HighsInt* value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getIntOptionValue",
+      "js": [
+        "RawModel.getIntOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getDoubleOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "double* value"
+      ],
+      "signature": "HighsInt Highs_getDoubleOptionValue(const void* highs, const char* option, double* value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getDoubleOptionValue",
+      "js": [
+        "RawModel.getDoubleOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getStringOptionValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "char* value"
+      ],
+      "signature": "HighsInt Highs_getStringOptionValue(const void* highs, const char* option, char* value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getStringOptionValue",
+      "js": [
+        "RawModel.getStringOptionValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getOptionType",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "HighsInt* type"
+      ],
+      "signature": "HighsInt Highs_getOptionType(const void* highs, const char* option, HighsInt* type)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getOptionType",
+      "js": [
+        "RawModel.getOptionType"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_resetOptions",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_resetOptions(void* highs)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "resetOptions",
+      "js": [
+        "RawModel.resetOptions"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_writeOptions",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writeOptions(const void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportOptions",
+      "js": [
+        "RawModel.exportOptions",
+        "Model.exportOptions"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_writeOptionsDeviations",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* filename"
+      ],
+      "signature": "HighsInt Highs_writeOptionsDeviations(const void* highs, const char* filename)",
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "rawName": "exportOptionDeviations",
+      "js": [
+        "RawModel.exportOptionDeviations",
+        "Model.exportOptionDeviations"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getNumOptions",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getNumOptions(const void* highs)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getNumOptions",
+      "js": [
+        "RawModel.getNumOptions"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getOptionName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt index",
+        "char** name"
+      ],
+      "signature": "HighsInt Highs_getOptionName(const void* highs, const HighsInt index, char** name)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getOptionName",
+      "js": [
+        "RawModel.getOptionName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "ownership": "free returned C allocation after copying"
+    },
+    {
+      "cName": "Highs_getBoolOptionValues",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "HighsInt* current_value",
+        "HighsInt* default_value"
+      ],
+      "signature": "HighsInt Highs_getBoolOptionValues(const void* highs, const char* option, HighsInt* current_value, HighsInt* default_value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getBoolOptionValues",
+      "js": [
+        "RawModel.getBoolOptionValues"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getIntOptionValues",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "HighsInt* current_value",
+        "HighsInt* min_value",
+        "HighsInt* max_value",
+        "HighsInt* default_value"
+      ],
+      "signature": "HighsInt Highs_getIntOptionValues(const void* highs, const char* option, HighsInt* current_value, HighsInt* min_value, HighsInt* max_value, HighsInt* default_value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getIntOptionValues",
+      "js": [
+        "RawModel.getIntOptionValues"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getDoubleOptionValues",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "double* current_value",
+        "double* min_value",
+        "double* max_value",
+        "double* default_value"
+      ],
+      "signature": "HighsInt Highs_getDoubleOptionValues(const void* highs, const char* option, double* current_value, double* min_value, double* max_value, double* default_value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getDoubleOptionValues",
+      "js": [
+        "RawModel.getDoubleOptionValues"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getStringOptionValues",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* option",
+        "char* current_value",
+        "char* default_value"
+      ],
+      "signature": "HighsInt Highs_getStringOptionValues(const void* highs, const char* option, char* current_value, char* default_value)",
+      "family": "options",
+      "exposure": "raw-model",
+      "rawName": "getStringOptionValues",
+      "js": [
+        "RawModel.getStringOptionValues"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getIntInfoValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* info",
+        "HighsInt* value"
+      ],
+      "signature": "HighsInt Highs_getIntInfoValue(const void* highs, const char* info, HighsInt* value)",
+      "family": "info",
+      "exposure": "raw-model",
+      "rawName": "getIntInfoValue",
+      "js": [
+        "RawModel.getIntInfoValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getDoubleInfoValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* info",
+        "double* value"
+      ],
+      "signature": "HighsInt Highs_getDoubleInfoValue(const void* highs, const char* info, double* value)",
+      "family": "info",
+      "exposure": "raw-model",
+      "rawName": "getDoubleInfoValue",
+      "js": [
+        "RawModel.getDoubleInfoValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getInt64InfoValue",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* info",
+        "int64_t* value"
+      ],
+      "signature": "HighsInt Highs_getInt64InfoValue(const void* highs, const char* info, int64_t* value)",
+      "family": "info",
+      "exposure": "raw-model",
+      "rawName": "getInt64InfoValue",
+      "js": [
+        "RawModel.getInt64InfoValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "jsValue": "bigint"
+    },
+    {
+      "cName": "Highs_getInfoType",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* info",
+        "HighsInt* type"
+      ],
+      "signature": "HighsInt Highs_getInfoType(const void* highs, const char* info, HighsInt* type)",
+      "family": "info",
+      "exposure": "raw-model",
+      "rawName": "getInfoType",
+      "js": [
+        "RawModel.getInfoType"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "double* col_value",
+        "double* col_dual",
+        "double* row_value",
+        "double* row_dual"
+      ],
+      "signature": "HighsInt Highs_getSolution(const void* highs, double* col_value, double* col_dual, double* row_value, double* row_dual)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getSolution",
+      "js": [
+        "RawModel.getSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasis",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* col_status",
+        "HighsInt* row_status"
+      ],
+      "signature": "HighsInt Highs_getBasis(const void* highs, HighsInt* col_status, HighsInt* row_status)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getBasis",
+      "js": [
+        "RawModel.getBasis"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getModelStatus",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getModelStatus(const void* highs)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getModelStatus",
+      "js": [
+        "RawModel.getModelStatus"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getDualRay",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* has_dual_ray",
+        "double* dual_ray_value"
+      ],
+      "signature": "HighsInt Highs_getDualRay(const void* highs, HighsInt* has_dual_ray, double* dual_ray_value)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getDualRay",
+      "js": [
+        "RawModel.getDualRay"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getDualUnboundednessDirection",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* has_dual_unboundedness_direction",
+        "double* dual_unboundedness_direction_value"
+      ],
+      "signature": "HighsInt Highs_getDualUnboundednessDirection(const void* highs, HighsInt* has_dual_unboundedness_direction, double* dual_unboundedness_direction_value)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getDualUnboundednessDirection",
+      "js": [
+        "RawModel.getDualUnboundednessDirection"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPrimalRay",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* has_primal_ray",
+        "double* primal_ray_value"
+      ],
+      "signature": "HighsInt Highs_getPrimalRay(const void* highs, HighsInt* has_primal_ray, double* primal_ray_value)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getPrimalRay",
+      "js": [
+        "RawModel.getPrimalRay"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getObjectiveValue",
+      "returnType": "double",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "double Highs_getObjectiveValue(const void* highs)",
+      "family": "solution",
+      "exposure": "raw-model",
+      "rawName": "getObjectiveValue",
+      "js": [
+        "RawModel.getObjectiveValue"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasicVariables",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* basic_variables"
+      ],
+      "signature": "HighsInt Highs_getBasicVariables(const void* highs, HighsInt* basic_variables)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getBasicVariables",
+      "js": [
+        "RawModel.getBasicVariables"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasisInverseRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt row",
+        "double* row_vector",
+        "HighsInt* row_num_nz",
+        "HighsInt* row_index"
+      ],
+      "signature": "HighsInt Highs_getBasisInverseRow(const void* highs, const HighsInt row, double* row_vector, HighsInt* row_num_nz, HighsInt* row_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getBasisInverseRow",
+      "js": [
+        "RawModel.getBasisInverseRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasisInverseCol",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "double* col_vector",
+        "HighsInt* col_num_nz",
+        "HighsInt* col_index"
+      ],
+      "signature": "HighsInt Highs_getBasisInverseCol(const void* highs, const HighsInt col, double* col_vector, HighsInt* col_num_nz, HighsInt* col_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getBasisInverseCol",
+      "js": [
+        "RawModel.getBasisInverseCol"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasisSolve",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const double* rhs",
+        "double* solution_vector",
+        "HighsInt* solution_num_nz",
+        "HighsInt* solution_index"
+      ],
+      "signature": "HighsInt Highs_getBasisSolve(const void* highs, const double* rhs, double* solution_vector, HighsInt* solution_num_nz, HighsInt* solution_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getBasisSolve",
+      "js": [
+        "RawModel.getBasisSolve"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getBasisTransposeSolve",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const double* rhs",
+        "double* solution_vector",
+        "HighsInt* solution_nz",
+        "HighsInt* solution_index"
+      ],
+      "signature": "HighsInt Highs_getBasisTransposeSolve(const void* highs, const double* rhs, double* solution_vector, HighsInt* solution_nz, HighsInt* solution_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getBasisTransposeSolve",
+      "js": [
+        "RawModel.getBasisTransposeSolve"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getReducedRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt row",
+        "double* row_vector",
+        "HighsInt* row_num_nz",
+        "HighsInt* row_index"
+      ],
+      "signature": "HighsInt Highs_getReducedRow(const void* highs, const HighsInt row, double* row_vector, HighsInt* row_num_nz, HighsInt* row_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getReducedRow",
+      "js": [
+        "RawModel.getReducedRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getReducedColumn",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "double* col_vector",
+        "HighsInt* col_num_nz",
+        "HighsInt* col_index"
+      ],
+      "signature": "HighsInt Highs_getReducedColumn(const void* highs, const HighsInt col, double* col_vector, HighsInt* col_num_nz, HighsInt* col_index)",
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "rawName": "getReducedColumn",
+      "js": [
+        "RawModel.getReducedColumn"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setBasis",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt* col_status",
+        "const HighsInt* row_status"
+      ],
+      "signature": "HighsInt Highs_setBasis(void* highs, const HighsInt* col_status, const HighsInt* row_status)",
+      "family": "warm-start",
+      "exposure": "raw-model",
+      "rawName": "setBasis",
+      "js": [
+        "RawModel.setBasis"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setLogicalBasis",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_setLogicalBasis(void* highs)",
+      "family": "warm-start",
+      "exposure": "raw-model",
+      "rawName": "setLogicalBasis",
+      "js": [
+        "RawModel.setLogicalBasis"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double* col_value",
+        "const double* row_value",
+        "const double* col_dual",
+        "const double* row_dual"
+      ],
+      "signature": "HighsInt Highs_setSolution(void* highs, const double* col_value, const double* row_value, const double* col_dual, const double* row_dual)",
+      "family": "warm-start",
+      "exposure": "raw-model",
+      "rawName": "setSolution",
+      "js": [
+        "RawModel.setSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setSparseSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_entries",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_setSparseSolution(void* highs, const HighsInt num_entries, const HighsInt* index, const double* value)",
+      "family": "warm-start",
+      "exposure": "raw-model",
+      "rawName": "setSparseSolution",
+      "js": [
+        "RawModel.setSparseSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setCallback",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "HighsCCallbackType user_callback",
+        "void* user_callback_data"
+      ],
+      "signature": "HighsInt Highs_setCallback(void* highs, HighsCCallbackType user_callback, void* user_callback_data)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": "startCallback",
+      "js": [
+        "RawModel.startCallback",
+        "Model.startCallback"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_startCallback",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt callback_type"
+      ],
+      "signature": "HighsInt Highs_startCallback(void* highs, const HighsInt callback_type)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": "startCallback",
+      "js": [
+        "RawModel.startCallback",
+        "Model.startCallback"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_stopCallback",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt callback_type"
+      ],
+      "signature": "HighsInt Highs_stopCallback(void* highs, const HighsInt callback_type)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": "stopCallback",
+      "js": [
+        "RawModel.stopCallback",
+        "Model.stopCallback"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRunTime",
+      "returnType": "double",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "double Highs_getRunTime(const void* highs)",
+      "family": "timing",
+      "exposure": "raw-model",
+      "rawName": "getRunTime",
+      "js": [
+        "RawModel.getRunTime"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_zeroAllClocks",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_zeroAllClocks(const void* highs)",
+      "family": "timing",
+      "exposure": "raw-model",
+      "rawName": "zeroAllClocks",
+      "js": [
+        "RawModel.zeroAllClocks"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addCol",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double cost",
+        "const double lower",
+        "const double upper",
+        "const HighsInt num_new_nz",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_addCol(void* highs, const double cost, const double lower, const double upper, const HighsInt num_new_nz, const HighsInt* index, const double* value)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addCol",
+      "js": [
+        "RawModel.addCol"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addCols",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_new_col",
+        "const double* costs",
+        "const double* lower",
+        "const double* upper",
+        "const HighsInt num_new_nz",
+        "const HighsInt* starts",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_addCols(void* highs, const HighsInt num_new_col, const double* costs, const double* lower, const double* upper, const HighsInt num_new_nz, const HighsInt* starts, const HighsInt* index, const double* value)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addCols",
+      "js": [
+        "RawModel.addCols"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addVar",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double lower",
+        "const double upper"
+      ],
+      "signature": "HighsInt Highs_addVar(void* highs, const double lower, const double upper)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addVar",
+      "js": [
+        "RawModel.addVar"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addVars",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_new_var",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_addVars(void* highs, const HighsInt num_new_var, const double* lower, const double* upper)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addVars",
+      "js": [
+        "RawModel.addVars"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double lower",
+        "const double upper",
+        "const HighsInt num_new_nz",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_addRow(void* highs, const double lower, const double upper, const HighsInt num_new_nz, const HighsInt* index, const double* value)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addRow",
+      "js": [
+        "RawModel.addRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_addRows",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_new_row",
+        "const double* lower",
+        "const double* upper",
+        "const HighsInt num_new_nz",
+        "const HighsInt* starts",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_addRows(void* highs, const HighsInt num_new_row, const double* lower, const double* upper, const HighsInt num_new_nz, const HighsInt* starts, const HighsInt* index, const double* value)",
+      "family": "add",
+      "exposure": "raw-model",
+      "rawName": "addRows",
+      "js": [
+        "RawModel.addRows"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_ensureColwise",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_ensureColwise(void* highs)",
+      "family": "matrix-orientation",
+      "exposure": "raw-model",
+      "rawName": "ensureColwise",
+      "js": [
+        "RawModel.ensureColwise"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_ensureRowwise",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_ensureRowwise(void* highs)",
+      "family": "matrix-orientation",
+      "exposure": "raw-model",
+      "rawName": "ensureRowwise",
+      "js": [
+        "RawModel.ensureRowwise"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeObjectiveSense",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt sense"
+      ],
+      "signature": "HighsInt Highs_changeObjectiveSense(void* highs, const HighsInt sense)",
+      "family": "change-objective",
+      "exposure": "raw-model",
+      "rawName": "changeObjectiveSense",
+      "js": [
+        "RawModel.changeObjectiveSense"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeObjectiveOffset",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double offset"
+      ],
+      "signature": "HighsInt Highs_changeObjectiveOffset(void* highs, const double offset)",
+      "family": "change-objective",
+      "exposure": "raw-model",
+      "rawName": "changeObjectiveOffset",
+      "js": [
+        "RawModel.changeObjectiveOffset"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColIntegrality",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt col",
+        "const HighsInt integrality"
+      ],
+      "signature": "HighsInt Highs_changeColIntegrality(void* highs, const HighsInt col, const HighsInt integrality)",
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "rawName": "changeColIntegrality",
+      "js": [
+        "RawModel.changeColIntegrality"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsIntegralityByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_col",
+        "const HighsInt to_col",
+        "const HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_changeColsIntegralityByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const HighsInt* integrality)",
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "rawName": "changeColsIntegralityByRange",
+      "js": [
+        "RawModel.changeColsIntegralityByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsIntegralityBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "const HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_changeColsIntegralityBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const HighsInt* integrality)",
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "rawName": "changeColsIntegralityBySet",
+      "js": [
+        "RawModel.changeColsIntegralityBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsIntegralityByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt* mask",
+        "const HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_changeColsIntegralityByMask(void* highs, const HighsInt* mask, const HighsInt* integrality)",
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "rawName": "changeColsIntegralityByMask",
+      "js": [
+        "RawModel.changeColsIntegralityByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_clearIntegrality",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_clearIntegrality(void* highs)",
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "rawName": "clearIntegrality",
+      "js": [
+        "RawModel.clearIntegrality"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColCost",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt col",
+        "const double cost"
+      ],
+      "signature": "HighsInt Highs_changeColCost(void* highs, const HighsInt col, const double cost)",
+      "family": "change-cost",
+      "exposure": "raw-model",
+      "rawName": "changeColCost",
+      "js": [
+        "RawModel.changeColCost"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsCostByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_col",
+        "const HighsInt to_col",
+        "const double* cost"
+      ],
+      "signature": "HighsInt Highs_changeColsCostByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const double* cost)",
+      "family": "change-cost",
+      "exposure": "raw-model",
+      "rawName": "changeColsCostByRange",
+      "js": [
+        "RawModel.changeColsCostByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsCostBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "const double* cost"
+      ],
+      "signature": "HighsInt Highs_changeColsCostBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* cost)",
+      "family": "change-cost",
+      "exposure": "raw-model",
+      "rawName": "changeColsCostBySet",
+      "js": [
+        "RawModel.changeColsCostBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsCostByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt* mask",
+        "const double* cost"
+      ],
+      "signature": "HighsInt Highs_changeColsCostByMask(void* highs, const HighsInt* mask, const double* cost)",
+      "family": "change-cost",
+      "exposure": "raw-model",
+      "rawName": "changeColsCostByMask",
+      "js": [
+        "RawModel.changeColsCostByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColBounds",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt col",
+        "const double lower",
+        "const double upper"
+      ],
+      "signature": "HighsInt Highs_changeColBounds(void* highs, const HighsInt col, const double lower, const double upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeColBounds",
+      "js": [
+        "RawModel.changeColBounds"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsBoundsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_col",
+        "const HighsInt to_col",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeColsBoundsByRange(void* highs, const HighsInt from_col, const HighsInt to_col, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeColsBoundsByRange",
+      "js": [
+        "RawModel.changeColsBoundsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsBoundsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeColsBoundsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeColsBoundsBySet",
+      "js": [
+        "RawModel.changeColsBoundsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeColsBoundsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt* mask",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeColsBoundsByMask(void* highs, const HighsInt* mask, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeColsBoundsByMask",
+      "js": [
+        "RawModel.changeColsBoundsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeRowBounds",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt row",
+        "const double lower",
+        "const double upper"
+      ],
+      "signature": "HighsInt Highs_changeRowBounds(void* highs, const HighsInt row, const double lower, const double upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeRowBounds",
+      "js": [
+        "RawModel.changeRowBounds"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeRowsBoundsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_row",
+        "const HighsInt to_row",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeRowsBoundsByRange(void* highs, const HighsInt from_row, const HighsInt to_row, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeRowsBoundsByRange",
+      "js": [
+        "RawModel.changeRowsBoundsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeRowsBoundsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeRowsBoundsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeRowsBoundsBySet",
+      "js": [
+        "RawModel.changeRowsBoundsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeRowsBoundsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt* mask",
+        "const double* lower",
+        "const double* upper"
+      ],
+      "signature": "HighsInt Highs_changeRowsBoundsByMask(void* highs, const HighsInt* mask, const double* lower, const double* upper)",
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "rawName": "changeRowsBoundsByMask",
+      "js": [
+        "RawModel.changeRowsBoundsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_changeCoeff",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt row",
+        "const HighsInt col",
+        "const double value"
+      ],
+      "signature": "HighsInt Highs_changeCoeff(void* highs, const HighsInt row, const HighsInt col, const double value)",
+      "family": "change-coefficient",
+      "exposure": "raw-model",
+      "rawName": "changeCoeff",
+      "js": [
+        "RawModel.changeCoeff"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getObjectiveSense",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "HighsInt* sense"
+      ],
+      "signature": "HighsInt Highs_getObjectiveSense(const void* highs, HighsInt* sense)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getObjectiveSense",
+      "js": [
+        "RawModel.getObjectiveSense"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getObjectiveOffset",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "double* offset"
+      ],
+      "signature": "HighsInt Highs_getObjectiveOffset(const void* highs, double* offset)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getObjectiveOffset",
+      "js": [
+        "RawModel.getObjectiveOffset"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getColsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt from_col",
+        "const HighsInt to_col",
+        "HighsInt* num_col",
+        "double* costs",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getColsByRange(const void* highs, const HighsInt from_col, const HighsInt to_col, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getColsByRange",
+      "js": [
+        "RawModel.getColsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getColsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "HighsInt* num_col",
+        "double* costs",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getColsBySet(const void* highs, const HighsInt num_set_entries, const HighsInt* set, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getColsBySet",
+      "js": [
+        "RawModel.getColsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getColsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt* mask",
+        "HighsInt* num_col",
+        "double* costs",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getColsByMask(const void* highs, const HighsInt* mask, HighsInt* num_col, double* costs, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getColsByMask",
+      "js": [
+        "RawModel.getColsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRowsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt from_row",
+        "const HighsInt to_row",
+        "HighsInt* num_row",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getRowsByRange(const void* highs, const HighsInt from_row, const HighsInt to_row, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getRowsByRange",
+      "js": [
+        "RawModel.getRowsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRowsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set",
+        "HighsInt* num_row",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getRowsBySet(const void* highs, const HighsInt num_set_entries, const HighsInt* set, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getRowsBySet",
+      "js": [
+        "RawModel.getRowsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRowsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt* mask",
+        "HighsInt* num_row",
+        "double* lower",
+        "double* upper",
+        "HighsInt* num_nz",
+        "HighsInt* matrix_start",
+        "HighsInt* matrix_index",
+        "double* matrix_value"
+      ],
+      "signature": "HighsInt Highs_getRowsByMask(const void* highs, const HighsInt* mask, HighsInt* num_row, double* lower, double* upper, HighsInt* num_nz, HighsInt* matrix_start, HighsInt* matrix_index, double* matrix_value)",
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "rawName": "getRowsByMask",
+      "js": [
+        "RawModel.getRowsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRowName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt row",
+        "char* name"
+      ],
+      "signature": "HighsInt Highs_getRowName(const void* highs, const HighsInt row, char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getRowName",
+      "js": [
+        "RawModel.getRowName",
+        "Model.getRowName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "bridge": "length-safe native string shim",
+      "reason": "The upstream API writes with strcpy into a caller buffer and does not accept its size."
+    },
+    {
+      "cName": "Highs_getRowByName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* name",
+        "HighsInt* row"
+      ],
+      "signature": "HighsInt Highs_getRowByName(const void* highs, const char* name, HighsInt* row)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getRowByName",
+      "js": [
+        "RawModel.getRowByName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getColName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "char* name"
+      ],
+      "signature": "HighsInt Highs_getColName(const void* highs, const HighsInt col, char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getColName",
+      "js": [
+        "RawModel.getColName",
+        "Model.getColName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "bridge": "length-safe native string shim",
+      "reason": "The upstream API writes with strcpy into a caller buffer and does not accept its size."
+    },
+    {
+      "cName": "Highs_getColByName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const char* name",
+        "HighsInt* col"
+      ],
+      "signature": "HighsInt Highs_getColByName(const void* highs, const char* name, HighsInt* col)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getColByName",
+      "js": [
+        "RawModel.getColByName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getColIntegrality",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_getColIntegrality(const void* highs, const HighsInt col, HighsInt* integrality)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getColIntegrality",
+      "js": [
+        "RawModel.getColIntegrality"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteColsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_col",
+        "const HighsInt to_col"
+      ],
+      "signature": "HighsInt Highs_deleteColsByRange(void* highs, const HighsInt from_col, const HighsInt to_col)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteColsByRange",
+      "js": [
+        "RawModel.deleteColsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteColsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set"
+      ],
+      "signature": "HighsInt Highs_deleteColsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteColsBySet",
+      "js": [
+        "RawModel.deleteColsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteColsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "HighsInt* mask"
+      ],
+      "signature": "HighsInt Highs_deleteColsByMask(void* highs, HighsInt* mask)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteColsByMask",
+      "js": [
+        "RawModel.deleteColsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteRowsByRange",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt from_row",
+        "const HighsInt to_row"
+      ],
+      "signature": "HighsInt Highs_deleteRowsByRange(void* highs, const HighsInt from_row, const HighsInt to_row)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteRowsByRange",
+      "js": [
+        "RawModel.deleteRowsByRange"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteRowsBySet",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_set_entries",
+        "const HighsInt* set"
+      ],
+      "signature": "HighsInt Highs_deleteRowsBySet(void* highs, const HighsInt num_set_entries, const HighsInt* set)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteRowsBySet",
+      "js": [
+        "RawModel.deleteRowsBySet"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_deleteRowsByMask",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "HighsInt* mask"
+      ],
+      "signature": "HighsInt Highs_deleteRowsByMask(void* highs, HighsInt* mask)",
+      "family": "delete",
+      "exposure": "raw-model",
+      "rawName": "deleteRowsByMask",
+      "js": [
+        "RawModel.deleteRowsByMask"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_scaleCol",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt col",
+        "const double scaleval"
+      ],
+      "signature": "HighsInt Highs_scaleCol(void* highs, const HighsInt col, const double scaleval)",
+      "family": "scale",
+      "exposure": "raw-model",
+      "rawName": "scaleCol",
+      "js": [
+        "RawModel.scaleCol"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_scaleRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt row",
+        "const double scaleval"
+      ],
+      "signature": "HighsInt Highs_scaleRow(void* highs, const HighsInt row, const double scaleval)",
+      "family": "scale",
+      "exposure": "raw-model",
+      "rawName": "scaleRow",
+      "js": [
+        "RawModel.scaleRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getInfinity",
+      "returnType": "double",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "double Highs_getInfinity(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getInfinity",
+      "js": [
+        "RawModel.getInfinity"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getSizeofHighsInt",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getSizeofHighsInt(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getSizeofHighsInt",
+      "js": [
+        "intBytes",
+        "intBits"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached",
+      "reason": "Avoid the proposal's ambiguous intSize value."
+    },
+    {
+      "cName": "Highs_getNumCol",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getNumCol(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getNumCol",
+      "js": [
+        "RawModel.getNumCol"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getNumRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getNumRow(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getNumRow",
+      "js": [
+        "RawModel.getNumRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getNumNz",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getNumNz(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getNumNz",
+      "js": [
+        "RawModel.getNumNz"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getHessianNumNz",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getHessianNumNz(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getHessianNumNz",
+      "js": [
+        "RawModel.getHessianNumNz"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPresolvedNumCol",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getPresolvedNumCol(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedNumCol",
+      "js": [
+        "RawModel.getPresolvedNumCol"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPresolvedNumRow",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getPresolvedNumRow(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedNumRow",
+      "js": [
+        "RawModel.getPresolvedNumRow"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPresolvedNumNz",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs"
+      ],
+      "signature": "HighsInt Highs_getPresolvedNumNz(const void* highs)",
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedNumNz",
+      "js": [
+        "RawModel.getPresolvedNumNz"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "direct-value",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getModel",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt a_format",
+        "const HighsInt q_format",
+        "HighsInt* num_col",
+        "HighsInt* num_row",
+        "HighsInt* num_nz",
+        "HighsInt* hessian_num_nz",
+        "HighsInt* sense",
+        "double* offset",
+        "double* col_cost",
+        "double* col_lower",
+        "double* col_upper",
+        "double* row_lower",
+        "double* row_upper",
+        "HighsInt* a_start",
+        "HighsInt* a_index",
+        "double* a_value",
+        "HighsInt* q_start",
+        "HighsInt* q_index",
+        "double* q_value",
+        "HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_getModel(const void* highs, const HighsInt a_format, const HighsInt q_format, HighsInt* num_col, HighsInt* num_row, HighsInt* num_nz, HighsInt* hessian_num_nz, HighsInt* sense, double* offset, double* col_cost, double* col_lower, double* col_upper, double* row_lower, double* row_upper, HighsInt* a_start, HighsInt* a_index, double* a_value, HighsInt* q_start, HighsInt* q_index, double* q_value, HighsInt* integrality)",
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "rawName": "getModel",
+      "js": [
+        "RawModel.getModel"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getLp",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt a_format",
+        "HighsInt* num_col",
+        "HighsInt* num_row",
+        "HighsInt* num_nz",
+        "HighsInt* sense",
+        "double* offset",
+        "double* col_cost",
+        "double* col_lower",
+        "double* col_upper",
+        "double* row_lower",
+        "double* row_upper",
+        "HighsInt* a_start",
+        "HighsInt* a_index",
+        "double* a_value",
+        "HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_getLp(const void* highs, const HighsInt a_format, HighsInt* num_col, HighsInt* num_row, HighsInt* num_nz, HighsInt* sense, double* offset, double* col_cost, double* col_lower, double* col_upper, double* row_lower, double* row_upper, HighsInt* a_start, HighsInt* a_index, double* a_value, HighsInt* integrality)",
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "rawName": "getLp",
+      "js": [
+        "RawModel.getLp"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPresolvedLp",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt a_format",
+        "HighsInt* num_col",
+        "HighsInt* num_row",
+        "HighsInt* num_nz",
+        "HighsInt* sense",
+        "double* offset",
+        "double* col_cost",
+        "double* col_lower",
+        "double* col_upper",
+        "double* row_lower",
+        "double* row_upper",
+        "HighsInt* a_start",
+        "HighsInt* a_index",
+        "double* a_value",
+        "HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_getPresolvedLp(const void* highs, const HighsInt a_format, HighsInt* num_col, HighsInt* num_row, HighsInt* num_nz, HighsInt* sense, double* offset, double* col_cost, double* col_lower, double* col_upper, double* row_lower, double* row_upper, HighsInt* a_start, HighsInt* a_index, double* a_value, HighsInt* integrality)",
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedLp",
+      "js": [
+        "RawModel.getPresolvedLp"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getPresolvedColName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt col",
+        "char* name"
+      ],
+      "signature": "HighsInt Highs_getPresolvedColName(const void* highs, const HighsInt col, char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedColName",
+      "js": [
+        "RawModel.getPresolvedColName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "bridge": "length-safe native string shim"
+    },
+    {
+      "cName": "Highs_getPresolvedRowName",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt row",
+        "char* name"
+      ],
+      "signature": "HighsInt Highs_getPresolvedRowName(const void* highs, const HighsInt row, char* name)",
+      "family": "names",
+      "exposure": "raw-model",
+      "rawName": "getPresolvedRowName",
+      "js": [
+        "RawModel.getPresolvedRowName"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached",
+      "bridge": "length-safe native string shim"
+    },
+    {
+      "cName": "Highs_getIisLp",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt a_format",
+        "HighsInt* num_col",
+        "HighsInt* num_row",
+        "HighsInt* num_nz",
+        "HighsInt* sense",
+        "double* offset",
+        "double* col_cost",
+        "double* col_lower",
+        "double* col_upper",
+        "double* row_lower",
+        "double* row_upper",
+        "HighsInt* a_start",
+        "HighsInt* a_index",
+        "double* a_value",
+        "HighsInt* integrality"
+      ],
+      "signature": "HighsInt Highs_getIisLp(const void* highs, const HighsInt a_format, HighsInt* num_col, HighsInt* num_row, HighsInt* num_nz, HighsInt* sense, double* offset, double* col_cost, double* col_lower, double* col_upper, double* row_lower, double* row_upper, HighsInt* a_start, HighsInt* a_index, double* a_value, HighsInt* integrality)",
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "rawName": "getIisLp",
+      "js": [
+        "RawModel.getIisLp"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getFixedLp",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const void* highs",
+        "const HighsInt a_format",
+        "HighsInt* num_col",
+        "HighsInt* num_row",
+        "HighsInt* num_nz",
+        "HighsInt* sense",
+        "double* offset",
+        "double* col_cost",
+        "double* col_lower",
+        "double* col_upper",
+        "double* row_lower",
+        "double* row_upper",
+        "HighsInt* a_start",
+        "HighsInt* a_index",
+        "double* a_value"
+      ],
+      "signature": "HighsInt Highs_getFixedLp(const void* highs, const HighsInt a_format, HighsInt* num_col, HighsInt* num_row, HighsInt* num_nz, HighsInt* sense, double* offset, double* col_cost, double* col_lower, double* col_upper, double* row_lower, double* row_upper, HighsInt* a_start, HighsInt* a_index, double* a_value)",
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "rawName": "getFixedLp",
+      "js": [
+        "RawModel.getFixedLp"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_crossover",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt num_col",
+        "const HighsInt num_row",
+        "const double* col_value",
+        "const double* col_dual",
+        "const double* row_dual"
+      ],
+      "signature": "HighsInt Highs_crossover(void* highs, const HighsInt num_col, const HighsInt num_row, const double* col_value, const double* col_dual, const double* row_dual)",
+      "family": "advanced",
+      "exposure": "raw-model",
+      "rawName": "crossover",
+      "js": [
+        "RawModel.crossover"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getRanging",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "// double* col_cost_up_value",
+        "double* col_cost_up_objective",
+        "HighsInt* col_cost_up_in_var",
+        "HighsInt* col_cost_up_ou_var",
+        "double* col_cost_dn_value",
+        "double* col_cost_dn_objective",
+        "HighsInt* col_cost_dn_in_var",
+        "HighsInt* col_cost_dn_ou_var",
+        "double* col_bound_up_value",
+        "double* col_bound_up_objective",
+        "HighsInt* col_bound_up_in_var",
+        "HighsInt* col_bound_up_ou_var",
+        "double* col_bound_dn_value",
+        "double* col_bound_dn_objective",
+        "HighsInt* col_bound_dn_in_var",
+        "HighsInt* col_bound_dn_ou_var",
+        "double* row_bound_up_value",
+        "double* row_bound_up_objective",
+        "HighsInt* row_bound_up_in_var",
+        "HighsInt* row_bound_up_ou_var",
+        "double* row_bound_dn_value",
+        "double* row_bound_dn_objective",
+        "HighsInt* row_bound_dn_in_var",
+        "HighsInt* row_bound_dn_ou_var"
+      ],
+      "signature": "HighsInt Highs_getRanging(void* highs, // double* col_cost_up_value, double* col_cost_up_objective, HighsInt* col_cost_up_in_var, HighsInt* col_cost_up_ou_var, double* col_cost_dn_value, double* col_cost_dn_objective, HighsInt* col_cost_dn_in_var, HighsInt* col_cost_dn_ou_var, double* col_bound_up_value, double* col_bound_up_objective, HighsInt* col_bound_up_in_var, HighsInt* col_bound_up_ou_var, double* col_bound_dn_value, double* col_bound_dn_objective, HighsInt* col_bound_dn_in_var, HighsInt* col_bound_dn_ou_var, double* row_bound_up_value, double* row_bound_up_objective, HighsInt* row_bound_up_in_var, HighsInt* row_bound_up_ou_var, double* row_bound_dn_value, double* row_bound_dn_objective, HighsInt* row_bound_dn_in_var, HighsInt* row_bound_dn_ou_var)",
+      "family": "advanced",
+      "exposure": "raw-model",
+      "rawName": "getRanging",
+      "js": [
+        "RawModel.getRanging"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_feasibilityRelaxation",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const double global_lower_penalty",
+        "const double global_upper_penalty",
+        "const double global_rhs_penalty",
+        "const double* local_lower_penalty",
+        "const double* local_upper_penalty",
+        "const double* local_rhs_penalty"
+      ],
+      "signature": "HighsInt Highs_feasibilityRelaxation(void* highs, const double global_lower_penalty, const double global_upper_penalty, const double global_rhs_penalty, const double* local_lower_penalty, const double* local_upper_penalty, const double* local_rhs_penalty)",
+      "family": "advanced",
+      "exposure": "raw-model",
+      "rawName": "feasibilityRelaxation",
+      "js": [
+        "RawModel.feasibilityRelaxation"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getIis",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "HighsInt* iis_num_col",
+        "HighsInt* iis_num_row",
+        "HighsInt* col_index",
+        "HighsInt* row_index",
+        "HighsInt* col_bound",
+        "HighsInt* row_bound",
+        "HighsInt* col_status",
+        "HighsInt* row_status"
+      ],
+      "signature": "HighsInt Highs_getIis(void* highs, HighsInt* iis_num_col, HighsInt* iis_num_row, HighsInt* col_index, HighsInt* row_index, HighsInt* col_bound, HighsInt* row_bound, HighsInt* col_status, HighsInt* row_status)",
+      "family": "advanced",
+      "exposure": "raw-model",
+      "rawName": "getIis",
+      "js": [
+        "RawModel.getIis"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_resetGlobalScheduler",
+      "returnType": "void",
+      "parameters": [
+        "const HighsInt blocking"
+      ],
+      "signature": "void Highs_resetGlobalScheduler(const HighsInt blocking)",
+      "family": "scheduler",
+      "exposure": "excluded",
+      "rawName": null,
+      "js": [],
+      "wasmExport": false,
+      "returnPolicy": "not-exposed",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_getCallbackDataOutItem",
+      "returnType": "const void*",
+      "parameters": [
+        "const HighsCallbackDataOut* data_out",
+        "const char* item_name"
+      ],
+      "signature": "const void* Highs_getCallbackDataOutItem(const HighsCallbackDataOut* data_out, const char* item_name)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": null,
+      "js": [],
+      "wasmExport": true,
+      "returnPolicy": "copied-by-callback-adapter",
+      "arrayPolicy": "copy-detached",
+      "reason": "Callback payloads are copied by the trampoline; raw callback-data pointers never escape."
+    },
+    {
+      "cName": "Highs_setCallbackSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "HighsCallbackDataIn* data_in",
+        "const HighsInt num_entries",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_setCallbackSolution(HighsCallbackDataIn* data_in, const HighsInt num_entries, const double* value)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": null,
+      "js": [
+        "CallbackControl.setSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_setCallbackSparseSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "HighsCallbackDataIn* data_in",
+        "const HighsInt num_entries",
+        "const HighsInt* index",
+        "const double* value"
+      ],
+      "signature": "HighsInt Highs_setCallbackSparseSolution(HighsCallbackDataIn* data_in, const HighsInt num_entries, const HighsInt* index, const double* value)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": null,
+      "js": [
+        "CallbackControl.setSparseSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_repairCallbackSolution",
+      "returnType": "HighsInt",
+      "parameters": [
+        "HighsCallbackDataIn* data_in"
+      ],
+      "signature": "HighsInt Highs_repairCallbackSolution(HighsCallbackDataIn* data_in)",
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "rawName": null,
+      "js": [
+        "CallbackControl.repairSolution"
+      ],
+      "wasmExport": true,
+      "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    }
+  ]
+}

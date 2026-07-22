@@ -642,7 +642,7 @@ type HighsLoaderOptions = Readonly<
   }>
 >;
 
-enum HighsAnalysisLevel {
+declare enum HighsAnalysisLevel {
   kHighsAnalysisLevelNone = 0,
   kHighsAnalysisLevelModelData = 1,
   kHighsAnalysisLevelSolverSummaryData = 2,
@@ -650,52 +650,47 @@ enum HighsAnalysisLevel {
   kHighsAnalysisLevelSolverTime = 8,
   kHighsAnalysisLevelNlaData = 16,
   kHighsAnalysisLevelNlaTime = 32,
-  kHighsAnalysisLevelMin = kHighsAnalysisLevelNone,
-  kHighsAnalysisLevelMax = kHighsAnalysisLevelModelData +
-    kHighsAnalysisLevelSolverSummaryData +
-    kHighsAnalysisLevelSolverRuntimeData +
-    kHighsAnalysisLevelSolverTime +
-    kHighsAnalysisLevelNlaData +
-    kHighsAnalysisLevelNlaTime
+  kHighsAnalysisLevelMin = 0,
+  kHighsAnalysisLevelMax = 63
 }
 
-enum HighsDebugLevel {
+declare enum HighsDebugLevel {
   kHighsDebugLevelNone = 0,
   kHighsDebugLevelCheap,
   kHighsDebugLevelCostly,
   kHighsDebugLevelExpensive,
-  kHighsDebugLevelMin = kHighsDebugLevelNone,
-  kHighsDebugLevelMax = kHighsDebugLevelExpensive
+  kHighsDebugLevelMin = 0,
+  kHighsDebugLevelMax = 3
 }
 
-enum SimplexScaleStrategy {
+declare enum SimplexScaleStrategy {
   kSimplexScaleStrategyMin = 0,
-  kSimplexScaleStrategyOff = kSimplexScaleStrategyMin, // 0
+  kSimplexScaleStrategyOff = 0,
   kSimplexScaleStrategyChoose, // 1
   kSimplexScaleStrategyEquilibration, // 2
   kSimplexScaleStrategyForcedEquilibration, // 3
   kSimplexScaleStrategyMaxValue015, // 4
   kSimplexScaleStrategyMaxValue0157, // 5
-  kSimplexScaleStrategyMax = kSimplexScaleStrategyMaxValue0157
+  kSimplexScaleStrategyMax = 5
 }
 
-enum SimplexStrategy {
+declare enum SimplexStrategy {
   kSimplexStrategyMin = 0,
-  kSimplexStrategyChoose = kSimplexStrategyMin, // 0
+  kSimplexStrategyChoose = 0,
   kSimplexStrategyDual, // 1
-  kSimplexStrategyDualPlain = kSimplexStrategyDual, // 1
+  kSimplexStrategyDualPlain = 1,
   kSimplexStrategyDualTasks, // 2
   kSimplexStrategyDualMulti, // 3
   kSimplexStrategyPrimal, // 4
-  kSimplexStrategyMax = kSimplexStrategyPrimal,
+  kSimplexStrategyMax = 4,
   kSimplexStrategyNum
 }
 
-enum SimplexCrashStrategy {
+declare enum SimplexCrashStrategy {
   kSimplexCrashStrategyMin = 0,
-  kSimplexCrashStrategyOff = kSimplexCrashStrategyMin,
+  kSimplexCrashStrategyOff = 0,
   kSimplexCrashStrategyLtssfK,
-  kSimplexCrashStrategyLtssf = kSimplexCrashStrategyLtssfK,
+  kSimplexCrashStrategyLtssf = 1,
   kSimplexCrashStrategyBixby,
   kSimplexCrashStrategyLtssfPri,
   kSimplexCrashStrategyLtsfK,
@@ -704,44 +699,44 @@ enum SimplexCrashStrategy {
   kSimplexCrashStrategyBixbyNoNonzeroColCosts,
   kSimplexCrashStrategyBasic,
   kSimplexCrashStrategyTestSing,
-  kSimplexCrashStrategyMax = kSimplexCrashStrategyTestSing
+  kSimplexCrashStrategyMax = 11
 }
 
-enum SimplexEdgeWeightStrategy {
+declare enum SimplexEdgeWeightStrategy {
   kSimplexEdgeWeightStrategyMin = -1,
-  kSimplexEdgeWeightStrategyChoose = kSimplexEdgeWeightStrategyMin,
+  kSimplexEdgeWeightStrategyChoose = -1,
   kSimplexEdgeWeightStrategyDantzig,
   kSimplexEdgeWeightStrategyDevex,
   kSimplexEdgeWeightStrategySteepestEdge,
-  kSimplexEdgeWeightStrategyMax = kSimplexEdgeWeightStrategySteepestEdge
+  kSimplexEdgeWeightStrategyMax = 2
 }
 
-enum SolutionStyle {
+declare enum SolutionStyle {
   kSolutionStyleOldRaw = -1,
   kSolutionStyleRaw = 0,
   kSolutionStylePretty, // 1;
   kSolutionStyleGlpsolRaw, // 2;
   kSolutionStyleGlpsolPretty, // 3;
   kSolutionStyleSparse, // 4;
-  kSolutionStyleMin = kSolutionStyleOldRaw,
-  kSolutionStyleMax = kSolutionStyleSparse
+  kSolutionStyleMin = -1,
+  kSolutionStyleMax = 4
 }
 
-enum GlpsolCostRowLocation {
+declare enum GlpsolCostRowLocation {
   kGlpsolCostRowLocationLast = -2,
   kGlpsolCostRowLocationNone, // -1
   kGlpsolCostRowLocationNoneIfEmpty, // 0
-  kGlpsolCostRowLocationMin = kGlpsolCostRowLocationLast
+  kGlpsolCostRowLocationMin = -2
 }
 
-enum IisStrategy {
+declare enum IisStrategy {
   kIisStrategyMin = 0,
-  kIisStrategyFromLpRowPriority = kIisStrategyMin,  // 0
+  kIisStrategyFromLpRowPriority = 0,
   kIisStrategyFromLpColPriority,                    // 1
   //  kIisStrategyFromRayRowPriority,                     // 2
   //  kIisStrategyFromRayColPriority,                     // 3
-  kIisStrategyMax = kIisStrategyFromLpColPriority
-};
+  kIisStrategyMax = 1
+}
 
 /** Loads HiGHS */
 export default function highsLoader(options?: HighsLoaderOptions): Promise<Highs>;

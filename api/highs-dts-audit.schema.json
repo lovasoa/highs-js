@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lovasoa.github.io/highs-js/schemas/highs-dts-audit.schema.json",
+  "type": "object",
+  "required": ["schemaVersion", "proposal", "decision", "replace", "omit", "keepWithShapeChanges"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "proposal": {"type": "string"},
+    "decision": {"type": "string"},
+    "replace": {"type": "array"},
+    "omit": {"type": "array"},
+    "keepWithShapeChanges": {"type": "array"}
+  },
+  "additionalProperties": true
+}

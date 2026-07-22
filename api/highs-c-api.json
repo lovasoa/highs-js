@@ -1,0 +1,215 @@
+{
+  "$schema": "./highs-c-api.schema.json",
+  "schemaVersion": 1,
+  "header": "HiGHS/highs/interfaces/highs_c_api.h",
+  "deprecatedBoundary": "Deprecated methods",
+  "statusConvention": {
+    "error": -1,
+    "ok": 0,
+    "warning": 1
+  },
+  "constantPolicy": {
+    "includePattern": "^kHighs",
+    "cType": "HighsInt",
+    "exposure": "Highs.constants",
+    "valuePolicy": "exact-number"
+  },
+  "defaults": {
+    "rawName": "lowerCamelCase C name without the Highs_ prefix",
+    "wasmExport": true,
+    "returnPolicy": "status-object",
+    "arrayPolicy": "copy-detached"
+  },
+  "groups": [
+    {
+      "family": "one-shot",
+      "exposure": "raw-runtime",
+      "functions": ["Highs_lpCall", "Highs_mipCall", "Highs_qpCall"]
+    },
+    {
+      "family": "ownership",
+      "exposure": "internal",
+      "functions": ["Highs_create", "Highs_destroy"]
+    },
+    {
+      "family": "runtime",
+      "exposure": "raw-runtime",
+      "returnPolicy": "direct-value",
+      "functions": ["Highs_version", "Highs_versionMajor", "Highs_versionMinor", "Highs_versionPatch", "Highs_githash"]
+    },
+    {
+      "family": "data-io",
+      "exposure": "model-data-adapter",
+      "functions": ["Highs_readModel", "Highs_writeModel", "Highs_writePresolvedModel", "Highs_writeSolution", "Highs_writeSolutionPretty", "Highs_readOptions", "Highs_writeOptions", "Highs_writeOptionsDeviations"]
+    },
+    {
+      "family": "lifecycle",
+      "exposure": "raw-model",
+      "functions": ["Highs_clear", "Highs_clearModel", "Highs_clearSolver", "Highs_releaseMemory", "Highs_presolve", "Highs_run", "Highs_postsolve"]
+    },
+    {
+      "family": "model-input",
+      "exposure": "raw-model",
+      "functions": ["Highs_passLp", "Highs_passMip", "Highs_passModel", "Highs_passHessian"]
+    },
+    {
+      "family": "linear-objectives",
+      "exposure": "raw-model",
+      "functions": ["Highs_passLinearObjectives", "Highs_addLinearObjective", "Highs_clearLinearObjectives"]
+    },
+    {
+      "family": "names",
+      "exposure": "raw-model",
+      "functions": ["Highs_passRowName", "Highs_passColName", "Highs_passModelName", "Highs_getRowName", "Highs_getRowByName", "Highs_getColName", "Highs_getColByName", "Highs_getPresolvedColName", "Highs_getPresolvedRowName"]
+    },
+    {
+      "family": "options",
+      "exposure": "raw-model",
+      "functions": ["Highs_setBoolOptionValue", "Highs_setIntOptionValue", "Highs_setDoubleOptionValue", "Highs_setStringOptionValue", "Highs_getBoolOptionValue", "Highs_getIntOptionValue", "Highs_getDoubleOptionValue", "Highs_getStringOptionValue", "Highs_getOptionType", "Highs_resetOptions", "Highs_getNumOptions", "Highs_getOptionName", "Highs_getBoolOptionValues", "Highs_getIntOptionValues", "Highs_getDoubleOptionValues", "Highs_getStringOptionValues"]
+    },
+    {
+      "family": "info",
+      "exposure": "raw-model",
+      "functions": ["Highs_getIntInfoValue", "Highs_getDoubleInfoValue", "Highs_getInt64InfoValue", "Highs_getInfoType"]
+    },
+    {
+      "family": "solution",
+      "exposure": "raw-model",
+      "functions": ["Highs_getSolution", "Highs_getBasis", "Highs_getModelStatus", "Highs_getDualRay", "Highs_getDualUnboundednessDirection", "Highs_getPrimalRay", "Highs_getObjectiveValue"]
+    },
+    {
+      "family": "basis-analysis",
+      "exposure": "raw-model",
+      "functions": ["Highs_getBasicVariables", "Highs_getBasisInverseRow", "Highs_getBasisInverseCol", "Highs_getBasisSolve", "Highs_getBasisTransposeSolve", "Highs_getReducedRow", "Highs_getReducedColumn"]
+    },
+    {
+      "family": "warm-start",
+      "exposure": "raw-model",
+      "functions": ["Highs_setBasis", "Highs_setLogicalBasis", "Highs_setSolution", "Highs_setSparseSolution"]
+    },
+    {
+      "family": "callbacks",
+      "exposure": "model-callback-adapter",
+      "functions": ["Highs_setCallback", "Highs_startCallback", "Highs_stopCallback", "Highs_getCallbackDataOutItem", "Highs_setCallbackSolution", "Highs_setCallbackSparseSolution", "Highs_repairCallbackSolution"]
+    },
+    {
+      "family": "timing",
+      "exposure": "raw-model",
+      "functions": ["Highs_getRunTime", "Highs_zeroAllClocks"]
+    },
+    {
+      "family": "add",
+      "exposure": "raw-model",
+      "functions": ["Highs_addCol", "Highs_addCols", "Highs_addVar", "Highs_addVars", "Highs_addRow", "Highs_addRows"]
+    },
+    {
+      "family": "matrix-orientation",
+      "exposure": "raw-model",
+      "functions": ["Highs_ensureColwise", "Highs_ensureRowwise"]
+    },
+    {
+      "family": "change-objective",
+      "exposure": "raw-model",
+      "functions": ["Highs_changeObjectiveSense", "Highs_changeObjectiveOffset"]
+    },
+    {
+      "family": "change-integrality",
+      "exposure": "raw-model",
+      "functions": ["Highs_changeColIntegrality", "Highs_changeColsIntegralityByRange", "Highs_changeColsIntegralityBySet", "Highs_changeColsIntegralityByMask", "Highs_clearIntegrality"]
+    },
+    {
+      "family": "change-cost",
+      "exposure": "raw-model",
+      "functions": ["Highs_changeColCost", "Highs_changeColsCostByRange", "Highs_changeColsCostBySet", "Highs_changeColsCostByMask"]
+    },
+    {
+      "family": "change-bounds",
+      "exposure": "raw-model",
+      "functions": ["Highs_changeColBounds", "Highs_changeColsBoundsByRange", "Highs_changeColsBoundsBySet", "Highs_changeColsBoundsByMask", "Highs_changeRowBounds", "Highs_changeRowsBoundsByRange", "Highs_changeRowsBoundsBySet", "Highs_changeRowsBoundsByMask"]
+    },
+    {
+      "family": "change-coefficient",
+      "exposure": "raw-model",
+      "functions": ["Highs_changeCoeff"]
+    },
+    {
+      "family": "model-scalars",
+      "exposure": "raw-model",
+      "functions": ["Highs_getObjectiveSense", "Highs_getObjectiveOffset", "Highs_getColIntegrality", "Highs_getInfinity", "Highs_getSizeofHighsInt", "Highs_getNumCol", "Highs_getNumRow", "Highs_getNumNz", "Highs_getHessianNumNz", "Highs_getPresolvedNumCol", "Highs_getPresolvedNumRow", "Highs_getPresolvedNumNz"]
+    },
+    {
+      "family": "sparse-extraction",
+      "exposure": "raw-model",
+      "functions": ["Highs_getColsByRange", "Highs_getColsBySet", "Highs_getColsByMask", "Highs_getRowsByRange", "Highs_getRowsBySet", "Highs_getRowsByMask"]
+    },
+    {
+      "family": "delete",
+      "exposure": "raw-model",
+      "functions": ["Highs_deleteColsByRange", "Highs_deleteColsBySet", "Highs_deleteColsByMask", "Highs_deleteRowsByRange", "Highs_deleteRowsBySet", "Highs_deleteRowsByMask"]
+    },
+    {
+      "family": "scale",
+      "exposure": "raw-model",
+      "functions": ["Highs_scaleCol", "Highs_scaleRow"]
+    },
+    {
+      "family": "model-extraction",
+      "exposure": "raw-model",
+      "functions": ["Highs_getModel", "Highs_getLp", "Highs_getPresolvedLp", "Highs_getIisLp", "Highs_getFixedLp"]
+    },
+    {
+      "family": "advanced",
+      "exposure": "raw-model",
+      "functions": ["Highs_crossover", "Highs_getRanging", "Highs_feasibilityRelaxation", "Highs_getIis"]
+    },
+    {
+      "family": "scheduler",
+      "exposure": "excluded",
+      "wasmExport": false,
+      "functions": ["Highs_resetGlobalScheduler"],
+      "reason": "The JavaScript build is single-threaded; exposing global scheduler control adds undefined-behavior risk and no useful capability."
+    }
+  ],
+  "overrides": {
+    "Highs_create": {"returnPolicy": "owned-handle", "js": ["raw.createModel", "createModel"], "reason": "Instance ownership is wrapped so destroy is guaranteed."},
+    "Highs_destroy": {"returnPolicy": "no-value", "js": ["RawModel.dispose", "Model.dispose"], "reason": "Never expose the native pointer or manual destroy."},
+    "Highs_readModel": {"rawName": "readModel", "js": ["RawModel.readModel", "Model.readModel"], "publicInput": "{ data, format: 'lp' | 'mps' }", "reason": "A hidden temporary MEMFS file adapts data; paths are not public."},
+    "Highs_writeModel": {"rawName": "exportModel", "js": ["RawModel.exportModel", "Model.exportModel"], "publicInput": "'lp' | 'mps'", "reason": "A hidden temporary MEMFS file is copied out as detached data."},
+    "Highs_writePresolvedModel": {"rawName": "exportPresolvedModel", "js": ["RawModel.exportPresolvedModel", "Model.exportPresolvedModel"]},
+    "Highs_writeSolution": {"rawName": "exportSolution", "js": ["RawModel.exportSolution", "Model.exportSolution"]},
+    "Highs_writeSolutionPretty": {"rawName": "exportSolutionPretty", "js": ["RawModel.exportSolutionPretty", "Model.exportSolutionPretty"]},
+    "Highs_readOptions": {"rawName": "readOptions", "js": ["RawModel.readOptions", "Model.readOptions"], "publicInput": "string"},
+    "Highs_writeOptions": {"rawName": "exportOptions", "js": ["RawModel.exportOptions", "Model.exportOptions"]},
+    "Highs_writeOptionsDeviations": {"rawName": "exportOptionDeviations", "js": ["RawModel.exportOptionDeviations", "Model.exportOptionDeviations"]},
+    "Highs_getRowName": {"js": ["RawModel.getRowName", "Model.getRowName"], "bridge": "length-safe native string shim", "reason": "The upstream API writes with strcpy into a caller buffer and does not accept its size."},
+    "Highs_getColName": {"js": ["RawModel.getColName", "Model.getColName"], "bridge": "length-safe native string shim", "reason": "The upstream API writes with strcpy into a caller buffer and does not accept its size."},
+    "Highs_getPresolvedRowName": {"bridge": "length-safe native string shim"},
+    "Highs_getPresolvedColName": {"bridge": "length-safe native string shim"},
+    "Highs_getOptionName": {"ownership": "free returned C allocation after copying"},
+    "Highs_getNumOptions": {"returnPolicy": "direct-value"},
+    "Highs_getInt64InfoValue": {"jsValue": "bigint"},
+    "Highs_getModelStatus": {"returnPolicy": "direct-value"},
+    "Highs_getObjectiveValue": {"returnPolicy": "direct-value"},
+    "Highs_getRunTime": {"returnPolicy": "direct-value"},
+    "Highs_getInfinity": {"returnPolicy": "direct-value"},
+    "Highs_getSizeofHighsInt": {"returnPolicy": "direct-value", "js": ["intBytes", "intBits"], "reason": "Avoid the proposal's ambiguous intSize value."},
+    "Highs_getNumCol": {"returnPolicy": "direct-value"},
+    "Highs_getNumRow": {"returnPolicy": "direct-value"},
+    "Highs_getNumNz": {"returnPolicy": "direct-value"},
+    "Highs_getHessianNumNz": {"returnPolicy": "direct-value"},
+    "Highs_getPresolvedNumCol": {"returnPolicy": "direct-value"},
+    "Highs_getPresolvedNumRow": {"returnPolicy": "direct-value"},
+    "Highs_getPresolvedNumNz": {"returnPolicy": "direct-value"},
+    "Highs_setCallback": {"rawName": "startCallback", "js": ["RawModel.startCallback", "Model.startCallback"]},
+    "Highs_startCallback": {"rawName": "startCallback", "js": ["RawModel.startCallback", "Model.startCallback"]},
+    "Highs_stopCallback": {"js": ["RawModel.stopCallback", "Model.stopCallback"]},
+    "Highs_getCallbackDataOutItem": {"rawName": null, "returnPolicy": "copied-by-callback-adapter", "reason": "Callback payloads are copied by the trampoline; raw callback-data pointers never escape."},
+    "Highs_setCallbackSolution": {"rawName": null, "js": ["CallbackControl.setSolution"]},
+    "Highs_setCallbackSparseSolution": {"rawName": null, "js": ["CallbackControl.setSparseSolution"]},
+    "Highs_repairCallbackSolution": {"rawName": null, "js": ["CallbackControl.repairSolution"]},
+    "Highs_resetGlobalScheduler": {"rawName": null, "returnPolicy": "not-exposed", "js": []}
+  },
+  "compatibilityExports": ["_Highs_call"],
+  "generatedExports": ["_malloc", "_free"],
+  "bridgeExports": ["_Highs_js_getColName", "_Highs_js_getRowName", "_Highs_js_getPresolvedColName", "_Highs_js_getPresolvedRowName"]
+}

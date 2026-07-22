@@ -1,0 +1,137 @@
+{
+  "$schema": "./highs-dts-audit.schema.json",
+  "schemaVersion": 1,
+  "proposal": "highs.d.ts",
+  "decision": "replace-with-generated-modern-fragment-plus-legacy-types",
+  "principles": [
+    "Keep the existing asynchronous factory and legacy solve(problem, options) contract.",
+    "Expose stable non-deprecated C API capability through raw status-returning methods and a persistent throwing Model.",
+    "Never expose native pointers, live WebAssembly views, filesystem paths, or arbitrary calls.",
+    "Copy all public array results into detached JavaScript-owned typed arrays.",
+    "Use exact snake_case HiGHS option names and reject file, thread, parallel, and concurrency options in the new API."
+  ],
+  "replace": [
+    {
+      "proposal": "Highs.intSize: 32 | 64",
+      "with": ["Highs.intBytes", "Highs.intBits"],
+      "backing": "Highs_getSizeofHighsInt",
+      "reason": "The C function returns bytes, so the proposed name makes 32 versus 64 ambiguous."
+    },
+    {
+      "proposal": "Highs.Model factory and constructor-like helpers",
+      "with": ["Highs.createModel", "Highs.raw.createModel"],
+      "backing": "Highs_create / Highs_destroy",
+      "reason": "A small explicit lifecycle maps cleanly to native ownership."
+    },
+    {
+      "proposal": "Model.fromFile, writeModel, writeSolution, writeOptions and other path methods",
+      "with": ["readModel({ data, format })", "exportModel", "exportPresolvedModel", "exportSolution", "exportSolutionPretty", "readOptions(text)", "exportOptions", "exportOptionDeviations"],
+      "backing": "corresponding Highs_read* / Highs_write* calls through hidden temporary MEMFS files",
+      "reason": "Public filesystem paths are environment-dependent and unsafe in browser workers."
+    },
+    {
+      "proposal": "Model.getCoefficient(row, column)",
+      "with": ["getRow({ kind: 'set', indices: [row] })", "getColumn({ kind: 'set', indices: [column] })"],
+      "backing": "Highs_getRowsBySet / Highs_getColsBySet",
+      "reason": "There is no Highs_getCoeff C function; sparse extraction is faster when callers need more than one coefficient."
+    },
+    {
+      "proposal": "Model.clone()",
+      "with": ["const snapshot = model.getModel(); const copy = highs.createModel(); copy.passModel(snapshot)"],
+      "backing": "Highs_getModel / Highs_passModel",
+      "reason": "The C API has no clone and an explicit copy makes its O(model size) cost and memory peak visible."
+    },
+    {
+      "proposal": "string status enums",
+      "with": ["numeric C constants", "RawStatusResult<T>"],
+      "backing": "kHighsStatus, kHighsModelStatus and related constants",
+      "reason": "Raw parity must preserve exact status values; high-level errors can add readable messages."
+    },
+    {
+      "proposal": "generic RawModelApi.call(name, ...args)",
+      "with": ["generated named raw methods"],
+      "backing": "api/highs-c-api.json",
+      "reason": "An arbitrary escape hatch cannot validate pointer ownership, lengths, integer overflow, or callback safety."
+    }
+  ],
+  "omit": [
+    {
+      "proposal": "Disposable and Symbol.dispose requirements",
+      "alternative": "Every owning object has dispose(); implementations may additionally define Symbol.dispose when available.",
+      "reason": "Requiring esnext.disposable needlessly raises the consumer TypeScript lib target."
+    },
+    {
+      "proposal": "algebraic Variable, Constraint, LinearExpression and QuadraticExpression handles",
+      "alternative": "Use sparse ModelData plus add/change/pass methods.",
+      "reason": "These are C++-style objects with no stable C handles; implementing them would require a second JS model graph or native shim with substantial memory and invalidation cost."
+    },
+    {
+      "proposal": "stable variable/constraint ids and live collections",
+      "alternative": "Use numeric indices, names, tagged selections, and detached snapshots.",
+      "reason": "The C API is index-based and deletion renumbers entries. Stable ids would add bookkeeping and cannot guarantee native parity."
+    },
+    {
+      "proposal": "Float64VectorView, Int32VectorView, SparseMatrixView and unsafeView()",
+      "alternative": "Return detached Float64Array and Int32Array values.",
+      "reason": "Emscripten memory growth and solver operations invalidate live views; safe zero-copy semantics are impossible."
+    },
+    {
+      "proposal": "gzip EncodedModel compression",
+      "alternative": "Accept uncompressed LP/MPS string or Uint8Array data; callers decompress before invoking the API.",
+      "reason": "The build intentionally uses ZLIB=OFF."
+    },
+    {
+      "proposal": "resetGlobalScheduler()",
+      "alternative": "None; dispose models and call releaseMemory().",
+      "reason": "The JavaScript build is single-threaded and upstream documents undefined behavior if the scheduler is in use."
+    },
+    {
+      "proposal": "thread, parallel, and concurrency options on the new API",
+      "alternative": "The legacy HighsOptions members remain accepted for backward compatibility; the new exact option API rejects them.",
+      "reason": "The WebAssembly build is intentionally single-threaded."
+    },
+    {
+      "proposal": "external Model.interrupt()",
+      "alternative": "CallbackControl.interrupt() from a synchronous callback.",
+      "reason": "Synchronous single-threaded WebAssembly cannot observe an external JavaScript interrupt while Highs_run is executing."
+    },
+    {
+      "proposal": "PDLP callback and MIP lazy-constraint callback",
+      "alternative": "Expose only callback types that upstream invokes in this build.",
+      "reason": "The proposed PDLP payload is not represented by a usable stable C callback contract here, and the lazy callback type is inert upstream."
+    },
+    {
+      "proposal": "presolveStatus, model name getter, standardForm, kappa, illConditioning, suggestedScaling, savedMipSolutions, presolve logs/maps, assessPrimalSolution, matrixImage",
+      "alternative": "Use the stable capabilities listed in api/highs-c-api.json.",
+      "reason": "No matching stable non-deprecated C function exists in the bundled HiGHS header."
+    },
+    {
+      "proposal": "readBasis, readSolution, writeBasis, writeInfo, writeRunData, writeIisModel and related writer methods",
+      "alternative": "Use typed set/get basis and solution methods, scalar info access, and getIis/getIisLp.",
+      "reason": "No matching stable non-deprecated C function exists in the bundled HiGHS header."
+    },
+    {
+      "proposal": "multiobjective getters, iteration, and deletion",
+      "alternative": "passLinearObjectives, addLinearObjective, and clearLinearObjectives.",
+      "reason": "Only pass/add/clear operations exist in the stable C API."
+    },
+    {
+      "proposal": "arbitrary native pointers including RawModelApi.pointer and callback data pointers",
+      "alternative": "Use owned RawModel objects and copied callback payloads.",
+      "reason": "Pointer escape prevents lifecycle and memory-safety guarantees."
+    },
+    {
+      "proposal": "Highs_compilationDate and deprecated aliases",
+      "alternative": "version, version components, and gitHash.",
+      "reason": "Deprecated APIs are explicitly outside the parity target."
+    }
+  ],
+  "keepWithShapeChanges": [
+    {"proposal": "persistent Model", "backing": "Highs_create / Highs_destroy"},
+    {"proposal": "LP, MIP and QP bulk input", "backing": "Highs_passLp / Highs_passMip / Highs_passModel / Highs_passHessian"},
+    {"proposal": "model mutation and sparse selection", "backing": "Highs_add*, Highs_change*, Highs_get*ByRange/Set/Mask, Highs_delete*, Highs_scale*"},
+    {"proposal": "solution, basis, rays, ranging, IIS, crossover and feasibility relaxation", "backing": "matching stable C functions"},
+    {"proposal": "options and scalar info", "backing": "typed Highs_get/set*Option* and Highs_get*Info* functions"},
+    {"proposal": "synchronous callbacks", "backing": "Highs_setCallback / Highs_startCallback / Highs_stopCallback plus a native trampoline"}
+  ]
+}
