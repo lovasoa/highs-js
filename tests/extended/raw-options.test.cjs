@@ -47,3 +47,18 @@ test("new option APIs reject thread, concurrency, and filesystem options", async
     assert.deepStrictEqual(model.raw.setOptionValue(name, value), { status: -1 });
   }
 });
+
+test("numeric option descriptors preserve native min, max, and default order", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const model = highs.createModel();
+  t.after(() => model.dispose());
+
+  const descriptor = model.options.describe("mip_rel_gap");
+  assert.equal(descriptor.type, "double");
+  assert.equal(descriptor.current, 1e-4);
+  assert.equal(descriptor.minimum, 0);
+  assert.equal(descriptor.maximum, Infinity);
+  assert.equal(descriptor.default, 1e-4);
+});

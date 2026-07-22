@@ -445,6 +445,21 @@
     if (isForbiddenOption(name)) throw unsupportedOptionError(name);
   }
 
+  function rawOptionIsAllowed(name) {
+    if (typeof name !== "string" || !name)
+      throw validationError("option name is required");
+    return !isForbiddenOption(name);
+  }
+
+  function validateOptionText(text) {
+    if (typeof text !== "string")
+      throw validationError("option data must be a string");
+    for (const line of text.split(/\r?\n/)) {
+      const match = /^\s*([A-Za-z][A-Za-z0-9_]*)\b/.exec(line);
+      if (match && !line.trimStart().startsWith("#")) validateOption(match[1]);
+    }
+  }
+
   function selectionArguments(selection, dimension, arena, label) {
     if (!selection || typeof selection !== "object")
       throw validationError(label + " selection must be tagged");
@@ -653,7 +668,7 @@
 
     getOptionType(name) {
       const pointer = this._require(false);
-      validateOption(name);
+      if (!rawOptionIsAllowed(name)) return rawResult(STATUS_ERROR);
       return withArena(function (arena) {
         const output = arena.outInts(1);
         const status = stringFunction("Highs_getOptionType", 1, 1)(pointer, name, output);
@@ -1276,7 +1291,7 @@
 
     setOptionValue(name, value) {
       const pointer = this._require(false);
-      validateOption(name);
+      if (!rawOptionIsAllowed(name)) return rawStatus(STATUS_ERROR);
       const type = typeof value;
       let status;
       if (type === "boolean")
@@ -1355,7 +1370,12 @@
       if (typeof text !== "string") throw validationError("option data must be a string");
       for (const line of text.split(/\r?\n/)) {
         const match = /^\s*([A-Za-z][A-Za-z0-9_]*)\b/.exec(line);
-        if (match && !line.trimStart().startsWith("#")) validateOption(match[1]);
+        if (
+          match &&
+          !line.trimStart().startsWith("#") &&
+          !rawOptionIsAllowed(match[1])
+        )
+          return rawStatus(STATUS_ERROR);
       }
       return rawStatus(
         withTextInput(text, "options", function (filename) {
@@ -1370,7 +1390,7 @@
 
     getOptionValues(name) {
       const pointer = this._require(false);
-      validateOption(name);
+      if (!rawOptionIsAllowed(name)) return rawResult(STATUS_ERROR);
       const typeResult = this.getOptionType(name);
       if (typeResult.status === STATUS_ERROR) return rawResult(STATUS_ERROR);
       return withArena(function (arena) {
@@ -1393,16 +1413,16 @@
         }
         if (type === "integer") {
           const current = arena.outInts(1);
-          const initial = arena.outInts(1);
           const minimum = arena.outInts(1);
           const maximum = arena.outInts(1);
+          const initial = arena.outInts(1);
           const status = stringFunction("Highs_getIntOptionValues", 1, 4)(
             pointer,
             name,
             current,
-            initial,
             minimum,
-            maximum
+            maximum,
+            initial
           );
           return rawResult(status, {
             name: name,
@@ -1415,16 +1435,16 @@
         }
         if (type === "double") {
           const current = arena.outDoubles(1);
-          const initial = arena.outDoubles(1);
           const minimum = arena.outDoubles(1);
           const maximum = arena.outDoubles(1);
+          const initial = arena.outDoubles(1);
           const status = stringFunction("Highs_getDoubleOptionValues", 1, 4)(
             pointer,
             name,
             current,
-            initial,
             minimum,
-            maximum
+            maximum,
+            initial
           );
           return rawResult(status, {
             name: name,
@@ -2804,6 +2824,7 @@
 
     set(name, value) {
       if (typeof name === "object" && name) {
+        Object.keys(name).forEach(validateOption);
         let aggregate = STATUS_OK;
         Object.keys(name).forEach(
           function (key) {
@@ -2814,10 +2835,12 @@
         );
         return this._model._setLast(aggregate, "setOptionValue");
       }
+      validateOption(name);
       return this._model._status("setOptionValue", [name, value]);
     }
 
     describe(name) {
+      validateOption(name);
       return this._model._value("getOptionValues", [name]);
     }
 
@@ -2830,6 +2853,7 @@
     }
 
     get(name) {
+      validateOption(name);
       return this._model._value("getOptionValue", [name]);
     }
 
@@ -2845,6 +2869,7 @@
     }
 
     read(text) {
+      validateOptionText(text);
       return this._model._status("readOptions", [text]);
     }
   }
