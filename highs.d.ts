@@ -53,6 +53,7 @@ export type Highs = LegacyHighs & {
   readonly intBytes: number;
   readonly intBits: number;
   readonly constants: HighsConstants;
+  readonly errors: HighsErrorConstructors;
 
   /** Create a persistent instance backed by Highs_create. */
   createModel(source?: ModelData | EncodedModel): Model;
@@ -86,17 +87,26 @@ export interface CallResult<T> extends CallMetadata {
   readonly value: T;
 }
 
-export class HighsError extends Error {
+export interface HighsError extends Error {
   readonly status: -1;
   readonly operation: string;
-  constructor(message: string, operation: string);
 }
 
-export class HighsDisposedError extends HighsError {}
-export class HighsValidationError extends HighsError {}
-export class HighsReentrancyError extends HighsError {}
-export class HighsUnsupportedOptionError extends HighsError {
+export interface HighsDisposedError extends HighsError {}
+export interface HighsValidationError extends HighsError {}
+export interface HighsReentrancyError extends HighsError {}
+export interface HighsUnsupportedOptionError extends HighsError {
   readonly option: string;
+}
+
+export interface HighsErrorConstructors {
+  readonly HighsError: new (message: string, operation: string) => HighsError;
+  readonly HighsDisposedError: new () => HighsDisposedError;
+  readonly HighsValidationError: new (message: string) => HighsValidationError;
+  readonly HighsReentrancyError: new () => HighsReentrancyError;
+  readonly HighsUnsupportedOptionError: new (
+    option: string,
+  ) => HighsUnsupportedOptionError;
 }
 
 export interface HighsConstants {
@@ -332,12 +342,24 @@ export interface SolveOutput {
   readonly basis: Basis;
 }
 
+export interface MipSolveOutput {
+  readonly modelStatus: ModelStatusCode;
+  readonly solution: {
+    readonly colValue: Float64Array;
+    readonly rowValue: Float64Array;
+  };
+}
+
 export interface RunResult extends CallMetadata {
   readonly modelStatus: ModelStatusCode;
 }
 
-export interface PostsolveInput extends SolutionInput {
-  readonly basis?: BasisInput;
+export interface PostsolveInput {
+  /** Primal values for the presolved columns. */
+  readonly colValue: NumberInput;
+  /** Optional dual values for the presolved columns and rows. */
+  readonly colDual?: NumberInput;
+  readonly rowDual?: NumberInput;
 }
 
 export interface LinearObjectiveInput {
@@ -447,13 +469,37 @@ export type CallbackType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9;
 export interface CallbackEvent {
   readonly type: CallbackType;
   readonly message: string;
-  readonly data: Readonly<Record<string, number | bigint | Float64Array>>;
+  readonly data: CallbackData;
   /** Backed by Highs_setCallbackSolution / Highs_setCallbackSparseSolution. */
   setSolution(solution: NumberInput | SparseSolutionInput): RawStatus;
   /** Backed by Highs_repairCallbackSolution. */
   repairSolution(): RawStatus;
   /** Interrupt the current run by writing user_interrupt in callback data. */
   interrupt(): void;
+}
+
+export interface CallbackData
+  extends Readonly<Record<string, unknown>> {
+  readonly running_time?: number;
+  readonly simplex_iteration_count?: number;
+  readonly ipm_iteration_count?: number;
+  readonly pdlp_iteration_count?: number;
+  readonly objective_function_value?: number;
+  readonly mip_node_count?: bigint;
+  readonly mip_total_lp_iterations?: bigint;
+  readonly mip_primal_bound?: number;
+  readonly mip_dual_bound?: number;
+  readonly mip_gap?: number;
+  readonly mip_solution?: Float64Array;
+  readonly cut_pool?: {
+    readonly numCols: number;
+    readonly numCuts: number;
+    readonly starts: Int32Array;
+    readonly indices: Int32Array;
+    readonly values: Float64Array;
+    readonly lower: Float64Array;
+    readonly upper: Float64Array;
+  };
 }
 
 /** Callback execution is synchronous; returning a Promise is unsupported. */
@@ -570,7 +616,7 @@ export interface Model {
   getBasisInverseCol(col: number, sparse?: boolean): NumericVector;
   getBasisSolve(rhs: NumberInput, sparse?: boolean): NumericVector;
   getBasisTransposeSolve(rhs: NumberInput, sparse?: boolean): NumericVector;
-  getReducedRow(row: number, basisInverseRow?: NumberInput, sparse?: boolean): NumericVector;
+  getReducedRow(row: number, sparse?: boolean): NumericVector;
   getReducedColumn(col: number, sparse?: boolean): NumericVector;
 
   crossover(input: SolutionInput): CallMetadata;
@@ -592,7 +638,7 @@ export interface RawRuntimeApi {
   /** Highs_lpCall. */
   lpCall(model: ModelData): RawResult<SolveOutput>;
   /** Highs_mipCall. */
-  mipCall(model: ModelData): RawResult<SolveOutput>;
+  mipCall(model: ModelData): RawResult<MipSolveOutput>;
   /** Highs_qpCall. */
   qpCall(model: ModelData): RawResult<SolveOutput>;
   /** Highs_create; dispose() invokes Highs_destroy. */
@@ -659,7 +705,7 @@ export interface RawModelApi {
   getBasisInverseCol(col: number, sparse?: boolean): RawResult<NumericVector>;
   getBasisSolve(rhs: NumberInput, sparse?: boolean): RawResult<NumericVector>;
   getBasisTransposeSolve(rhs: NumberInput, sparse?: boolean): RawResult<NumericVector>;
-  getReducedRow(row: number, basisInverseRow?: NumberInput, sparse?: boolean): RawResult<NumericVector>;
+  getReducedRow(row: number, sparse?: boolean): RawResult<NumericVector>;
   getReducedColumn(col: number, sparse?: boolean): RawResult<NumericVector>;
   setBasis(basis: BasisInput): RawStatus;
   setLogicalBasis(): RawStatus;

@@ -1,1 +1,10 @@
 declare var Module: any;
+declare var FS: any;
+declare var HEAPU8: Uint8Array;
+declare var HEAP32: Int32Array;
+declare var HEAPF64: Float64Array;
+declare function _malloc(byteLength: number): number;
+declare function _free(pointer: number): void;
+declare function UTF8ToString(pointer: number): string;
+declare function addFunction(callback: Function, signature: string): number;
+declare function removeFunction(pointer: number): void;
