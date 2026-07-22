@@ -24,14 +24,15 @@ To measure the persistent fast path after it exists, pass `--mode persistent`.
 Do not compare that report to a legacy-mode report: the comparator deliberately
 rejects mismatched scenarios.
 
-The extended verification suite is intentionally separate from the historical
-test runner until package scripts are integrated:
+The extended verification suite and declaration checks are part of `npm test`.
+They can also be run independently while developing a focused change:
 
 ```sh
 node --test tests/extended/*.test.cjs
 npx tsc -p test-dts/tsconfig.json
 ```
 
-Tests that require the new API report a clear skip against an old build. Once
-`createModel` and `raw` are present, failures are strict. Legacy compatibility
-and CommonJS package smoke tests always run.
+Tests that require the new API report a clear skip against a stale local build.
+CI and release jobs set `HIGHS_REQUIRE_EXTENDED=1` after rebuilding, so a
+missing `createModel` or `raw` surface is a hard failure. Legacy compatibility
+and package smoke tests always run.
