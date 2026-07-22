@@ -1332,7 +1332,7 @@
 
     getOptionValue(name) {
       const pointer = this._require(false);
-      validateOption(name);
+      if (!rawOptionIsAllowed(name)) return rawResult(STATUS_ERROR);
       const typeResult = this.getOptionType(name);
       if (typeResult.status === STATUS_ERROR) return rawResult(STATUS_ERROR);
       return withArena(function (arena) {

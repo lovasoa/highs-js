@@ -45,6 +45,7 @@ test("new option APIs reject thread, concurrency, and filesystem options", async
       `${name} must be rejected by the persistent API`,
     );
     assert.deepStrictEqual(model.raw.setOptionValue(name, value), { status: -1 });
+    assert.deepStrictEqual(model.raw.getOptionValue(name), { status: -1 });
   }
 });
 
