@@ -290,7 +290,36 @@
     if (sense !== 1 && sense !== -1)
       throw validationError("sense must be 1 (minimize) or -1 (maximize)");
     validateFiniteOrInfinity(model.offset == null ? 0 : model.offset, "offset");
+    if (model.modelName != null && typeof model.modelName !== "string")
+      throw validationError("modelName must be a string");
+    for (const [names, count, label] of [
+      [model.colNames, numCols, "colNames"],
+      [model.rowNames, numRows, "rowNames"],
+    ]) {
+      if (names == null) continue;
+      validateLength(names, count, label);
+      for (let index = 0; index < names.length; index++)
+        if (typeof names[index] !== "string")
+          throw validationError(label + "[" + index + "] must be a string");
+    }
     return { numCols, numRows, numNonzeros, hessianNonzeros, sense };
+  }
+
+  function validateLinearObjective(objective, numCols, label) {
+    if (!objective || typeof objective !== "object")
+      throw validationError(label + " must be an object");
+    validateFiniteOrInfinity(objective.weight, label + ".weight");
+    validateFiniteOrInfinity(objective.offset, label + ".offset");
+    validateDoubleArray(objective.coefficients, numCols, label + ".coefficients");
+    validateFiniteOrInfinity(
+      objective.absoluteTolerance,
+      label + ".absoluteTolerance"
+    );
+    validateFiniteOrInfinity(
+      objective.relativeTolerance,
+      label + ".relativeTolerance"
+    );
+    requireInteger(objective.priority, label + ".priority", 0);
   }
 
   class Arena {
@@ -472,6 +501,9 @@
     }
     if (selection.kind === "set") {
       validateIndexArray(selection.indices, null, label + ".indices", dimension);
+      for (let index = 1; index < selection.indices.length; index++)
+        if (selection.indices[index] <= selection.indices[index - 1])
+          throw validationError(label + " set indices must increase strictly");
       return {
         suffix: "BySet",
         prefix: [selection.indices.length, arena.ints(selection.indices)],
@@ -483,6 +515,13 @@
       const mask = new Int32Array(dimension);
       let count = 0;
       for (let index = 0; index < dimension; index++) {
+        if (
+          selection.mask[index] !== false &&
+          selection.mask[index] !== true &&
+          selection.mask[index] !== 0 &&
+          selection.mask[index] !== 1
+        )
+          throw validationError(label + ".mask values must be boolean, 0, or 1");
         mask[index] = selection.mask[index] ? 1 : 0;
         count += mask[index];
       }
@@ -634,7 +673,7 @@
     addLinearObjective(objective) {
       const pointer = this._require(false);
       const numCols = dimensions(pointer).numCols;
-      validateDoubleArray(objective.coefficients, numCols, "coefficients");
+      validateLinearObjective(objective, numCols, "objective");
       return rawStatus(
         withArena(function (arena) {
           return numericFunction("Highs_addLinearObjective", 7)(
@@ -875,6 +914,9 @@
 
     addCol(cost, lower, upper, entries) {
       const pointer = this._require(false);
+      validateFiniteOrInfinity(cost, "cost");
+      validateFiniteOrInfinity(lower, "lower");
+      validateFiniteOrInfinity(upper, "upper");
       validateSparseEntries(entries, dimensions(pointer).numRows);
       return rawStatus(
         withArena(function (arena) {
@@ -950,6 +992,8 @@
 
     changeRowBounds(row, lower, upper) {
       requireInteger(row, "row", 0);
+      validateFiniteOrInfinity(lower, "lower");
+      validateFiniteOrInfinity(upper, "upper");
       return rawStatus(
         numericFunction("Highs_changeRowBounds", 4)(
           this._require(false),
@@ -976,6 +1020,7 @@
 
     scaleCol(column, factor) {
       requireInteger(column, "column", 0);
+      validateFiniteOrInfinity(factor, "factor");
       return rawStatus(
         numericFunction("Highs_scaleCol", 3)(this._require(false), column, factor)
       );
@@ -1256,10 +1301,10 @@
           const priority = new Int32Array(count);
           for (let index = 0; index < count; index++) {
             const objective = objectives[index];
-            validateDoubleArray(
-              objective.coefficients,
+            validateLinearObjective(
+              objective,
               numCols,
-              "objectives[" + index + "].coefficients"
+              "objectives[" + index + "]"
             );
             weight[index] = objective.weight;
             offset[index] = objective.offset;
@@ -1598,6 +1643,8 @@
 
     addRow(lower, upper, entries) {
       const pointer = this._require(false);
+      validateFiniteOrInfinity(lower, "lower");
+      validateFiniteOrInfinity(upper, "upper");
       validateSparseEntries(entries, dimensions(pointer).numCols);
       return rawStatus(
         withArena(function (arena) {
@@ -1652,6 +1699,8 @@
 
     changeColBounds(column, lower, upper) {
       requireInteger(column, "column", 0);
+      validateFiniteOrInfinity(lower, "lower");
+      validateFiniteOrInfinity(upper, "upper");
       return rawStatus(
         numericFunction("Highs_changeColBounds", 4)(
           this._require(false),
@@ -1692,6 +1741,7 @@
 
     scaleRow(row, factor) {
       requireInteger(row, "row", 0);
+      validateFiniteOrInfinity(factor, "factor");
       return rawStatus(
         numericFunction("Highs_scaleRow", 3)(this._require(false), row, factor)
       );
@@ -1755,6 +1805,9 @@
       const pointer = this._require(false);
       const shape = dimensions(pointer);
       if (!input) throw validationError("relaxation input is required");
+      validateFiniteOrInfinity(input.globalLowerPenalty, "globalLowerPenalty");
+      validateFiniteOrInfinity(input.globalUpperPenalty, "globalUpperPenalty");
+      validateFiniteOrInfinity(input.globalRowPenalty, "globalRowPenalty");
       return rawStatus(
         withArena(function (arena) {
           function penalties(values, length, label) {

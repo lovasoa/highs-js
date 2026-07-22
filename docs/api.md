@@ -113,8 +113,11 @@ model.getRows({ kind: "set", indices: new Int32Array([1, 4, 7]) });
 model.deleteCols({ kind: "mask", mask: new Uint8Array([0, 1, 0, 1]) });
 ```
 
-Ranges follow the inclusive endpoints used by the HiGHS C API. Set order and
-mask length are validated against the current model.
+Ranges follow the inclusive endpoints used by the HiGHS C API. Set indices
+must increase strictly. Masks contain exactly one boolean, `0`, or `1` per
+current model row or column. Mutation arrays for ranges and sets follow the
+selected entries; mutation arrays used with masks span the full dimension, as
+required by the C API.
 
 ## Status and error behavior
 

@@ -291,7 +291,9 @@ export interface EncodedData {
 
 export type IndexSelection =
   | { readonly kind: "range"; readonly from: number; readonly to: number }
+  /** Indices must increase strictly, matching the stable C set operations. */
   | { readonly kind: "set"; readonly indices: IndexInput }
+  /** Masks contain one boolean/0/1 entry per model row or column. */
   | { readonly kind: "mask"; readonly mask: MaskInput };
 
 export interface ColumnData {
@@ -597,13 +599,17 @@ export interface Model {
   changeObjectiveSense(sense: ObjectiveSense): CallMetadata;
   changeObjectiveOffset(offset: number): CallMetadata;
   changeColIntegrality(index: number, type: VariableType): CallMetadata;
+  /** Values follow selected entries; mask values instead span every column. */
   changeColsIntegrality(selection: IndexSelection, types: readonly VariableType[] | Int32Array): CallMetadata;
   clearIntegrality(): CallMetadata;
   changeColCost(index: number, cost: number): CallMetadata;
+  /** Values follow selected entries; mask values instead span every column. */
   changeColsCost(selection: IndexSelection, costs: NumberInput): CallMetadata;
   changeColBounds(index: number, lower: number, upper: number): CallMetadata;
+  /** Arrays follow selected entries; mask arrays instead span every column. */
   changeColsBounds(selection: IndexSelection, lower: NumberInput, upper: NumberInput): CallMetadata;
   changeRowBounds(index: number, lower: number, upper: number): CallMetadata;
+  /** Arrays follow selected entries; mask arrays instead span every row. */
   changeRowsBounds(selection: IndexSelection, lower: NumberInput, upper: NumberInput): CallMetadata;
   changeCoefficient(row: number, col: number, value: number): CallMetadata;
   deleteCols(selection: IndexSelection): CallMetadata;

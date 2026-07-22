@@ -78,15 +78,47 @@ test("range, set, and mask selections are explicit and unambiguous", async (t) =
   t.after(() => model.dispose());
 
   const range = { kind: "range", from: 1, to: 2 };
-  const set = { kind: "set", indices: new Int32Array([3, 0]) };
+  const set = { kind: "set", indices: new Int32Array([0, 3]) };
   const mask = { kind: "mask", mask: new Uint8Array([0, 1, 1, 0]) };
 
   assert.deepStrictEqual([...model.getCols(range).cost], [20, 30]);
-  assert.deepStrictEqual([...model.getCols(set).cost], [40, 10]);
+  assert.deepStrictEqual([...model.getCols(set).cost], [10, 40]);
   assert.deepStrictEqual([...model.getCols(mask).cost], [20, 30]);
 
   model.changeColsCost(range, new Float64Array([21, 31]));
-  model.changeColsCost(set, new Float64Array([41, 11]));
-  model.changeColsCost(mask, new Float64Array([22, 32]));
+  model.changeColsCost(set, new Float64Array([11, 41]));
+  model.changeColsCost(mask, new Float64Array([0, 22, 32, 0]));
   assert.deepStrictEqual([...model.getModel().colCost], [11, 22, 32, 41]);
+
+  assert.throws(
+    () => model.getCols({ kind: "set", indices: [3, 0] }),
+    (error) => error?.name === "HighsValidationError",
+  );
+  assert.throws(
+    () => model.getCols({ kind: "mask", mask: [0, 2, 0, 0] }),
+    (error) => error?.name === "HighsValidationError",
+  );
+});
+
+test("model metadata validates before replacing the native model", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const model = highs.createModel(makeModel());
+  t.after(() => model.dispose());
+  const invalid = { ...makeModel(), colNames: ["only-one"] };
+
+  assert.throws(
+    () => model.passModel(invalid),
+    (error) => error?.name === "HighsValidationError",
+  );
+  assert.throws(
+    () => model.changeColBounds(0, "0", 1),
+    (error) => error?.name === "HighsValidationError",
+  );
+  assert.throws(
+    () => model.scaleRow(0, Number.NaN),
+    (error) => error?.name === "HighsValidationError",
+  );
+  assert.deepStrictEqual([...model.getModel().colCost], [10, 20, 30, 40]);
 });

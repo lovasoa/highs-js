@@ -32,7 +32,7 @@ void legacyThreadOptions;
 
 const selections: IndexSelection[] = [
   { kind: "range", from: 0, to: 1 },
-  { kind: "set", indices: new Int32Array([1, 0]) },
+  { kind: "set", indices: new Int32Array([0, 1]) },
   { kind: "mask", mask: new Uint8Array([1, 0]) },
 ];
 
