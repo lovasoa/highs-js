@@ -20,6 +20,7 @@ emcmake cmake ../HiGHS \
 	-DZLIB=OFF \
 	-DFAST_BUILD=OFF \
 	-DBUILD_SHARED_LIBS=OFF \
+	-DHIGHSINT64=OFF \
 	-DHIGHS_NO_DEFAULT_THREADS=ON
 
 # Run emmake with the normal make to generate wasm object files.

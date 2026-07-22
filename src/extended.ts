@@ -1781,27 +1781,16 @@
       return withArena(function (arena) {
         const iisNumCols = arena.outInts(1);
         const iisNumRows = arena.outInts(1);
-        let status = numericFunction("Highs_getIis", 9)(
-          pointer,
-          iisNumCols,
-          iisNumRows,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        );
-        if (status === STATUS_ERROR) return rawResult(status);
-        const numCols = heap32()[iisNumCols >> 2];
-        const numRows = heap32()[iisNumRows >> 2];
-        const colIndex = arena.outInts(numCols);
-        const rowIndex = arena.outInts(numRows);
-        const colBound = arena.outInts(numCols);
-        const rowBound = arena.outInts(numRows);
+        // Highs_getIis recomputes the IIS on every invocation. Allocate to the
+        // model dimensions and call it exactly once so counts and copied data
+        // necessarily describe the same computation.
+        const colIndex = arena.outInts(shape.numCols);
+        const rowIndex = arena.outInts(shape.numRows);
+        const colBound = arena.outInts(shape.numCols);
+        const rowBound = arena.outInts(shape.numRows);
         const colStatus = arena.outInts(shape.numCols);
         const rowStatus = arena.outInts(shape.numRows);
-        status = numericFunction("Highs_getIis", 9)(
+        const status = numericFunction("Highs_getIis", 9)(
           pointer,
           iisNumCols,
           iisNumRows,
@@ -1812,6 +1801,16 @@
           colStatus,
           rowStatus
         );
+        if (status === STATUS_ERROR) return rawResult(status);
+        const numCols = heap32()[iisNumCols >> 2];
+        const numRows = heap32()[iisNumRows >> 2];
+        if (
+          numCols < 0 ||
+          numCols > shape.numCols ||
+          numRows < 0 ||
+          numRows > shape.numRows
+        )
+          throw new RangeError("HiGHS returned invalid IIS dimensions");
         return rawResult(status, {
           colIndex: copyInts(colIndex, numCols),
           rowIndex: copyInts(rowIndex, numRows),
@@ -3126,6 +3125,12 @@
   const infinity = probe.getInfinity();
   const intBytes = probe.getSizeofHighsInt();
   probe.dispose();
+  if (intBytes !== 4)
+    throw new Error(
+      "This highs-js runtime requires a 32-bit HighsInt build; received " +
+        intBytes * 8 +
+        " bits"
+    );
 
   Module["version"] = version;
   Module["infinity"] = infinity;
