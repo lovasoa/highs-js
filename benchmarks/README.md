@@ -32,7 +32,5 @@ node --test tests/extended/*.test.cjs
 npx tsc -p test-dts/tsconfig.json
 ```
 
-Tests that require the new API report a clear skip against a stale local build.
-CI and release jobs set `HIGHS_REQUIRE_EXTENDED=1` after rebuilding, so a
-missing `createModel` or `raw` surface is a hard failure. Legacy compatibility
-and package smoke tests always run.
+Tests always require the extended API; a missing `createModel` or `raw` surface
+is a hard failure. Legacy compatibility and package smoke tests always run.

@@ -50,8 +50,6 @@ jobs:
       - name: build
         run: npm run build
       - name: test
-        env:
-          HIGHS_REQUIRE_EXTENDED: "1"
         run: npm test
       - name: verify package contents
         run: npm run test:package

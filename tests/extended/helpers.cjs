@@ -14,11 +14,7 @@ function loadRuntime() {
 
 function requireExtended(t, highs) {
   if (typeof highs.createModel !== "function" || !highs.raw) {
-    if (process.env.HIGHS_REQUIRE_EXTENDED === "1") {
-      throw new Error("the built artifact is missing the required extended API");
-    }
-    t.skip("extended persistent/raw API is not present in this build");
-    return false;
+    throw new Error("the built artifact is missing the required extended API");
   }
   return true;
 }
