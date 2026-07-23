@@ -1,85 +1,1416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
-    <meta name="description" content="HiGHS online linear programming solver">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HiGHS-js linear programming</title>
-    <script src="demo.js" async defer></script>
-    <link rel="prefetch" href="highs.js">
-    <link rel="prefetch" href="highs.wasm">
-    <link rel="prefetch" href="worker.js">
-</head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HiGHS online linear, mixed-integer, and quadratic optimization solver — runs in your browser via WebAssembly">
+<title>HiGHS Web Solver — Linear, MIP &amp; Quadratic Optimization</title>
+<style>
+  :root {
+    --color-accent: #118bee15;
+    --color-bg: #fff;
+    --color-bg-secondary: #e9e9e9;
+    --color-link: #118bee;
+    --color-secondary: #059669;
+    --color-secondary-accent: #0596690b;
+    --color-shadow: #f4f4f4;
+    --color-table: #118bee;
+    --color-text: #000;
+    --color-text-secondary: #666;
+    --color-scrollbar: #cacae8;
 
+    --radius: 6px;
+    --radius-lg: 10px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Monaco, monospace;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Header Navigation ── */
+  .top-nav {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .top-nav a {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s ease;
+  }
+
+  .top-nav a:hover {
+    opacity: 0.75;
+  }
+
+  .top-nav-right {
+    display: flex;
+    gap: 1.75rem;
+  }
+
+  /* ── Hero Section ── */
+  .hero {
+    text-align: center;
+    padding: 4.5rem 1.5rem 2.5rem;
+    max-width: 840px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.5vw, 2.6rem);
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 u {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--color-text);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .browser-mark {
+    background-color: #ffff00;
+    color: #000000;
+    padding: 0 4px;
+    font-weight: inherit;
+  }
+
+  /* ── Divider & Section Title ── */
+  .section-divider {
+    border: 0;
+    border-top: 1px solid var(--color-bg-secondary);
+    max-width: 960px;
+    margin: 4.5rem auto 3rem;
+  }
+
+  .demo-heading {
+    text-align: center;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Main Container ── */
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  /* ── Navigation Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    border-bottom: 2px solid var(--color-bg-secondary);
+    margin-bottom: 2rem;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar) transparent;
+  }
+
+  .tabs::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar);
+    border-radius: 2px;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1rem;
+    border: none;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -4px;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .tab-btn:hover {
+    color: var(--color-text);
+    background: var(--color-accent);
+  }
+
+  .tab-btn.active {
+    color: var(--color-link);
+    border-bottom-color: var(--color-link);
+    font-weight: 600;
+    background: transparent;
+  }
+
+  /* ── Tab Panels ── */
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  /* ── Example Card Component ── */
+  .example-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px var(--color-shadow);
+  }
+
+  .tech-header-line {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-link);
+    border-bottom: 1px solid var(--color-bg-secondary);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Header & Explanation Typography */
+  .problem-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .problem-header h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.4rem;
+  }
+
+  .problem-header p {
+    font-size: 0.925rem;
+    color: #333;
+    line-height: 1.55;
+  }
+
+  /* Code Section */
+  .code-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.35rem;
+  }
+
+  .code-editor-box {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.825rem;
+    line-height: 1.5;
+    border: 1px solid var(--color-bg-secondary);
+    overflow: hidden;
+  }
+
+  .code-editor-box textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #cdd6f4;
+    font-family: var(--font-mono);
+    font-size: 0.825rem;
+    line-height: 1.5;
+    resize: none;
+    height: auto;
+    field-sizing: content;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    display: block;
+  }
+
+  /* Interactive Input Visualizations */
+  .visual-inputs {
+    background: var(--color-shadow);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .visual-inputs h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.85rem;
+  }
+
+  .visual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .item-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .item-card.selected {
+    border-color: var(--color-secondary);
+    background: var(--color-secondary-accent);
+  }
+
+  .item-card h5 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-box {
+    background: var(--color-bg);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .stat-box .stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  .stat-box .stat-val {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .capacity-packing {
+    background: var(--color-bg);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .capacity-header-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .packing-track {
+    height: 24px;
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+    display: flex;
+    overflow: hidden;
+    gap: 2px;
+  }
+
+  .pack-block {
+    height: 100%;
+    background: var(--color-link);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.3s ease;
+  }
+
+  .pack-block.empty {
+    background: transparent;
+    color: var(--color-text-secondary);
+  }
+
+  .interval-scale {
+    margin-bottom: 0.75rem;
+  }
+
+  .interval-scale-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .interval-scale-track {
+    height: 8px;
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .interval-scale-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--color-secondary);
+    border-radius: 4px;
+  }
+
+  /* Visual Solution Output */
+  .visual-solution {
+    background: var(--color-shadow);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .visual-solution h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .progress-bar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .progress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .progress-track {
+    height: 10px;
+    background: var(--color-bg-secondary);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--color-link);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+  }
+
+  /* Textual Solution Output */
+  .textual-solution {
+    margin-bottom: 1rem;
+  }
+
+  textarea, .output {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.825rem;
+    line-height: 1.5;
+    border: 1px solid var(--color-bg-secondary);
+    outline: none;
+    resize: vertical;
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    padding: 0.75rem 0.85rem;
+    border-radius: var(--radius);
+    tab-size: 2;
+  }
+
+  textarea:focus {
+    border-color: var(--color-link);
+    box-shadow: 0 0 0 3px var(--color-accent);
+  }
+
+  .output {
+    min-height: 140px;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .output.error {
+    color: #dc2626;
+    border-color: #fca5a5;
+    background: #fef2f2;
+  }
+
+  .output.placeholder {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    border-style: dashed;
+  }
+
+  /* Solve Timing Bar */
+  .timing-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    background: var(--color-secondary-accent);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-secondary);
+    width: fit-content;
+    margin-bottom: 0.85rem;
+  }
+
+  /* Metadata Footer */
+  .metadata-footer {
+    font-size: 0.725rem;
+    color: var(--color-text-secondary);
+    border-top: 1px solid var(--color-bg-secondary);
+    padding-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid var(--color-link);
+    border-radius: var(--radius);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: var(--color-link);
+    color: #ffffff;
+  }
+
+  .btn:hover {
+    background: #0d70c4;
+    border-color: #0d70c4;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--color-link);
+    border-color: var(--color-bg-secondary);
+  }
+
+  .btn.ghost:hover {
+    background: var(--color-accent);
+    border-color: var(--color-link);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+    margin-bottom: 1.25rem;
+    align-items: center;
+  }
+
+  /* Form Controls */
+  label {
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  select, input[type=text], input[type=number] {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  select:focus, input[type=text]:focus, input[type=number]:focus {
+    border-color: var(--color-link);
+    box-shadow: 0 0 0 3px var(--color-accent);
+  }
+
+  input[type=number] {
+    width: 110px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Options Table */
+  .opts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+  }
+
+  .opts-table th, .opts-table td {
+    padding: 0.45rem 0.65rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-bg-secondary);
+  }
+
+  .opts-table th {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    position: sticky;
+    top: 0;
+    background: var(--color-shadow);
+  }
+
+  .opts-table tr:hover td {
+    background: var(--color-accent);
+  }
+
+  .doc-link {
+    font-size: 0.8rem;
+    color: var(--color-link);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .top-nav {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .hero {
+      padding: 2.5rem 1rem 1.5rem;
+    }
+    .container {
+      padding: 0 1rem 3rem;
+    }
+  }
+</style>
+</head>
 <body>
-    <header>
-        <nav>
-            <a href="https://github.com/lovasoa/highs-js">Github project page</a>
-            <ul>
-                <li><a href="#">Demo</a></li>
-                <li><a href="https://www.npmjs.com/package/highs">NPM package</a></li>
-                <li><a href="https://highs.dev/">HiGHS solver</a></li>
-            </ul>
-        </nav>
-        <h1><u>HiGHS</u> online linear programming solver</h1>
-        <p>A linear programming solver you can use directly from your <mark>browser</mark></p>
-    </header>
-    <main>
-        <hr>
-        <section>
-            <header>
-                <h2>Demo</h2>
-            </header>
-            <aside>
-                <h3>Problem definition</h3>
-                <p>Enter a problem definition in the <a href="http://lim.univ-reunion.fr/staff/fred/Enseignement/Optim/doc/CPLEX-LP/CPLEX-LP-file-format.html">LP Format</a></p>
-                <p><textarea id="lp_problem" style="min-height: 400px; width: 95%;">
-Maximize
+
+<!-- ═══════════ TOP NAVIGATION ═══════════ -->
+<nav class="top-nav">
+  <div class="top-nav-left">
+    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">Github project page</a>
+  </div>
+  <div class="top-nav-right">
+    <a href="#" class="active">Demo</a>
+    <a href="https://www.npmjs.com/package/highs" target="_blank" rel="noopener">NPM package</a>
+    <a href="https://highs.dev/" target="_blank" rel="noopener">HiGHS solver</a>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero">
+  <h1><u>HiGHS</u> online linear programming solver</h1>
+  <p>A linear, mixed-integer, and quadratic optimization solver you can use directly from your <mark class="browser-mark">browser</mark></p>
+</header>
+
+<hr class="section-divider">
+
+<h2 class="demo-heading">Demo</h2>
+
+<div class="container">
+
+<!-- ═══════════ TABS ═══════════ -->
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="lp"><span class="icon">📝</span> LP</button>
+  <button class="tab-btn" data-tab="build"><span class="icon">🔧</span> Build &amp; Mutate</button>
+  <button class="tab-btn" data-tab="mip"><span class="icon">🔢</span> MILP</button>
+  <button class="tab-btn" data-tab="qp"><span class="icon">📈</span> QP</button>
+  <button class="tab-btn" data-tab="ranging"><span class="icon">📊</span> Ranging</button>
+  <button class="tab-btn" data-tab="options"><span class="icon">⚙️</span> Options &amp; Hooks</button>
+  <button class="tab-btn" data-tab="iis"><span class="icon">🔍</span> IIS</button>
+  <button class="tab-btn" data-tab="io"><span class="icon">💾</span> Model I/O</button>
+</nav>
+
+<!-- ═══════════ TAB 1: LP FORMAT ═══════════ -->
+<section class="tab-panel active" id="panel-lp">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>LP // ONE-SHOT CPLEX TEXT SOLVER</span>
+      <span>highs.solve()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>CPLEX LP Model Optimization</h3>
+      <p>Parses CPLEX LP text and returns primal variable assignments, dual shadow prices, row slacks, and basis status flags in a single call without manual matrix construction.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>4 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="lp-core-code" spellcheck="false">// 1. One-shot solve call for LP text
+const result = highs.solve(lpText, { output_flag: false });
+
+// 2. Extract optimal objective and column result dictionary
+const { ObjectiveValue, Columns } = result;</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>Interactive CPLEX LP Text Model</h4>
+      <textarea id="lp-input" spellcheck="false" style="min-height:160px">Maximize
  obj: x1 + 2 x2 + 3 x3 + x4
 Subject To
- c1: - x1 + x2 + x3 + 10 x4 <= 20
- c2: x1 - 3 x2 + x3 <= 30
+ c1: - x1 + x2 + x3 + 10 x4 &lt;= 20
+ c2: x1 - 3 x2 + x3 &lt;= 30
  c3: x2 - 3.5 x4 = 0
 Bounds
- 0 <= x1 <= 40
- 2 <= x4 <= 3
-End
-                </textarea></p>
-            </aside>
-            <aside>
-                <h3>Solution</h3>
-                <code id="solution" style="white-space: pre-wrap; width: 100%">Downloading highs-js...</code>
-            </aside>
-        </section>
-        <hr>
-        <article>
-            <header><h2>Node.js example</h2></header>
-            <pre><code>var highs = await require("highs")();
+ 0 &lt;= x1 &lt;= 40
+ 2 &lt;= x4 &lt;= 3
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="lp-solve">Solve LP</button>
+        <button class="btn ghost" id="lp-reset">Reset Model</button>
+      </div>
+    </div>
 
-highs.solve(`Maximize
- obj: x + 2 y
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val">OPTIMAL</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">OPTIMAL OBJECTIVE</span>
+          <span class="stat-val" id="lp-obj-val">122.5000</span>
+        </div>
+      </div>
+      <h4>Primal Solution Breakdown</h4>
+      <div class="progress-bar-group" id="lp-visual-bars">
+        <div class="progress-item">
+          <div class="progress-label"><span>x1</span><span>--</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Structured Result Object:</label>
+      <div class="output placeholder" id="lp-output">Loading HiGHS…</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="lp-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS WebAssembly • Legacy solve() API • Primal Simplex Engine • IEEE 754 64-bit Precision
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 2: BUILD & SOLVE ═══════════ -->
+<section class="tab-panel" id="panel-build">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>BUILD // PERSISTENT MODEL &amp; CSC MATRIX</span>
+      <span>highs.createModel()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3 id="build-title">Production Planning Optimization</h3>
+      <p id="build-explain">Allocates factory manufacturing capacity across 4 products to maximize revenue subject to plant labor and machine limits.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>9 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="build-core-code" spellcheck="false">// 1. Instantiate persistent model and pass CSC problem structure
+const model = highs.createModel();
+model.passModel({
+  numCols: colCost.length, numRows: rowLower.length, sense: -1,
+  colCost, colLower, colUpper, rowLower, rowUpper,
+  matrix: { format: "csc", numRows, numCols, starts, indices, values }
+});
+
+// 2. Solve and query primal & dual vectors
+model.run();
+const { colValue, colDual } = model.getSolution();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <div class="form-row">
+        <select id="build-example" style="flex:1">
+          <option value="production">Production Planning</option>
+          <option value="diet">Diet Problem</option>
+          <option value="transport">Transportation</option>
+        </select>
+        <button class="btn ghost" id="build-load">Load Example</button>
+      </div>
+      <h4 style="margin-top:0.75rem">Interactive Variable Inputs</h4>
+      <div id="build-vars"></div>
+      <div class="btn-row">
+        <button class="btn" id="build-solve">Solve Model</button>
+        <button class="btn ghost" id="build-add-var">+ Add Variable</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val">OPTIMAL</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">OBJECTIVE</span>
+          <span class="stat-val" id="build-obj-val">--</span>
+        </div>
+      </div>
+      <h4>Primal Assignment Allocation</h4>
+      <div class="progress-bar-group" id="build-visual-bars">
+        <div class="progress-item">
+          <div class="progress-label"><span>x1</span><span>--</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Structured Solution Output:</label>
+      <div class="output placeholder" id="build-output">Select an example and click Solve.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="build-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS Extended API • highs.createModel() • Compressed Sparse Column (CSC) Matrix • Dual Simplex
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 3: MILP ═══════════ -->
+<section class="tab-panel" id="panel-mip">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>MILP // BINARY &amp; INTEGER VARIABLES</span>
+      <span>integrality: [1, 1, ...]</span>
+    </div>
+
+    <div class="problem-header">
+      <h3 id="mip-title">0/1 Knapsack Discrete Optimization</h3>
+      <p id="mip-explain">Selects the highest-value subset of discrete items (each either taken or left behind) without exceeding backpack weight capacity.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>10 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="mip-core-code" spellcheck="false">// 1. Pass MIP model with integrality array (1 = INTEGER / BINARY)
+const model = highs.createModel();
+model.passModel({
+  numCols, numRows, sense: -1, colCost, colLower, colUpper, rowLower, rowUpper,
+  matrix: { format: "csc", numRows, numCols, starts, indices, values },
+  integrality: [1, 1, 1, 1, 1]
+});
+
+// 2. Solve via Branch-and-Bound and extract binary assignments
+model.run();
+const { colValue } = model.getSolution();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <div class="form-row">
+        <select id="mip-example" style="flex:1">
+          <option value="knapsack">0/1 Knapsack</option>
+          <option value="facility">Facility Location</option>
+        </select>
+        <label>Capacity: <input type="number" id="mip-capacity" value="15" min="1" max="100"></label>
+      </div>
+      <h4>Knapsack Items (Value, Weight per line)</h4>
+      <textarea id="mip-items" style="min-height:90px" spellcheck="false">4, 12
+2, 2
+10, 4
+1, 1
+2, 1</textarea>
+      <div class="btn-row">
+        <button class="btn" id="mip-solve">Solve MILP</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val">OPTIMAL</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MIP GAP</span>
+          <span class="stat-val">0.00%</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">TOTAL VALUE</span>
+          <span class="stat-val" id="mip-val-stat">$15.00</span>
+        </div>
+      </div>
+
+      <!-- Capacity Packing Bar -->
+      <div class="capacity-packing" id="mip-packing-box">
+        <div class="capacity-header-row">
+          <span>KNAPSACK WEIGHT DISTRIBUTION</span>
+          <span id="mip-weight-stat">8 / 15 kg</span>
+        </div>
+        <div class="packing-track" id="mip-packing-track">
+          <div class="pack-block" style="width:100%">Run MILP to visualize weight packing</div>
+        </div>
+      </div>
+
+      <div class="visual-grid" id="mip-visual-grid"></div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Structured Solution Output:</label>
+      <div class="output placeholder" id="mip-output">Click Solve MILP to run.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="mip-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS MIP Engine • Branch-and-Bound with Cuts • Binary Integrality [0,1] • MIP Gap: 0.0%
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 4: QP (QUADRATIC PROGRAMMING) ═══════════ -->
+<section class="tab-panel" id="panel-qp">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>QP // QUADRATIC OBJECTIVE &amp; HESSIAN MATRIX</span>
+      <span>passHessian()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Markowitz Portfolio Risk Minimization</h3>
+      <p>Allocates capital across 3 investment assets (Tech, Energy, Bonds) to achieve a target annual return while minimizing portfolio variance. Passes a symmetric covariance Hessian matrix $Q$ in CSC format via <code>model.passHessian({ format: "triangular", dimension, starts, indices, values })</code>.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>10 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="qp-core-code" spellcheck="false">// 1. Pass linear budget (x1 + x2 + x3 = 1) and return (>= 8%) constraints
+const model = highs.createModel();
+model.passModel({
+  numCols: 3, numRows: 2, sense: 1, colCost: [0, 0, 0],
+  colLower: [0, 0, 0], colUpper: [1, 1, 1],
+  rowLower: [1.0, 0.08], rowUpper: [1.0, Infinity],
+  matrix: { format: "csc", numRows: 2, numCols: 3, starts: [0, 2, 4, 6], indices: [0, 1, 0, 1, 0, 1], values: [1, 0.12, 1, 0.08, 1, 0.04] }
+});
+
+// 2. Pass Covariance Matrix Q (Hessian) via passHessian()
+model.passHessian({
+  format: "triangular", dimension: 3,
+  starts: [0, 2, 3, 4], indices: [0, 1, 1, 2], values: [0.04, 0.01, 0.02, 0.005]
+});
+
+// 3. Solve Quadratic Program (minimize portfolio variance)
+model.run();
+const { colValue } = model.getSolution();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>Portfolio Asset Parameters &amp; Targets</h4>
+      <div class="form-row">
+        <label>Target Annual Return: <input type="number" id="qp-target-return" value="8.0" step="0.5" min="4" max="12">%</label>
+      </div>
+      <div class="visual-grid">
+        <div class="item-card">
+          <h5>Asset 1: Tech Growth</h5>
+          <span style="font-size:0.75rem">Exp Return: 12.0% | Variance: High</span>
+        </div>
+        <div class="item-card">
+          <h5>Asset 2: Energy</h5>
+          <span style="font-size:0.75rem">Exp Return: 8.0% | Variance: Med</span>
+        </div>
+        <div class="item-card">
+          <h5>Asset 3: Govt Bonds</h5>
+          <span style="font-size:0.75rem">Exp Return: 4.0% | Variance: Low</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="qp-solve">Optimize Portfolio QP</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val">OPTIMAL</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MINIMIZED VARIANCE</span>
+          <span class="stat-val" id="qp-risk-stat">0.0047</span>
+        </div>
+      </div>
+
+      <h4>Optimal Portfolio Allocation Breakdown</h4>
+      <div class="capacity-packing">
+        <div class="capacity-header-row">
+          <span>CAPITAL ALLOCATION (100% TOTAL)</span>
+          <span id="qp-allocation-text">Tech: -- | Energy: -- | Bonds: --</span>
+        </div>
+        <div class="packing-track" id="qp-allocation-track">
+          <div class="pack-block" style="width:100%">Run QP to compute optimal portfolio weights</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Optimal Asset Weights Array:</label>
+      <div class="output placeholder" id="qp-output">Click Optimize Portfolio QP to run.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="qp-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS QP Solver • passHessian() • Symmetric Positive Semidefinite Covariance Q Matrix
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 5: RANGING ═══════════ -->
+<section class="tab-panel" id="panel-ranging">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>RANGING // POST-OPTIMAL SENSITIVITY ANALYSIS</span>
+      <span>getRanging()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Objective Cost &amp; Constraint Sensitivity</h3>
+      <p>Calculates exact allowable lower and upper stability bounds for objective cost coefficients (<code>colCostDown</code>, <code>colCostUp</code>) and constraint right-hand sides before the current optimal basis changes.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>5 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="ranging-core-code" spellcheck="false">// 1. Load LP model and solve to optimal basis
+const model = highs.createModel({ format: "lp", data: lpText });
+model.run();
+
+// 2. Query sensitivity ranging intervals
+const ranging = model.getRanging();
+const x1CostBounds = [ranging.colCostDown.value[0], ranging.colCostUp.value[0]];</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>LP Model Definition</h4>
+      <textarea id="ranging-lp" spellcheck="false" style="min-height:140px">Maximize
+ obj: 3 x1 + 2 x2
 Subject To
- c1: x + y &lt;= 20
- c2: x - y &gt;= -30
+ c1: x1 + x2 &lt;= 6
+ c2: 2 x1 + x2 &lt;= 8
+ c3: -x1 + x2 &lt;= 1
+ c4: x2 &lt;= 2
 Bounds
- 0 &lt;= x
- 0 &lt;= y
-End`);</code></pre>
-        </article>
-        <hr>
-        <section>
-            <blockquote>
-                "Linear programming is viewed as a revolutionary development giving man the ability to state general objectives and to find, by means of the simplex method, optimal policy decisions for a broad class of practical decision problems of great complexity. In the real world, planning tends to be ad hoc because of the many special-interest groups with their multiple objectives. "
-                <footer><i>- George Dantzig</i></footer>
-            </blockquote>
-        </section>
-        <hr>
-    <footer>
-        <p>
-            <small>Contact info</small>
-        </p>
-    </footer>
-</body>
+ 0 &lt;= x1
+ 0 &lt;= x2
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="ranging-solve">Solve &amp; Range</button>
+      </div>
+    </div>
 
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val">OPTIMAL</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">BASIS STABILITY</span>
+          <span class="stat-val">STABLE</span>
+        </div>
+      </div>
+
+      <h4>Continuous Cost &amp; Bound Stability Scales</h4>
+      <div id="ranging-visual-bars">
+        <div class="interval-scale">
+          <div class="interval-scale-header">
+            <span>x1 Cost Stability Range</span>
+            <span>[1.0000 ⟷ 4.0000]</span>
+          </div>
+          <div class="interval-scale-track">
+            <div class="interval-scale-fill" style="left:20%;width:60%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Numerical Ranging Output:</label>
+      <div class="output placeholder" id="ranging-output">Click Solve &amp; Range to analyze.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="ranging-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS Extended API • getRanging() • Simplex Basis Inverse Tableau Analysis
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 6: OPTIONS & HOOKS ═══════════ -->
+<section class="tab-panel" id="panel-options">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>OPTIONS // SOLVER TUNING &amp; CALLBACK HOOKS</span>
+      <span>options.describe()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>HiGHS Parameter Introspection</h3>
+      <p>Queries, describes, and modifies C++ solver parameters (tolerances, presolve reductions, pivoting rules) on active WebAssembly instances at runtime.</p>
+    </div>
+
+    <div class="visual-inputs">
+      <div class="opts-filter">
+        <input type="text" id="opts-search" placeholder="Filter options…">
+        <span style="font-size:.8rem;color:var(--color-text-secondary);white-space:nowrap" id="opts-count"></span>
+      </div>
+      <div style="max-height:280px;overflow:auto;border:1px solid var(--color-bg-secondary);border-radius:var(--radius)">
+        <table class="opts-table">
+          <thead><tr><th>Name</th><th>Type</th><th>Current</th><th>Default</th></tr></thead>
+          <tbody id="opts-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="visual-solution">
+      <h4>Option Inspector &amp; Setter</h4>
+      <div class="form-row">
+        <label>Name: <input type="text" id="opt-name" placeholder="e.g. presolve"></label>
+        <button class="btn ghost" id="opt-get">Describe</button>
+      </div>
+      <div class="form-row">
+        <label>New Value: <input type="text" id="opt-value" placeholder="e.g. off"></label>
+        <button class="btn" id="opt-set">Set Option</button>
+      </div>
+      <div class="output" id="opt-detail" style="min-height:90px;margin-top:0.5rem">Select an option above or type a name to inspect.</div>
+      <button class="btn ghost" id="opt-reset-all" style="margin-top:0.5rem">Reset All Options</button>
+    </div>
+    <div class="metadata-footer">
+      HiGHS Option System • Dynamic C++ Option Table • Single-Threaded WASM Exclusions Active
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 7: IIS ═══════════ -->
+<section class="tab-panel" id="panel-iis">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>IIS // INFEASIBILITY CONFLICT DIAGNOSTICS</span>
+      <span>getIis()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Minimal Conflicting Subsystem Isolation</h3>
+      <p>Isolates the smallest irreducible subset of contradictory constraints and variable bounds that cause mathematical infeasibility.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>5 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="iis-core-code" spellcheck="false">// 1. Load infeasible LP model
+const model = highs.createModel({ format: "lp", data: lpText });
+model.run();
+
+// 2. Extract minimal irreducible inconsistent subsystem
+const iis = model.getIis();
+const { colIndices, rowIndices } = iis;</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>Infeasible Model Inputs</h4>
+      <textarea id="iis-lp" spellcheck="false" style="min-height:120px">Minimize
+ obj: x1 + x2
+Subject To
+ c1: x1 + x2 &lt;= 5
+ c2: x1 &gt;= 10
+ c3: x2 &gt;= 10
+Bounds
+ 0 &lt;= x1
+ 0 &lt;= x2
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="iis-solve">Find IIS</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">FEASIBILITY STATUS</span>
+          <span class="stat-val" style="color:#dc2626">INFEASIBLE</span>
+        </div>
+      </div>
+      <h4>Conflicting Subsystem Isolation</h4>
+      <div class="visual-grid" id="iis-visual-tags">
+        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
+          <h5 style="color:#dc2626">c2: x1 &gt;= 10</h5>
+          <span style="font-size:0.75rem;color:#991b1b">Lower Bound Conflict</span>
+        </div>
+        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
+          <h5 style="color:#dc2626">c3: x2 &gt;= 10</h5>
+          <span style="font-size:0.75rem;color:#991b1b">Lower Bound Conflict</span>
+        </div>
+        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
+          <h5 style="color:#dc2626">c1: x1 + x2 &lt;= 5</h5>
+          <span style="font-size:0.75rem;color:#991b1b">RHS Conflict</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>IIS Diagnostic Output:</label>
+      <div class="output placeholder" id="iis-output">Click Find IIS to analyze infeasibility.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="iis-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS Extended API • getIis() • Infeasibility Analysis Engine
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 8: MODEL I/O ═══════════ -->
+<section class="tab-panel" id="panel-io">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>I/O // IN-MEMORY SERIALIZATION &amp; NORMALIZATION</span>
+      <span>exportModel("lp")</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>CPLEX LP &amp; MPS Model Serialization</h3>
+      <p>Parses LP/MPS text directly in WebAssembly memory, normalizes variable names and constraint matrices, and exports clean LP strings without filesystem dependencies.</p>
+    </div>
+
+    <!-- Core Solving Code -->
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>6 lines</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="io-core-code" spellcheck="false">// 1. Parse CPLEX LP text into persistent model
+const model = highs.createModel({ format: "lp", data: lpText });
+
+// 2. Export normalized LP and optimize instance
+const normalizedLp = model.exportModel("lp");
+model.run();
+const { colValue } = model.getSolution();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>CPLEX LP Input Text</h4>
+      <textarea id="io-input" spellcheck="false" style="min-height:120px">Maximize
+ obj: 2 x1 + 3 x2
+Subject To
+ c1: x1 + x2 &lt;= 10
+ c2: 2 x1 + x2 &lt;= 16
+Bounds
+ 0 &lt;= x1
+ 0 &lt;= x2
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="io-load">Load LP</button>
+        <button class="btn ghost" id="io-export">Export LP</button>
+        <button class="btn ghost" id="io-solve">Solve Model</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">VARIABLES</span>
+          <span class="stat-val">2</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">CONSTRAINTS</span>
+          <span class="stat-val">2</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">PARSER STATUS</span>
+          <span class="stat-val" id="io-status-val">READY</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Model I/O Output:</label>
+      <div class="output placeholder" id="io-output">Load a model to begin.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="io-timing">⚡ Solved in -- ms</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS Extended API • In-Memory C++ Parser &amp; Exporter • LP/MPS Format
+    </div>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<script src="demo.js" async defer></script>
+<link rel="prefetch" href="highs.js">
+<link rel="prefetch" href="highs.wasm">
+<link rel="prefetch" href="worker.js">
+</body>
 </html>

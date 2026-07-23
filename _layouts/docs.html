@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{{ page.description | default: site.description | escape }}" />
+    <link rel="canonical" href="{{ page.url | absolute_url }}" />
+    <title>{{ page.title | escape }} · {{ site.title | escape }}</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      header,
+      main,
+      footer {
+        margin-inline: auto;
+        max-width: 76rem;
+        padding: 1rem clamp(1rem, 4vw, 3rem);
+      }
+
+      header {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 2rem;
+        border-bottom: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+      }
+
+      header > a {
+        color: inherit;
+        font-size: 1.2rem;
+        font-weight: 750;
+        text-decoration: none;
+      }
+
+      main {
+        min-height: 70vh;
+      }
+
+      main > :first-child {
+        margin-top: 1rem;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+        scroll-margin-top: 1rem;
+      }
+
+      h2 {
+        border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+        padding-bottom: 0.3rem;
+      }
+
+      a {
+        color: #0875c1;
+      }
+
+      code {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        border-radius: 0.2rem;
+        padding: 0.08rem 0.25rem;
+      }
+
+      pre {
+        background: color-mix(in srgb, currentColor 7%, transparent);
+        border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+        border-radius: 0.4rem;
+        overflow: auto;
+        padding: 1rem;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+      }
+
+      table {
+        border-collapse: collapse;
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      th,
+      td {
+        border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+        padding: 0.45rem 0.65rem;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: color-mix(in srgb, currentColor 7%, transparent);
+      }
+
+      footer {
+        border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+        font-size: 0.9rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        a {
+          color: #70bfff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="{{ '/docs/' | relative_url }}">highs-js documentation</a>
+      <nav aria-label="Documentation">
+        <a href="{{ '/docs/api/' | relative_url }}">API guide</a>
+        <a href="{{ '/docs/options/' | relative_url }}">Options</a>
+        <a href="{{ '/docs/migration/' | relative_url }}">Migration</a>
+        <a href="{{ '/docs/c-api-mapping/' | relative_url }}">C API mapping</a>
+        <a href="{{ '/extended/' | relative_url }}">Demo</a>
+        <a href="https://github.com/lovasoa/highs-js">GitHub</a>
+      </nav>
+    </header>
+    <main>{{ content }}</main>
+    <footer>
+      <p>
+        highs-js is an MIT-licensed WebAssembly distribution of
+        <a href="https://highs.dev/">HiGHS</a>.
+      </p>
+    </footer>
+  </body>
+</html>
