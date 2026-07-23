@@ -157,7 +157,40 @@ model.run();
 // Solver statistics after the run
 console.log(model.info.get("simplex_iteration_count")); // number
 console.log(model.info.get("mip_node_count"));          // bigint
-console.log(model.info.type("objective_function_value")); // "integer" | "double" | "int64"
+model.info.type("objective_function_value")); // "integer" | "double" | "int64"
+```
+
+## Basis operations
+
+After an optimal simplex solve, inspect and manipulate the basis:
+
+```js
+model.run();
+
+// Get the current basis and basic variable indices
+const basis = model.getBasis();
+// basis.colStatus: Int32Array -- per-column status (lower, basic, upper, zero, nonbasic)
+// basis.rowStatus: Int32Array -- per-row status
+const basicVars = model.getBasicVariables(); // indices of basic variables
+
+// Seed a new model with a warm-start basis
+const newModel = highs.createModel(/* ... */);
+newModel.setBasis(basis);  // or newModel.setLogicalBasis() for slack-only start
+newModel.run();
+
+// Basis inverse operations (dense or sparse)
+const invRow = model.getBasisInverseRow(0);            // { values: Float64Array }
+const invRowSparse = model.getBasisInverseRow(0, true); // { values, nonzeroIndices }
+const solve = model.getBasisSolve(new Float64Array([1, 0]));
+
+// Simplex tableau rows and columns
+const reducedRow = model.getReducedRow(0);
+const reducedCol = model.getReducedColumn(0);
+
+// Convert IPM solution to a basic solution
+model.options.set("solver", "ipm");
+model.run();
+model.crossover({ colValue: model.getSolution().colValue });
 ```
 
 ## WebAssembly loading
