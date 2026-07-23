@@ -9,7 +9,7 @@ jobs:
     outputs:
       emsdk: ${{ steps.versions.outputs.emsdk }}
       node: ${{ steps.versions.outputs.node }}
-      node-matrix: ${{ steps.versions.outputs.node-matrix }}
+      node_matrix: ${{ steps.versions.outputs.node_matrix }}
     steps:
       - uses: actions/checkout@v6
       - id: versions
@@ -18,7 +18,7 @@ jobs:
           . ./.env
           echo "emsdk=$EMSDK_VERSION" >> "$GITHUB_OUTPUT"
           echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
-          echo "node-matrix=[18,20,22,$NODE_VERSION]" >> "$GITHUB_OUTPUT"
+          echo "node_matrix=[18,20,22,$NODE_VERSION]" >> "$GITHUB_OUTPUT"
 
   build:
     name: Continuous Integration
@@ -72,7 +72,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ${{ fromJSON(needs.toolchain.outputs.node-matrix) }}
+        node: ${{ fromJSON(needs.toolchain.outputs.node_matrix) }}
     steps:
       - uses: actions/setup-node@v6
         with:
