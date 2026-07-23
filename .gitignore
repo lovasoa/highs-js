@@ -6,3 +6,4 @@ node_modules/
 demo/highs.js
 demo/highs.wasm
 demo/highs.mjs
+demo/docs/

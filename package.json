@@ -1,6 +1,6 @@
 {
   "name": "highs",
-  "version": "1.15.3-pre.1",
+  "version": "1.15.3-pre.2",
   "description": "Mixed integer linear programming library, built by compiling a high-performance C++ solver developed by the University of Edinburgh (HiGHS) to WebAssembly.",
   "main": "build/highs.js",
   "module": "build/highs.mjs",
@@ -23,10 +23,11 @@
     "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && node tests/test.js && node --test tests/extended/*.test.cjs",
     "test:package": "node scripts/test-packed-package.mjs",
     "test:demo": "node scripts/test-demo.mjs",
-    "build:demo": "cp build/highs.js build/highs.wasm demo/",
+    "build:demo": "cp build/highs.js build/highs.wasm demo/ && npm run docs:api",
     "build": "./build.sh",
     "check:api": "node scripts/generate-highs-api.mjs --check",
     "docs:options": "node scripts/generate-options-docs.mjs",
+    "docs:api": "npm ci --prefix docs-tooling --ignore-scripts && node docs-tooling/node_modules/typedoc/bin/typedoc --options typedoc.json",
     "bench:runtime": "node benchmarks/runtime.mjs",
     "bench:size": "node benchmarks/measure-size.mjs"
   },

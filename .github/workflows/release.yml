@@ -56,7 +56,6 @@ jobs:
       - run: npm run build:demo
       - name: generate options reference
         run: npm run docs:options
-      - run: cp -R docs demo/docs
       - name: publish the package to NPM
         run: |-
           VER=$(node -p 'require("./package.json").version')

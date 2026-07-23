@@ -6,13 +6,14 @@
  * and verifies that:
  *
  *  1. HiGHS loads successfully (the initial legacy LP solve completes).
- *  2. Every extended-API tab works — no "This build does not include the
+ *  2. The generated TypeDoc API reference is linked and loadable.
+ *  3. Every extended-API tab works — no "This build does not include the
  *     extended API" error ever appears.
  *
- * The demo directory must contain fresh build artifacts (highs.js, highs.wasm)
- * before running.  In CI these are copied from build/; locally you can run:
+ * The demo directory must contain fresh runtime and documentation artifacts
+ * before running. In CI and locally, generate them with:
  *
- *   cp build/highs.* demo/
+ *   npm run build:demo
  *
  * Usage:
  *   node scripts/test-demo.mjs
@@ -44,9 +45,9 @@ const MIME = {
 
 /* ── pre-flight: ensure build artifacts are present ── */
 
-for (const f of ["highs.js", "highs.wasm", "worker.js", "index.html", "demo.js"]) {
+for (const f of ["highs.js", "highs.wasm", "worker.js", "index.html", "demo.js", "docs/index.html"]) {
   if (!existsSync(join(DEMO_DIR, f))) {
-    console.error(`Missing ${f} in demo/. Run "cp build/highs.* demo/" first.`);
+    console.error(`Missing ${f} in demo/. Run "npm run build:demo" first.`);
     process.exit(1);
   }
 }
@@ -58,6 +59,7 @@ function createStaticServer(root) {
     try {
       let urlPath = decodeURIComponent(req.url.split("?")[0]);
       if (urlPath === "/") urlPath = "/index.html";
+      if (urlPath.endsWith("/")) urlPath += "index.html";
       // Prevent path traversal.
       const filePath = join(root, urlPath);
       if (!filePath.startsWith(root)) {
@@ -143,6 +145,70 @@ async function main() {
   try {
     console.log("\n─ Loading demo page ─");
     await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 30000 });
+
+    const apiReference = page.locator('.top-nav-right a[href="docs/"]');
+    assert(await apiReference.count() === 1, "Header links to the API reference beside npm");
+    const docsResponse = await page.request.get(`${baseUrl}docs/`);
+    assert(docsResponse.ok(), "Generated TypeDoc API reference is available at /docs/");
+    assert((await docsResponse.text()).includes("highs-js API reference"), "API reference has the expected TypeDoc title");
+    const docsThemeResponse = await page.request.get(`${baseUrl}docs/assets/custom.css`);
+    assert(docsThemeResponse.ok(), "API reference includes its custom theme");
+    assert((await docsThemeResponse.text()).includes("#f8fbfa"), "API reference uses the demo color palette");
+
+    const docsPage = await browser.newPage();
+    await docsPage.addInitScript(() => localStorage.setItem("tsd-theme", "dark"));
+    await docsPage.goto(`${baseUrl}docs/`, { waitUntil: "networkidle" });
+    assert(await docsPage.locator(".tsd-typography > h1").isVisible(), "API reference opens on a technical landing page");
+    assert(await docsPage.locator("table").count() >= 2, "Landing page organizes API surfaces and example features as reference tables");
+    assert(await docsPage.locator(".col-sidebar").isHidden(), "Landing page hides the redundant symbol sidebars");
+    assert(await docsPage.locator("#facility-example + pre").isVisible(), "Landing page includes the facility-location MILP example");
+    assert(await docsPage.locator("#facility-example + pre .api-code-link").count() >= 12, "Example API identifiers link to generated documentation");
+    assert((await docsPage.locator("#facility-example + pre .api-code-link", { hasText: "run" }).first().getAttribute("href")).endsWith("/docs/interfaces/Model.html#run"), "Example method links target exact TypeDoc anchors");
+    const exampleLinks = await docsPage.locator("#facility-example + pre .api-code-link").evaluateAll((links) => [...new Set(links.map((link) => link.href))]);
+    const exampleLinkResponses = await Promise.all(exampleLinks.map((url) => docsPage.request.get(url)));
+    assert(exampleLinkResponses.every((response) => response.ok()), "Every linked example identifier resolves to generated documentation");
+    const docsScreenshot = join(ROOT, "build", "docs-home.png");
+    await docsPage.screenshot({ path: docsScreenshot, fullPage: true });
+    console.log(`  screenshot: ${docsScreenshot}`);
+
+    const contrastRatio = (selector) => docsPage.locator(selector).first().evaluate((element) => {
+      const channels = (color) => color.match(/[\d.]+/g).slice(0, 3).map(Number);
+      const luminance = (color) => {
+        const values = channels(color).map((value) => {
+          const channel = value / 255;
+          return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * values[0] + 0.7152 * values[1] + 0.0722 * values[2];
+      };
+      const foreground = luminance(getComputedStyle(element).color);
+      const background = luminance(getComputedStyle(element).backgroundColor === "rgba(0, 0, 0, 0)"
+        ? getComputedStyle(document.body).backgroundColor
+        : getComputedStyle(element).backgroundColor);
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+
+    const syntaxContrast = await docsPage.locator("pre code span").evaluateAll((elements) => {
+      const channels = (color) => color.match(/[\d.]+/g).slice(0, 3).map(Number);
+      const luminance = (color) => {
+        const values = channels(color).map((value) => {
+          const channel = value / 255;
+          return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * values[0] + 0.7152 * values[1] + 0.0722 * values[2];
+      };
+      return Math.min(...elements.map((element) => {
+        const foreground = luminance(getComputedStyle(element).color);
+        const background = luminance(getComputedStyle(element.closest("pre")).backgroundColor);
+        return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+      }));
+    });
+    assert(syntaxContrast >= 4.5, "Quick-start syntax tokens meet text contrast requirements");
+
+    await docsPage.goto(`${baseUrl}docs/enums/HighsDebugLevel.html`, { waitUntil: "networkidle" });
+    assert(await contrastRatio(".tsd-kind-enum-member") >= 4.5, "Enum signatures remain readable with a stored dark theme");
+    await docsPage.goto(`${baseUrl}docs/interfaces/Hessian.html`, { waitUntil: "networkidle" });
+    assert(await contrastRatio("code.tsd-tag") >= 4.5, "Readonly and Optional badges meet text contrast requirements");
+    await docsPage.close();
 
     // ── Test 1: Legacy LP solve (runs automatically on page load) ──
     console.log("\n─ Tab: LP Format (legacy API) ─");
