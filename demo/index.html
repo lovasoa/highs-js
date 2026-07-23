@@ -1187,6 +1187,16 @@
     transition: 160ms ease;
   }
   .formula-row.active { border-left-color: #e27680; background: #fff3f4; color: var(--color-text); }
+  .math-model-row {
+    display: grid;
+    grid-template-columns: 66px minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: baseline;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+  .math-role { color: #718b89; font-size: 0.56rem; text-transform: uppercase; }
+  .math-expression { color: var(--color-text); line-height: 1.8; }
   .formula-term {
     display: inline-block;
     margin: -0.15rem -0.1rem;
@@ -1199,7 +1209,6 @@
   .matrix-wrap { overflow-x: auto; }
   .matrix-table { border-spacing: 4px; border-collapse: separate; margin: -4px; font: 0.63rem/1 var(--font-mono); }
   .matrix-table th { min-width: 34px; height: 24px; color: #718b89; font-weight: 500; text-align: center; }
-  .matrix-axis-index { display: block; margin-bottom: 0.2rem; color: #b44a55; font: 0.5rem/1 var(--font-mono); }
   .matrix-axis-name { display: block; font: 0.57rem/1 var(--font-mono); }
   .matrix-table td {
     min-width: 34px;
@@ -1565,7 +1574,7 @@ console.log(result.ObjectiveValue);</pre>
 </section>
 
 <aside class="prerelease-banner">
-  <strong>Extended API preview</strong> <code>highs@1.15.3-pre.0</code> includes persistent models, MIP, QP, IIS, and ranging.
+  <strong>Extended API preview</strong> <code>highs@1.15.3-pre.1</code> includes persistent models, MIP, QP, IIS, and ranging.
   <a href="https://github.com/lovasoa/highs-js/issues/new" target="_blank" rel="noopener">Found something odd? Tell us &rarr;</a>
 </aside>
 

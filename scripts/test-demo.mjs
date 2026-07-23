@@ -165,7 +165,8 @@ async function main() {
     await page.click('[data-tab="build"][data-example="production"]');
     await page.waitForTimeout(200);
     assert(await page.locator("#build-matrix-explorer .sparse-stage").count() === 3, "Constraint explorer links formulas, matrix, and CSC arrays");
-    assert(await page.locator("#build-matrix-explorer .matrix-axis-index").first().textContent() === "0", "Dense matrix axes use the same zero-based indexing as CSC");
+    assert(await page.locator("#build-matrix-explorer .matrix-axis-index").count() === 0, "Dense matrix axes show only zero-based model names");
+    assert(await page.locator("#build-matrix-explorer .matrix-axis-name").first().textContent() === "x0", "Dense matrix columns begin with x0");
     await page.locator('#build-matrix-explorer .formula-term[data-entry-index="1"]').first().hover();
     assert(await page.locator("#build-matrix-explorer .matrix-table td.active").count() === 1, "Hovering a formula term highlights its matrix cell");
     assert(await page.locator("#build-matrix-explorer [data-array='values'].active").count() === 1, "Hovering a formula term highlights its stored value");
@@ -210,6 +211,15 @@ async function main() {
     // ── Test 4: QP ──
     console.log("\n─ Tab: QP ─");
     await page.click('[data-tab="qp"]');
+    const qpMath = await page.locator("#qp-matrix-explorer .formula-list").textContent();
+    assert(qpMath.includes("minimize") && qpMath.includes("subject to"), "Hessian explorer shows the optimization objective and constraints");
+    assert(!qpMath.includes("Q row"), "Hessian explorer does not restate matrix rows as mathematics");
+    await page.fill("#qp-target-return", "9");
+    assert((await page.locator("#qp-matrix-explorer .formula-list").textContent()).includes("≥ 0.09"), "Hessian explorer tracks the target-return constraint");
+    await page.locator('#qp-matrix-explorer .formula-term[data-entry-index="1"]').hover();
+    const hessianNarration = await page.locator("#qp-matrix-explorer .sparse-narration").textContent();
+    assert(hessianNarration.includes("→ Q[") && hessianNarration.includes("½xᵀQx"), "Hessian narration connects objective terms to Q and triangular storage");
+    await page.mouse.move(0, 0);
     for (let i = 0; i < 4 && await page.locator("#qp-matrix-explorer .matrix-table td.mirror").count() === 0; i++) {
       await page.click('#qp-matrix-explorer [data-action="next"]');
     }

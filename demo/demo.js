@@ -301,6 +301,7 @@ const examples = {
 let activeExample;
 let activeBuildExampleKey = "production";
 let buildMatrixExplorer;
+let qpMatrixExplorer;
 
 function renderVarInputs(ex) {
   if (!buildVars) return;
@@ -366,7 +367,7 @@ function constraintExplorerConfig(key, example) {
   };
 }
 
-function hessianExplorerConfig() {
+function hessianExplorerConfig(targetReturn = 0.08) {
   return {
     title: "Portfolio covariance: triangular Hessian Q",
     description: "The objective uses a symmetric matrix. HiGHS stores one triangle in the same column-oriented arrays instead of duplicating mirrored entries.",
@@ -378,6 +379,20 @@ function hessianExplorerConfig() {
     ],
     columnNames: ["x0", "x1", "x2"],
     rowNames: ["x0", "x1", "x2"],
+    mathRows: [
+      {
+        label: "minimize",
+        terms: [
+          { text: "0.04x0²", row: 0, column: 0 },
+          { text: "+ 0.02x0x1", row: 1, column: 0 },
+          { text: "+ 0.02x1²", row: 1, column: 1 },
+          { text: "+ 0.005x2²", row: 2, column: 2 },
+        ],
+      },
+      { label: "subject to", text: "x0 + x1 + x2 = 1" },
+      { label: "", text: `0.12x0 + 0.08x1 + 0.04x2 ≥ ${displayNumber(targetReturn)}` },
+      { label: "bounds", text: "0 ≤ x0, x1, x2 ≤ 1" },
+    ],
     triangular: true,
   };
 }
@@ -391,6 +406,7 @@ function createSparseExplorer(container, initialConfig) {
   let timer;
   let playing = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let hovered = false;
+  let linkedEventsBound = false;
 
   function sparseData() {
     const result = [];
@@ -438,6 +454,19 @@ function createSparseExplorer(container, initialConfig) {
     return `${escapeHtml(displayNumber(lower))} ≤ ${expression} ≤ ${escapeHtml(displayNumber(upper))}`;
   }
 
+  function mathematicalRowMarkup(row, index) {
+    if (!config.mathRows) return formulaMarkup(index);
+    const label = row.label ? `<span class="math-role">${escapeHtml(row.label)}</span>` : '<span class="math-role"></span>';
+    if (row.terms) {
+      const terms = row.terms.map((term) => {
+        const entryIndex = entryIndexForCell(term.row, term.column);
+        return `<span class="formula-term" data-entry-index="${entryIndex}">${escapeHtml(term.text)}</span>`;
+      }).join(" ");
+      return `${label}<span class="math-expression">${terms}</span>`;
+    }
+    return `${label}<span class="math-expression">${escapeHtml(row.text)}</span>`;
+  }
+
   function cells(values, name) {
     return values.map((value, index) =>
       `<span class="array-cell" data-array="${name}" data-index="${index}" ${name === "starts" ? `data-column-index="${Math.min(index, config.columnNames.length - 1)}"` : `data-entry-index="${index}"`}>${escapeHtml(displayNumber(value))}</span>`
@@ -447,13 +476,13 @@ function createSparseExplorer(container, initialConfig) {
   function renderStructure() {
     const matrixRows = config.dense.map((row, rowIndex) => `
       <tr>
-        <th><span class="matrix-axis-index">${rowIndex}</span><span class="matrix-axis-name">${escapeHtml(config.rowNames[rowIndex])}</span></th>
+        <th><span class="matrix-axis-name">${escapeHtml(config.rowNames[rowIndex])}</span></th>
         ${row.map((value, columnIndex) => {
           const entryIndex = value === 0 ? -1 : entryIndexForCell(rowIndex, columnIndex);
           return `<td class="${value === 0 ? "" : "nonzero"}" data-matrix-row="${rowIndex}" data-matrix-column="${columnIndex}" ${entryIndex >= 0 ? `data-entry-index="${entryIndex}"` : "data-zero"}>${escapeHtml(displayNumber(value))}</td>`;
         }).join("")}
       </tr>`).join("");
-    const matrixHead = config.columnNames.map((name, index) => `<th><span class="matrix-axis-index">${index}</span><span class="matrix-axis-name">${escapeHtml(name)}</span></th>`).join("");
+    const matrixHead = config.columnNames.map((name) => `<th><span class="matrix-axis-name">${escapeHtml(name)}</span></th>`).join("");
     const indices = entries.map((entry) => entry.row);
     const values = entries.map((entry) => entry.value);
 
@@ -468,11 +497,11 @@ function createSparseExplorer(container, initialConfig) {
       </div>
       <div class="sparse-flow">
         <section class="sparse-stage">
-          <div class="sparse-stage-label">1 · Mathematical rows</div>
-          <div class="formula-list">${config.dense.map((_, index) => `<div class="formula-row" data-formula-row="${index}">${formulaMarkup(index)}</div>`).join("")}</div>
+          <div class="sparse-stage-label">1 · ${config.mathRows ? "Optimization model" : "Linear constraints"}</div>
+          <div class="formula-list">${(config.mathRows || config.dense).map((row, index) => `<div class="formula-row ${config.mathRows ? "math-model-row" : ""}" data-formula-row="${index}">${mathematicalRowMarkup(row, index)}</div>`).join("")}</div>
         </section>
         <section class="sparse-stage">
-          <div class="sparse-stage-label">2 · Dense ${escapeHtml(config.symbol)} matrix · 0-based axes</div>
+          <div class="sparse-stage-label">2 · Dense ${escapeHtml(config.symbol)} matrix</div>
           <div class="matrix-wrap"><table class="matrix-table"><thead><tr><th></th>${matrixHead}</tr></thead><tbody>${matrixRows}</tbody></table></div>
           ${config.triangular ? '<div class="sparse-legend">Coral is stored; mint is the mirrored value implied by symmetry.</div>' : ""}
         </section>
@@ -490,16 +519,19 @@ function createSparseExplorer(container, initialConfig) {
     container.querySelector('[data-action="previous"]').addEventListener("click", () => move(-1));
     container.querySelector('[data-action="next"]').addEventListener("click", () => move(1));
     container.querySelector('[data-action="play"]').addEventListener("click", togglePlay);
-    container.addEventListener("mouseenter", () => {
-      hovered = true;
-      restartTimer();
-    });
-    container.addEventListener("mouseleave", () => {
-      hovered = false;
-      renderStep();
-      restartTimer();
-    });
-    container.addEventListener("pointerover", handleLinkedHover);
+    if (!linkedEventsBound) {
+      container.addEventListener("mouseenter", () => {
+        hovered = true;
+        restartTimer();
+      });
+      container.addEventListener("mouseleave", () => {
+        hovered = false;
+        renderStep();
+        restartTimer();
+      });
+      container.addEventListener("pointerover", handleLinkedHover);
+      linkedEventsBound = true;
+    }
   }
 
   function clearHighlights() {
@@ -526,12 +558,25 @@ function createSparseExplorer(container, initialConfig) {
     const entry = entries[entryIndex];
     const from = starts[entry.column];
     const to = starts[entry.column + 1];
-    const triangleNote = config.triangular && entry.row !== entry.column
-      ? ` The symmetric value ${config.symbol}[${entry.column},${entry.row}] is implied and is not stored again.`
-      : "";
-    return `<strong>Column ${entry.column} (${escapeHtml(config.columnNames[entry.column])}), entry k=${entryIndex}.</strong> ` +
-      `starts[${entry.column}]=${from} and starts[${entry.column + 1}]=${to}, so this column occupies entries ${from} through ${to - 1}. ` +
-      `indices[${entryIndex}]=${entry.row} points to row ${entry.row} (${escapeHtml(config.rowNames[entry.row])}); values[${entryIndex}]=${escapeHtml(displayNumber(entry.value))}.${escapeHtml(triangleNote)}`;
+    let source;
+    if (config.mathRows) {
+      const term = config.mathRows.flatMap((row) => row.terms || []).find((candidate) =>
+        entryIndexForCell(candidate.row, candidate.column) === entryIndex
+      );
+      if (entry.row === entry.column) {
+        source = `<strong>${escapeHtml(term?.text || "Quadratic term")} → ${escapeHtml(config.symbol)}[${escapeHtml(config.rowNames[entry.row])}, ${escapeHtml(config.columnNames[entry.column])}].</strong> ` +
+          `HiGHS evaluates ½xᵀ${escapeHtml(config.symbol)}x, so the diagonal stores ${escapeHtml(displayNumber(entry.value))}, twice the squared-term coefficient.`;
+      } else {
+        source = `<strong>${escapeHtml(term?.text || "Cross-term")} → ${escapeHtml(config.symbol)}[${escapeHtml(config.rowNames[entry.row])}, ${escapeHtml(config.columnNames[entry.column])}].</strong> ` +
+          `The symmetric cross-term appears twice inside ½xᵀ${escapeHtml(config.symbol)}x. Triangular storage keeps this lower-triangle value once; ${escapeHtml(config.symbol)}[${escapeHtml(config.columnNames[entry.column])}, ${escapeHtml(config.rowNames[entry.row])}] is implied.`;
+      }
+    } else {
+      const coefficient = displayNumber(entry.value);
+      source = `<strong>${escapeHtml(coefficient)}${escapeHtml(config.columnNames[entry.column])} in ${escapeHtml(config.rowNames[entry.row])} → ${escapeHtml(config.symbol)}[${escapeHtml(config.rowNames[entry.row])}, ${escapeHtml(config.columnNames[entry.column])}].</strong> `;
+    }
+    return `${source} CSC stores it at entry k=${entryIndex}: ` +
+      `starts[${entry.column}]=${from} and starts[${entry.column + 1}]=${to} delimit the ${escapeHtml(config.columnNames[entry.column])} column; ` +
+      `indices[${entryIndex}]=${entry.row} selects ${escapeHtml(config.rowNames[entry.row])}, and values[${entryIndex}]=${escapeHtml(displayNumber(entry.value))}.`;
   }
 
   function highlightEntries(entryIndexes, narration) {
@@ -568,7 +613,7 @@ function createSparseExplorer(container, initialConfig) {
       const from = starts[column];
       const to = starts[column + 1];
       highlightEntries(entryIndexes,
-        `<strong>Column ${column} (${escapeHtml(config.columnNames[column])}).</strong> starts[${column}]=${from} and starts[${column + 1}]=${to}; the ${to - from} stored coefficient${to - from === 1 ? "" : "s"} for this column occupy entries ${from} through ${to - 1}.`
+        `<strong>Variable ${escapeHtml(config.columnNames[column])} uses CSC column ${column}.</strong> starts[${column}]=${from} and starts[${column + 1}]=${to}; the ${to - from} stored coefficient${to - from === 1 ? "" : "s"} for this column occupy entries ${from} through ${to - 1}.`
       );
       return;
     }
@@ -579,7 +624,7 @@ function createSparseExplorer(container, initialConfig) {
       zero.classList.add("zero-hover");
       const row = Number(zero.dataset.matrixRow);
       const column = Number(zero.dataset.matrixColumn);
-      container.querySelector(`[data-formula-row="${row}"]`)?.classList.add("active");
+      if (!config.mathRows) container.querySelector(`[data-formula-row="${row}"]`)?.classList.add("active");
       container.querySelector(".sparse-narration").innerHTML =
         `<strong>${escapeHtml(config.symbol)}[${row},${column}] is zero.</strong> CSC omits zero coefficients entirely, so this cell has no entry in indices or values.`;
     }
@@ -991,6 +1036,11 @@ const qpAllocationTrack = document.getElementById("qp-allocation-track");
 const qpAllocationText = document.getElementById("qp-allocation-text");
 const qpStatus = document.getElementById("qp-status");
 
+qpTargetReturn?.addEventListener("input", () => {
+  const target = parseFloat(qpTargetReturn.value);
+  if (Number.isFinite(target)) qpMatrixExplorer?.setConfig(hessianExplorerConfig(target / 100));
+});
+
 async function solveQpModel() {
   setOutput(qpOutput, "Solving QP…", "");
   setStatus(qpStatus, "solving");
@@ -1398,7 +1448,7 @@ buildMatrixExplorer = createSparseExplorer(
   document.getElementById("build-matrix-explorer"),
   constraintExplorerConfig("production", examples.production),
 );
-createSparseExplorer(
+qpMatrixExplorer = createSparseExplorer(
   document.getElementById("qp-matrix-explorer"),
   hessianExplorerConfig(),
 );
