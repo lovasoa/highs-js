@@ -1,6 +1,6 @@
 {
   "name": "highs",
-  "version": "1.15.3-0",
+  "version": "1.15.3-pre.0",
   "description": "Mixed integer linear programming library, built by compiling a high-performance C++ solver developed by the University of Edinburgh (HiGHS) to WebAssembly.",
   "main": "build/highs.js",
   "module": "build/highs.mjs",
