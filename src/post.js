@@ -66,40 +66,48 @@ var /** @type {()=>Highs} */ _Highs_create,
  */
 Module["solve"] = function (model_str, highs_options) {
   FS.writeFile(MODEL_FILENAME, model_str);
-  const highs = _Highs_create();
-  assert_ok(
-    () => Module.Highs_readModel(highs, MODEL_FILENAME),
-    "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
-  );
-  const options = highs_options || {};
-  for (const option_name in options) {
-    const option_value = options[option_name];
-    const type = typeof option_value;
-    let setoption;
-    if (type === "number") setoption = setNumericOption;
-    else if (type === "boolean") setoption = Highs_setBoolOptionValue;
-    else if (type === "string") setoption = Highs_setStringOptionValue;
-    else
-      throw new Error(
-        `Unsupported option value type ${option_value} for '${option_name}'`
-      );
+  let highs;
+  try {
+    highs = _Highs_create();
+    if (!highs) throw new Error("Unable to create the HiGHS solver");
     assert_ok(
-      () => setoption(highs, option_name, option_value),
-      `set option '${option_name}'`
+      () => Module.Highs_readModel(highs, MODEL_FILENAME),
+      "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
     );
+    const options = highs_options || {};
+    for (const option_name in options) {
+      const option_value = options[option_name];
+      const type = typeof option_value;
+      let setoption;
+      if (type === "number") setoption = setNumericOption;
+      else if (type === "boolean") setoption = Highs_setBoolOptionValue;
+      else if (type === "string") setoption = Highs_setStringOptionValue;
+      else
+        throw new Error(
+          `Unsupported option value type ${option_value} for '${option_name}'`
+        );
+      assert_ok(
+        () => setoption(highs, option_name, option_value),
+        `set option '${option_name}'`
+      );
+    }
+    assert_ok(() => _Highs_run(highs), "solve the problem");
+    const status =
+      MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
+    assert_ok(
+      () => Module.Highs_writeSolutionPretty(highs, SOLUTION_FILENAME),
+      "write and extract solution"
+    );
+    const solution = FS.readFile(SOLUTION_FILENAME, { encoding: "utf8" });
+    return parseResult(solution.split(/\r?\n/), status);
+  } finally {
+    if (highs) _Highs_destroy(highs);
+    for (const filename of [MODEL_FILENAME, SOLUTION_FILENAME]) {
+      try {
+        FS.unlink(filename);
+      } catch (_) {}
+    }
   }
-  assert_ok(() => _Highs_run(highs), "solve the problem");
-  const status =
-    MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
-  assert_ok(
-    () => Module.Highs_writeSolutionPretty(highs, SOLUTION_FILENAME),
-    "write and extract solution"
-  );
-  const solution = FS.readFile(SOLUTION_FILENAME, { encoding: "utf8" });
-  _Highs_destroy(highs);
-  const output = parseResult(solution.split(/\r?\n/), status);
-  FS.unlink(SOLUTION_FILENAME);
-  return output;
 };
 
 function setNumericOption(highs, option_name, option_value) {
