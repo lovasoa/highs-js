@@ -43,6 +43,7 @@ emcc -O3 \
 	-s STACK_SIZE=4194304 \
 	-flto \
 	-I "$root/HiGHS/highs" \
+	-I "$root/build" \
 	--pre-js "$root/src/pre.js" \
 	--post-js "$root/src/post.js" \
 	--post-js "$root/build/generated/extended.js" \
@@ -63,6 +64,7 @@ emcc -O3 \
 	-s STACK_SIZE=4194304 \
 	-flto \
 	-I "$root/HiGHS/highs" \
+	-I "$root/build" \
 	--pre-js "$root/src/pre.js" \
 	--post-js "$root/src/post.js" \
 	--post-js "$root/build/generated/extended.js" \
