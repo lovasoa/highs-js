@@ -12,19 +12,24 @@ services:
         EMSDK_VERSION: ${EMSDK_VERSION:?EMSDK_VERSION must be set in .env}
     working_dir: /work
     user: node
+    environment:
+      # Keep runtime-generated compiler cache entries out of the SDK tree.
+      EM_CACHE: /emcache
     volumes:
       # Mount the checkout so the container tests the current working tree.
-      - .:/work:Z
+      # Shared relabeling allows a VS Code devcontainer and disposable test
+      # containers to use the checkout concurrently on SELinux hosts.
+      - .:/work:z
       # Keep container-owned dependencies away from host ownership and ABI
       # differences while still testing the exact mounted source tree.
       - node-modules:/work/node_modules
       # Native build outputs have the same ownership and host-ABI concerns.
       - build-cache:/work/build
-      # Persist Emscripten's generated system libraries across `run --rm`.
-      - emscripten-cache:/emsdk/upstream/emscripten/cache
+      # Persist generated system libraries in a volume owned by `node`.
+      - emscripten-user-cache:/emcache
     command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && HIGHS_REQUIRE_EXTENDED=1 npm test"
 
 volumes:
   node-modules:
   build-cache:
-  emscripten-cache:
+  emscripten-user-cache:
