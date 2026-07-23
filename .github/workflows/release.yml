@@ -58,7 +58,10 @@ jobs:
         run: npm run docs:options
       - run: cp -R docs demo/docs
       - name: publish the package to NPM
-        run: npm publish --provenance
+        run: |-
+          VER=$(node -p 'require("./package.json").version')
+          TAG=$(echo "$VER" | grep -q -- '-' && echo next || echo latest)
+          npm publish --provenance --tag "$TAG"
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
