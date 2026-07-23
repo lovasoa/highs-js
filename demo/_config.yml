@@ -1,0 +1,8 @@
+title: highs-js
+description: HiGHS linear, mixed-integer, and quadratic optimization in JavaScript.
+url: https://lovasoa.github.io
+baseurl: /highs-js
+markdown: kramdown
+highlighter: rouge
+exclude:
+  - docs/README.md

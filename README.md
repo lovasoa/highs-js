@@ -4,193 +4,137 @@
 [![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
 [![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)
 
-This is a javascript mixed integer linear programming library.
-It is built by compiling a high-performance C++ solver developed by the University of Edinburgh, ([HiGHS](https://highs.dev)), to WebAssembly using emscripten.
+highs-js brings the [HiGHS](https://highs.dev/) linear, mixed-integer, and
+quadratic optimization solver to JavaScript and WebAssembly. It works in Node.js
+and browsers, supports CommonJS and native ES modules, and remains compatible
+with the original one-shot `solve(problem, options)` API.
 
-## Versioning
+## Install
 
-The package major and minor version match the embedded HiGHS major and minor
-version. For example, `1.14.x` contains HiGHS `v1.14.x`. The patch version may
-differ when highs-js releases JavaScript API changes or bug fixes without
-changing the embedded HiGHS version.
-
-## Demo
-
-See the online demo at: https://lovasoa.github.io/highs-js/
-
-The [extended API demo](https://lovasoa.github.io/highs-js/extended/) shows
-persistent model reuse in a Web Worker.
-
-## Usage
-
-```js
-const highs_settings = {
-  // In node, locateFile is not needed
-  // In the browser, point locateFile to the URL of the wasm file (see below)
-  locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
-};
-const highs_promise = require("highs")(highs_settings);
-
-const PROBLEM = `Maximize
- obj:
-    x1 + 2 x2 + 4 x3 + x4
-Subject To
- c1: - x1 + x2 + x3 + 10 x4 <= 20
- c2: x1 - 4 x2 + x3 <= 30
- c3: x2 - 0.5 x4 = 0
-Bounds
- 0 <= x1 <= 40
- 2 <= x4 <= 3
-End`;
-
-const EXPECTED_SOLUTION = {
-  Status: 'Optimal',
-  ObjectiveValue: 87.5,
-  Columns: {
-    x1: {
-      Index: 0,
-      Status: 'BS',
-      Lower: 0,
-      Upper: 40,
-      Type: 'Continuous',
-      Primal: 17.5,
-      Dual: -0,
-      Name: 'x1'
-    },
-    x2: {
-      Index: 1,
-      Status: 'BS',
-      Lower: 0,
-      Upper: Infinity,
-      Type: 'Continuous',
-      Primal: 1,
-      Dual: -0,
-      Name: 'x2'
-    },
-    x3: {
-      Index: 2,
-      Status: 'BS',
-      Lower: 0,
-      Upper: Infinity,
-      Type: 'Continuous',
-      Primal: 16.5,
-      Dual: -0,
-      Name: 'x3'
-    },
-    x4: {
-      Index: 3,
-      Status: 'LB',
-      Lower: 2,
-      Upper: 3,
-      Type: 'Continuous',
-      Primal: 2,
-      Dual: -8.75,
-      Name: 'x4'
-    }
-  },
-  Rows: [
-    {
-      Index: 0,
-      Name: 'c1',
-      Status: 'UB',
-      Lower: -Infinity,
-      Upper: 20,
-      Primal: 20,
-      Dual: 1.5
-    },
-    {
-      Index: 1,
-      Name: 'c2',
-      Status: 'UB',
-      Lower: -Infinity,
-      Upper: 30,
-      Primal: 30,
-      Dual: 2.5
-    },
-    {
-      Index: 2,
-      Name: 'c3',
-      Status: 'UB',
-      Lower: 0,
-      Upper: 0,
-      Primal: 0,
-      Dual: 10.5
-    }
-  ]
-};
-
-async function test() {
-  const highs = await highs_promise;
-  const sol = highs.solve(PROBLEM);
-  require("assert").deepEqual(sol, EXPECTED_SOLUTION);
-}
+```sh
+npm install highs
 ```
 
-The problem has to be passed in the [CPLEX .lp file format](http://web.mit.edu/lpsolve/doc/CPLEX-format.htm).
+## Quick start
 
-For a more complete example, see the [`demo`](./demo/) folder.
+The compatibility API accepts a model in CPLEX LP text format and returns the
+established name-keyed result:
 
-### Persistent and raw APIs
+```js
+const loadHighs = require("highs");
+const highs = await loadHighs();
 
-The legacy `solve(problem, options)` API above remains supported unchanged.
-For repeated solves, typed sparse input, mutation, callbacks, basis analysis,
-IIS/ranging, and the rest of the stable HiGHS C API, create a persistent model:
+const result = highs.solve(
+  `Maximize
+   obj: x + 2 y
+  Subject To
+   capacity: x + y <= 20
+  Bounds
+   x >= 0
+   y >= 0
+  End`,
+  { output_flag: false },
+);
+
+console.log(result.Status, result.ObjectiveValue);
+console.log(result.Columns.x.Primal, result.Columns.y.Primal);
+```
+
+Existing `require("highs")`, loader options, `solve()` inputs, option names, and
+result shapes remain supported.
+
+## Persistent models
+
+Use a persistent model for repeated solves, structured sparse input, LP/MIP/QP
+models, mutation, callbacks, basis analysis, IIS, ranging, and the stable
+non-deprecated HiGHS C API:
 
 ```js
 import loadHighs from "highs";
 
 const highs = await loadHighs();
-const model = highs.createModel({ format: "lp", data: PROBLEM });
+const model = highs.createModel({
+  numCols: 2,
+  numRows: 1,
+  sense: highs.constants.objectiveSense.maximize,
+  colCost: new Float64Array([1, 2]),
+  colLower: new Float64Array([0, 0]),
+  colUpper: new Float64Array([highs.infinity, highs.infinity]),
+  rowLower: new Float64Array([-highs.infinity]),
+  rowUpper: new Float64Array([20]),
+  matrix: {
+    format: "csc",
+    numRows: 1,
+    numCols: 2,
+    starts: new Int32Array([0, 1, 2]),
+    indices: new Int32Array([0, 0]),
+    values: new Float64Array([1, 1]),
+  },
+  colNames: ["x", "y"],
+  rowNames: ["capacity"],
+});
+
 try {
   model.options.set({ output_flag: false, presolve: "on" });
-  const run = model.run();
-  const solution = model.getSolution(); // detached Float64Array values
-  console.log(run.modelStatus, solution.colValue);
+  let run = model.run();
+  console.log(run.modelStatus, model.getSolution().colValue);
+
+  // Re-solve without rebuilding or reparsing the model.
+  model.changeColBounds(1, 0, 5);
+  run = model.run();
+  console.log(run.modelStatus, model.getObjectiveValue());
 } finally {
   model.dispose();
 }
 ```
 
-CommonJS (`require("highs")`) and native ESM (`import ... from "highs"`) use
-the same `highs.wasm` binary. The WebAssembly build is deliberately
-single-threaded. New APIs reject thread/concurrency and file/path options; use
-the data-only model, options, and solution I/O methods instead.
+Inputs are validated before entering WebAssembly. Public array results are
+detached JavaScript-owned typed arrays, so they remain valid after another
+solver call or `dispose()`. The lower-level `highs.raw` API exposes the same
+structured operations while preserving native status codes.
 
-See the [extended API guide](./docs/api.md), [migration guide](./docs/migration.md),
-and [complete JavaScript-to-C mapping](./docs/c-api-mapping.md).
+| Workload | API |
+| --- | --- |
+| One solve from existing LP text | `highs.solve(lpText, options)` |
+| Repeated solves or model mutation | `highs.createModel(...)` |
+| Existing CSC/CSR arrays or QP Hessian data | `highs.createModel(modelData)` |
+| Exact C-style status handling | `highs.raw` |
+| Long browser solve | Put the loader and model in a Web Worker |
 
-### Loading the wasm file
+## WebAssembly loading
 
-This package requires a wasm file.
-You can find it in `node_modules/highs/build/highs.wasm` inside the NPM package,
-or download it from the [release page](https://github.com/lovasoa/highs-js/releases).
-By default, it will be loaded from the same path as the javascript file,
-which means you have to add the wasm file to your assets.
-
-Alternatively, if you don't want to bother with that, 
-if you are running highs-js in a web browser (and not in node),
-you can load the file directly from github:
-
-```js
-const highs_loader = require("highs");
-
-const highs = await highs_loader({
-  // In a browser, one can load the wasm file from github
-  locateFile: (file) => "https://lovasoa.github.io/highs-js/" + file
-});
-```
-## Passing custom options
-
-HiGHS is configurable through [a large number of options](https://ergo-code.github.io/HiGHS/dev/options/definitions/).
-
-You can pass options as the second parameter to `solve` : 
+The package ships `build/highs.wasm`. Node.js normally finds it next to the
+JavaScript build. In a browser, copy the file into your served assets and use
+`locateFile` when it is not next to `highs.js` or `highs.mjs`:
 
 ```js
-const highs_promise = require("highs")(highs_settings);
-const highs = await highs_promise;
-const sol = highs.solve(PROBLEM, {
-  "allowed_cost_scale_factor": 2,
-  "run_crossover": true,
-  "presolve": "on",
+import loadHighs from "highs";
+
+const highs = await loadHighs({
+  locateFile: (file) => new URL(`/solver-assets/${file}`, location.href).href,
 });
 ```
+
+Loading is asynchronous; solver operations are synchronous after the loader
+resolves. This WebAssembly build is deliberately single-threaded. The extended
+API rejects thread/concurrency and public file/path options; use Workers for
+application-level parallelism and the data-only model, option, and solution I/O
+methods.
+
+## Documentation and demos
+
+- [Extended API documentation](https://lovasoa.github.io/highs-js/docs/)
+- [Migration guide](./docs/migration.md)
+- [JavaScript-to-C API mapping](./docs/c-api-mapping.md)
+- [Online compatibility demo](https://lovasoa.github.io/highs-js/)
+- [Persistent API Worker demo](https://lovasoa.github.io/highs-js/extended/)
+
+The single canonical TypeScript declaration is [`types.d.ts`](./types.d.ts).
+The `highs/legacy-types` compatibility entry points to that same declaration.
+
+## Versioning
+
+The package major and minor version match the embedded HiGHS major and minor
+version. For example, `1.14.x` contains HiGHS `v1.14.x`. The package patch
+version may change for JavaScript API fixes without changing the embedded
+solver version.

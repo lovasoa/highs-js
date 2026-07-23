@@ -2,6 +2,8 @@
 
 The extended highs-js API exposes the stable, usable HiGHS C API while keeping
 the original `await require("highs")().solve(lp, options)` interface intact.
+The rendered version of these guides is published at
+[lovasoa.github.io/highs-js/docs](https://lovasoa.github.io/highs-js/docs/).
 Choose the narrowest interface that fits the job:
 
 - [Migration guide](migration.md): move from the legacy one-shot solver to a

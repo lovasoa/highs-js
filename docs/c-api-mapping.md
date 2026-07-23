@@ -1,3 +1,10 @@
+---
+layout: docs
+title: JavaScript to C API mapping
+description: The stable HiGHS C function behind every extended JavaScript operation.
+permalink: /docs/c-api-mapping/
+---
+
 # JavaScript to HiGHS C API mapping
 
 The extended API is a structured binding over the stable, non-deprecated HiGHS
@@ -176,6 +183,9 @@ Callback data is copied before delivery to JavaScript. The bridge is
 synchronous, exposes only fields initialized for the active callback type,
 passes no input-control pointer when HiGHS supplies none, and prevents
 recursive entry into the same `Highs` instance.
+For callback types 3 and 4, `_Highs_js_getCallbackMipSolutionSize` supplies the
+native ABI length because the upstream item-by-name accessor omits
+`mip_solution_size`; the detached `mip_solution` copy is sized from that value.
 
 ## Deliberate exclusions and alternatives
 

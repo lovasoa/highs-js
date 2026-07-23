@@ -1,3 +1,10 @@
+---
+layout: docs
+title: Extended JavaScript API
+description: Loading, models, ownership, options, callbacks, and data-only I/O.
+permalink: /docs/api/
+---
+
 # Extended JavaScript API
 
 ## Loading
@@ -135,6 +142,20 @@ console.log(model.lastCall);
 Input errors use `HighsValidationError`, unsupported option policy uses
 `HighsUnsupportedOptionError`, callback recursion uses
 `HighsReentrancyError`, and use-after-dispose uses `HighsDisposedError`.
+Runtime constructors are available from `highs.errors`, so applications can
+handle a specific wrapper failure without matching message text:
+
+```js
+try {
+  model.changeColBounds(-1, 0, 1);
+} catch (error) {
+  if (error instanceof highs.errors.HighsValidationError) {
+    reportInvalidModel(error.message);
+  } else {
+    throw error;
+  }
+}
+```
 
 Use `highs.raw` when exact native-style status propagation is preferable:
 
@@ -177,6 +198,10 @@ Every returned `Float64Array`, `Int32Array`, and `Uint8Array` is a detached,
 JavaScript-owned copy. It does not alias the WebAssembly heap and remains valid
 after memory growth, another solver call, `clearModel()`, or `dispose()`.
 Mutating a returned array never mutates the solver.
+
+`highs.memoryBytes` reports the current WebAssembly linear-memory capacity for
+regression checks without exposing a mutable heap view. It is not a live-byte
+or per-model allocation count.
 
 This safety contract intentionally excludes zero-copy heap views. For repeated
 solves, keep a model alive and use mutation methods such as
@@ -243,6 +268,15 @@ LP data is text. MPS may contain arbitrary bytes and is returned as
 zlib. Public path-based model, option, and solution APIs are deliberately not
 provided.
 
+## Analysis results
+
+`getRanging()`, `getIis()`, rays, basis operations, and feasibility relaxation
+return detached typed-array data. Ranging requires an optimal basic solution.
+`feasibilityRelaxation()` solves an elastic model and leaves its solution and
+penalty objective available, but upstream restores the original model and its
+pre-relaxation model-status code before returning. Read the relaxation solution
+immediately; a subsequent `run()` solves the original model again.
+
 ## Callbacks
 
 Callbacks run synchronously inside `model.run()`. They must return before the
@@ -273,7 +307,7 @@ Do not call model methods recursively from a callback. Such calls throw
 | MIP cut pool (`7`) | MIP scalar data and `cut_pool` | none |
 | MIP user solution (`9`) | MIP scalar data | `setSolution()`, `repairSolution()` |
 
-The event union in `highs.d.ts` exposes only controls that the native callback
+The event union in `types.d.ts` exposes only controls that the native callback
 type can honor. If a callback throws, the wrapper requests interruption when
 that callback is interruptible and rethrows the original JavaScript exception
 after the active native call unwinds. Logging payloads are intentionally
@@ -283,6 +317,14 @@ event.
 The high-level API supports callback types that are active in the stable C API.
 The inert lazy-constraint callback type and the PDLP-specific callback type are
 not exposed.
+
+## Complete surface
+
+This guide explains the contracts shared across the extended API. The canonical
+method signatures, overloads, callback-event union, and result types are in
+[`types.d.ts`](https://github.com/lovasoa/highs-js/blob/main/types.d.ts).
+For the native function behind each operation, see the
+[JavaScript-to-C mapping](../c-api-mapping/).
 
 ## Model snapshots and cloning
 
