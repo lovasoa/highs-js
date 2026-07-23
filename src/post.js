@@ -1,5 +1,4 @@
-const MODEL_FILENAME = "m.lp";
-const SOLUTION_FILENAME = "solution.txt";
+let legacySolveSequence = 0;
 
 Module.Highs_readModel = Module["cwrap"]("Highs_readModel", "number", [
   "number",
@@ -25,6 +24,11 @@ const Highs_setBoolOptionValue = Module["cwrap"](
   "number",
   ["number", "string", "number"]
 );
+const Highs_getOptionType = Module["cwrap"]("Highs_getOptionType", "number", [
+  "number",
+  "string",
+  "number",
+]);
 Module.Highs_writeSolutionPretty = Module["cwrap"](
   "Highs_writeSolutionPretty",
   "number",
@@ -56,7 +60,7 @@ var /** @type {()=>Highs} */ _Highs_create,
   /** @type {(arg0:Highs)=>void} */ _Highs_run,
   /** @type {(arg0:Highs)=>void} */ _Highs_destroy,
   /** @type {(arg0:Highs)=>(keyof (typeof MODEL_STATUS_CODES))} */ _Highs_getModelStatus,
-  /** @type {any}*/ FS;
+  /** @type {any} */ FS;
 
 /**
  * Solve a model in the CPLEX LP file format.
@@ -65,13 +69,18 @@ var /** @type {()=>Highs} */ _Highs_create,
  * @returns {import("../types").HighsSolution} The solution
  */
 Module["solve"] = function (model_str, highs_options) {
-  FS.writeFile(MODEL_FILENAME, model_str);
+  const solveId = ++legacySolveSequence;
+  const modelFilename = `highs-model-${solveId}.lp`;
+  const solutionFilename = `highs-solution-${solveId}.txt`;
   let highs;
+  let solution;
+  let status;
   try {
+    FS.writeFile(modelFilename, model_str);
     highs = _Highs_create();
     if (!highs) throw new Error("Unable to create the HiGHS solver");
     assert_ok(
-      () => Module.Highs_readModel(highs, MODEL_FILENAME),
+      () => Module.Highs_readModel(highs, modelFilename),
       "read LP model (see http://web.mit.edu/lpsolve/doc/CPLEX-format.htm)"
     );
     const options = highs_options || {};
@@ -92,29 +101,45 @@ Module["solve"] = function (model_str, highs_options) {
       );
     }
     assert_ok(() => _Highs_run(highs), "solve the problem");
-    const status =
-      MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
+    status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
     assert_ok(
-      () => Module.Highs_writeSolutionPretty(highs, SOLUTION_FILENAME),
+      () => Module.Highs_writeSolutionPretty(highs, solutionFilename),
       "write and extract solution"
     );
-    const solution = FS.readFile(SOLUTION_FILENAME, { encoding: "utf8" });
-    return parseResult(solution.split(/\r?\n/), status);
+    solution = FS.readFile(solutionFilename, { encoding: "utf8" });
   } finally {
     if (highs) _Highs_destroy(highs);
-    for (const filename of [MODEL_FILENAME, SOLUTION_FILENAME]) {
+    for (const filename of [modelFilename, solutionFilename]) {
       try {
         FS.unlink(filename);
       } catch (_) {}
     }
   }
+  return parseResult(solution.split(/\r?\n/), status);
 };
 
 function setNumericOption(highs, option_name, option_value) {
-  let result = Highs_setDoubleOptionValue(highs, option_name, option_value);
-  if (result === -1 && option_value === (option_value | 0))
-    result = Highs_setIntOptionValue(highs, option_name, option_value);
-  return result;
+  const typePointer = _malloc(Int32Array.BYTES_PER_ELEMENT);
+  if (!typePointer) return -1;
+  try {
+    const status = Highs_getOptionType(highs, option_name, typePointer);
+    if (status !== 0 && status !== 1) return status;
+    const optionType = HEAP32[typePointer >> 2];
+    if (optionType === 1) {
+      if (
+        !Number.isSafeInteger(option_value) ||
+        option_value < -2147483648 ||
+        option_value > 2147483647
+      )
+        return -1;
+      return Highs_setIntOptionValue(highs, option_name, option_value);
+    }
+    if (optionType === 2)
+      return Highs_setDoubleOptionValue(highs, option_name, option_value);
+    return -1;
+  } finally {
+    _free(typePointer);
+  }
 }
 
 function parseNum(s) {

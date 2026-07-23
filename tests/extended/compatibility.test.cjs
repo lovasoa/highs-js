@@ -50,3 +50,24 @@ test("legacy thread option inputs remain accepted for compatibility", async () =
     EXPECTED,
   );
 });
+
+test("legacy numeric options use their native integer or double setter", async () => {
+  const highs = await loadRuntime();
+  assert.deepStrictEqual(
+    highs.solve(PROBLEM, { mip_max_nodes: 10, time_limit: 1 }),
+    EXPECTED,
+  );
+  assert.throws(
+    () => highs.solve(PROBLEM, { mip_max_nodes: 1.5 }),
+    /Unable to set option 'mip_max_nodes'/,
+  );
+});
+
+test("legacy solve cleans up after a failed option update", async () => {
+  const highs = await loadRuntime();
+  assert.throws(
+    () => highs.solve(PROBLEM, { option_that_does_not_exist: 1 }),
+    /Unable to set option 'option_that_does_not_exist'/,
+  );
+  assert.deepStrictEqual(highs.solve(PROBLEM), EXPECTED);
+});
