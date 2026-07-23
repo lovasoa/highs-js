@@ -325,6 +325,81 @@ model.run();
 console.log(model.getRunTime());  // seconds
 ```
 
+## Runtime properties and raw API
+
+Access HiGHS version, constants, and the low-level C API:
+
+```js
+console.log(highs.version.string);                         // "1.7.1"
+console.log(highs.infinity);                                // Infinity
+console.log(highs.constants.modelStatus.optimal);           // 7
+```
+
+The `highs.raw` API exposes status-preserving one-shot calls matching the
+stable C API:
+
+```js
+const lpResult = highs.raw.lpCall({
+  numCols: 2, numRows: 1, sense: highs.constants.objectiveSense.maximize,
+  colCost: new Float64Array([1, 2]),
+  colLower: new Float64Array([0, 0]),
+  colUpper: new Float64Array([highs.infinity, highs.infinity]),
+  rowLower: new Float64Array([-highs.infinity]),
+  rowUpper: new Float64Array([20]),
+  matrix: {
+    format: "csc", numRows: 1, numCols: 2,
+    starts: new Int32Array([0, 1, 2]), indices: new Int32Array([0, 0]),
+    values: new Float64Array([1, 1]),
+  },
+});
+// lpResult.status === 0 (ok), lpResult.value.solution.colValue
+
+// MIP and QP one-shot variants work similarly
+highs.raw.mipCall({ ...model, integrality: new Int32Array([1, 1]) });
+highs.raw.qpCall({ ...model, sense: 1, hessian: { ... } });
+```
+
+## Quadratic programming and multi-objective
+
+Pass a Hessian for QP, or use lexicographic multi-objective optimization:
+
+```js
+model.changeObjectiveSense(highs.constants.objectiveSense.minimize);
+model.passHessian({
+  format: "triangular", dimension: 4,
+  starts: new Int32Array([0, 1, 2, 3, 4]),
+  indices: new Int32Array([0, 1, 2, 3]),
+  values: new Float64Array([2, 4, 6, 8]),
+});
+model.run();
+
+// Multi-objective: lexicographic priorities
+model.passLinearObjectives([{
+  weight: 1, offset: 0, coefficients: new Float64Array([1, 0, 0, 0]),
+  absoluteTolerance: 0, relativeTolerance: 0, priority: -1,
+}]);
+model.clearLinearObjectives();
+```
+
+## Lifecycle, warm-start, and row/col queries
+
+Control solver state, warm-start from solutions, and query integrality or row data:
+
+```js
+model.clearSolver();         // keep model, remove solution
+model.clearModel();          // keep instance, remove model
+model.clear();               // combined clearModel + clearSolver
+model.releaseMemory();       // free internal HiGHS memory
+
+// Warm-start with a dense or sparse solution
+model.setSolution({ colValue: new Float64Array([1, 2, 3, 4]) });
+model.setSolution({ indices: new Int32Array([0]), values: new Float64Array([1]) });
+
+// Query per-column integrality and row data
+console.log(model.getColIntegrality(0));  // 0 = continuous
+const rows = model.getRows({ kind: "range", from: 0, to: 1 });
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
