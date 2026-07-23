@@ -152,12 +152,29 @@ async function main() {
     const lpText = await page.evaluate(() => document.getElementById("lp-output").textContent);
     assert(lpText.length > 10, "LP solve produced output");
     assert(/Status|Optimal|Objective/i.test(lpText), "LP solve output looks like a result");
+    assert(await page.locator(".code-editor-box .token").count() > 5, "JavaScript examples have syntax highlighting");
+    assert(await page.locator("#panel-lp .syntax-editor .token").count() > 5, "LP editor has syntax highlighting");
+    assert(await page.locator("#lp-output .token").count() > 5, "JSON output has syntax highlighting");
+    const desktopScreenshot = join(ROOT, "build", "demo-desktop.png");
+    await page.screenshot({ path: desktopScreenshot, fullPage: true });
+    console.log(`  screenshot: ${desktopScreenshot}`);
 
     // ── Test 2: Build & Solve (extended API) ──
     console.log("\n─ Tab: Build & Solve (extended API) ─");
-    await page.click('[data-tab="build"]');
+    assert(await page.locator("#build-example, #mip-example").count() === 0, "Nested examples use the shared tree instead of panel dropdowns");
+    await page.click('[data-tab="build"][data-example="production"]');
     await page.waitForTimeout(200);
-    await page.click("#build-load");
+    assert(await page.locator("#build-matrix-explorer .sparse-stage").count() === 3, "Constraint explorer links formulas, matrix, and CSC arrays");
+    assert(await page.locator("#build-matrix-explorer .matrix-axis-index").first().textContent() === "0", "Dense matrix axes use the same zero-based indexing as CSC");
+    await page.locator('#build-matrix-explorer .formula-term[data-entry-index="1"]').first().hover();
+    assert(await page.locator("#build-matrix-explorer .matrix-table td.active").count() === 1, "Hovering a formula term highlights its matrix cell");
+    assert(await page.locator("#build-matrix-explorer [data-array='values'].active").count() === 1, "Hovering a formula term highlights its stored value");
+    const hoveredNarration = await page.locator("#build-matrix-explorer .sparse-narration").textContent();
+    await page.waitForTimeout(1700);
+    assert(await page.locator("#build-matrix-explorer .sparse-narration").textContent() === hoveredNarration, "Sparse animation pauses while the explorer is hovered");
+    await page.mouse.move(0, 0);
+    await page.click('#build-matrix-explorer [data-action="next"]');
+    assert((await page.locator("#build-matrix-explorer .sparse-narration").textContent()).includes("starts["), "Constraint explorer explains starts, indices, and values");
     await page.click("#build-solve");
     await waitForOutput(page, "#build-output");
     await checkOutputNotError(page, "build-output", "Build & Solve");
@@ -165,9 +182,23 @@ async function main() {
     const buildText = await page.evaluate(() => document.getElementById("build-output").textContent);
     assert(/Status|Objective/i.test(buildText), "Build & Solve produced a result");
 
+    await page.click("#build-add-var");
+    assert(await page.locator(".build-cost").count() === 5, "Add Variable persists a fifth variable in the editor");
+    await page.click("#build-solve");
+    await page.waitForFunction(() => document.getElementById("build-output")?.textContent.includes("x4 ="));
+    assert(true, "Added variable is included in the solved model");
+
+    await page.click('[data-tab="build"][data-example="transport"]');
+    assert((await page.locator("#build-matrix-explorer .sparse-explorer-header strong").textContent()).includes("Transportation"), "Constraint explorer follows nested example selection");
+    const sparseOverflow = await page.locator("#build-matrix-explorer").evaluate((element) => element.scrollWidth > element.clientWidth);
+    assert(!sparseOverflow, "Sparse explorer arrays do not overflow their panel");
+    await page.click("#build-solve");
+    await page.waitForFunction(() => /optimal/i.test(document.getElementById("build-status")?.textContent || ""));
+    assert(true, "Transportation example is feasible and solves to optimality");
+
     // ── Test 3: MIP ──
     console.log("\n─ Tab: MIP ──");
-    await page.click('[data-tab="mip"]');
+    await page.click('[data-tab="mip"][data-example="knapsack"]');
     await page.waitForTimeout(200);
     await page.click("#mip-solve");
     await waitForOutput(page, "#mip-output");
@@ -176,7 +207,20 @@ async function main() {
     const mipText = await page.evaluate(() => document.getElementById("mip-output").textContent);
     assert(/Status|Objective|Selected/i.test(mipText), "MIP solve produced a result");
 
-    // ── Test 4: Ranging ──
+    // ── Test 4: QP ──
+    console.log("\n─ Tab: QP ─");
+    await page.click('[data-tab="qp"]');
+    for (let i = 0; i < 4 && await page.locator("#qp-matrix-explorer .matrix-table td.mirror").count() === 0; i++) {
+      await page.click('#qp-matrix-explorer [data-action="next"]');
+    }
+    assert(await page.locator("#qp-matrix-explorer .matrix-table td.mirror").count() === 1, "Hessian explorer shows the symmetric value omitted from triangular storage");
+    await page.click("#qp-solve");
+    await waitForOutput(page, "#qp-output");
+    await checkOutputNotError(page, "qp-output", "QP solve");
+    const qpText = await page.evaluate(() => document.getElementById("qp-output").textContent);
+    assert(/Optimal Asset Weights/i.test(qpText), "QP solve produced portfolio weights");
+
+    // ── Test 5: Ranging ──
     console.log("\n─ Tab: Ranging ─");
     await page.click('[data-tab="ranging"]');
     await page.waitForTimeout(200);
@@ -185,7 +229,7 @@ async function main() {
     await checkOutputNotError(page, "ranging-output", "Ranging");
     await checkNoExtendedApiError(page, "Ranging");
 
-    // ── Test 5: Options ──
+    // ── Test 6: Options ──
     console.log("\n─ Tab: Options ─");
     await page.click('[data-tab="options"]');
     // Options load lazily when the tab is first opened.
@@ -197,16 +241,22 @@ async function main() {
     assert(optCount > 50, `Options table loaded (${optCount} options)`);
     await checkNoExtendedApiError(page, "Options");
 
-    // ── Test 6: IIS ──
+    // ── Test 7: IIS ──
     console.log("\n─ Tab: IIS ─");
     await page.click('[data-tab="iis"]');
     await page.waitForTimeout(200);
+    assert(await page.locator("#iis-visual-tags .iis-empty-state").count() === 1, "IIS starts with a neutral unresolved state");
+    assert(await page.locator("#iis-visual-tags .conflict-node").count() === 0, "IIS does not show conflicts before analysis");
     await page.click("#iis-solve");
     await waitForOutput(page, "#iis-output");
     await checkOutputNotError(page, "iis-output", "IIS");
     await checkNoExtendedApiError(page, "IIS");
+    assert(await page.locator("#iis-visual-tags .conflict-node").count() > 0, "IIS renders the conflict returned by HiGHS");
+    const iisScreenshot = join(ROOT, "build", "demo-iis.png");
+    await page.screenshot({ path: iisScreenshot, fullPage: true });
+    console.log(`  screenshot: ${iisScreenshot}`);
 
-    // ── Test 7: Model I/O ──
+    // ── Test 8: Model I/O ──
     console.log("\n─ Tab: Model I/O ─");
     await page.click('[data-tab="io"]');
     await page.waitForTimeout(200);
@@ -218,6 +268,17 @@ async function main() {
     await page.click("#io-solve");
     await waitForOutput(page, "#io-output");
     await checkOutputNotError(page, "io-output", "Model I/O solve");
+
+    // ── Responsive layout ──
+    console.log("\n─ Mobile layout ─");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.click('[data-tab="qp"]');
+    await page.waitForTimeout(300);
+    const hasPageOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    assert(!hasPageOverflow, "Mobile layout has no page-level horizontal overflow");
+    const mobileScreenshot = join(ROOT, "build", "demo-mobile.png");
+    await page.screenshot({ path: mobileScreenshot, fullPage: true });
+    console.log(`  screenshot: ${mobileScreenshot}`);
 
     // ── Console errors ──
     console.log("\n─ Console errors ─");

@@ -17,6 +17,27 @@ function describeStatus(highs, code) {
   return entry ? entry[0] : `code ${code}`;
 }
 
+function resolveObjectiveSense(highs, name) {
+  const sense = highs.constants.objectiveSense[name];
+  if (sense === undefined) throw new TypeError(`Unknown objective sense: ${name}`);
+  return sense;
+}
+
+function resolveVariableTypes(highs, names) {
+  return names.map((name) => {
+    const type = highs.constants.variableType[name];
+    if (type === undefined) throw new TypeError(`Unknown variable type: ${name}`);
+    return type;
+  });
+}
+
+function describeIisBound(highs, code) {
+  const name = Object.entries(highs.constants.iis).find(
+    ([key, value]) => key.startsWith("bound") && value === code,
+  )?.[0];
+  return name ? name.slice("bound".length).toLowerCase() : `code ${code}`;
+}
+
 /* ── Legacy Solve ── */
 
 async function solveLP(data) {
@@ -46,7 +67,7 @@ async function buildSolve(data) {
   model.passModel({
     numCols: colCost.length,
     numRows: rowLower.length,
-    sense: data.sense ?? 1,
+    sense: resolveObjectiveSense(highs, data.sense),
     colCost,
     colLower,
     colUpper,
@@ -100,7 +121,7 @@ async function qpSolve(data) {
   model.passModel({
     numCols: colCost.length,
     numRows: rowLower.length,
-    sense: data.sense ?? 1,
+    sense: resolveObjectiveSense(highs, data.sense),
     colCost,
     colLower,
     colUpper,
@@ -157,7 +178,7 @@ async function mipSolve(data) {
   model.passModel({
     numCols: data.colCost.length,
     numRows: data.rowLower.length,
-    sense: data.sense ?? 1,
+    sense: resolveObjectiveSense(highs, data.sense),
     colCost: data.colCost,
     colLower: data.colLower,
     colUpper: data.colUpper,
@@ -171,7 +192,7 @@ async function mipSolve(data) {
       indices: data.indices,
       values: data.values,
     },
-    integrality: data.integrality,
+    integrality: resolveVariableTypes(highs, data.integrality),
   });
 
   model.options.set("output_flag", false);
@@ -207,11 +228,14 @@ async function doRanging(data) {
   }
   model = highs.createModel({ format: "lp", data: data.problem });
   model.options.set("output_flag", false);
+  const t0 = performance.now();
   const run = model.run();
+  const elapsed = (performance.now() - t0).toFixed(1);
 
   if (run.modelStatus !== highs.constants.modelStatus.optimal) {
     return {
       modelStatus: describeStatus(highs, run.modelStatus),
+      elapsed,
       note: "Ranging is only available for optimal solutions.",
     };
   }
@@ -219,6 +243,7 @@ async function doRanging(data) {
   const ranging = model.getRanging();
   return {
     modelStatus: describeStatus(highs, run.modelStatus),
+    elapsed,
     objective: model.getObjectiveValue(),
     primal: arrayFrom(model.getSolution().colValue),
     colCostDown: arrayFrom(ranging.colCostDown.value),
@@ -296,6 +321,7 @@ async function doIis(data) {
   }
   model = highs.createModel({ format: "lp", data: data.problem });
   model.options.set("output_flag", false);
+  const t0 = performance.now();
   const run = model.run();
 
   if (run.modelStatus === highs.constants.modelStatus.optimal) {
@@ -304,6 +330,7 @@ async function doIis(data) {
       objective: model.getObjectiveValue(),
       primal: arrayFrom(model.getSolution().colValue),
       note: "Model is feasible — no IIS needed.",
+      elapsed: (performance.now() - t0).toFixed(1),
     };
   }
 
@@ -311,11 +338,12 @@ async function doIis(data) {
     const iis = model.getIis();
     return {
       modelStatus: describeStatus(highs, run.modelStatus),
+      elapsed: (performance.now() - t0).toFixed(1),
       iis: {
-        colIndices: arrayFrom(iis.colIndices),
-        rowIndices: arrayFrom(iis.rowIndices),
-        colBounds: arrayFrom(iis.colBounds),
-        rowBounds: arrayFrom(iis.rowBounds),
+        colIndices: arrayFrom(iis.colIndex),
+        rowIndices: arrayFrom(iis.rowIndex),
+        colBounds: arrayFrom(iis.colBound).map((code) => describeIisBound(highs, code)),
+        rowBounds: arrayFrom(iis.rowBound).map((code) => describeIisBound(highs, code)),
       },
     };
   } catch (e) {
@@ -351,12 +379,14 @@ async function ioSolve() {
   const highs = await runtimePromise;
   if (!model) return { error: "Load a model first." };
   model.options.set("output_flag", false);
+  const t0 = performance.now();
   const run = model.run();
   return {
     status: run.status,
     modelStatus: describeStatus(highs, run.modelStatus),
     objective: model.getObjectiveValue(),
     primal: arrayFrom(model.getSolution().colValue),
+    elapsed: (performance.now() - t0).toFixed(1),
   };
 }
 

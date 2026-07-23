@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HiGHS online linear, mixed-integer, and quadratic optimization solver — runs in your browser via WebAssembly">
-<title>HiGHS Web Solver — Linear, MIP &amp; Quadratic Optimization</title>
+<meta name="description" content="highs-js packages the open-source HiGHS linear, mixed-integer, and convex quadratic optimization solver for Node.js and browsers">
+<title>highs-js — HiGHS for JavaScript</title>
 <style>
   :root {
     --color-accent: #118bee15;
@@ -457,7 +457,7 @@
   .progress-item {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0;
   }
 
   .progress-label {
@@ -704,6 +704,789 @@
       padding: 0 1rem 3rem;
     }
   }
+
+  /* Purpose-built browser demo */
+  :root {
+    --color-accent: #e276801c;
+    --color-bg: #f8fbfa;
+    --color-bg-secondary: #dbe9e8;
+    --color-link: #b44a55;
+    --color-secondary: #5c8987;
+    --color-secondary-accent: #9ececc26;
+    --color-shadow: #f0f6f5;
+    --color-table: #9ececc;
+    --color-text: #222629;
+    --color-text-secondary: #667174;
+    --color-scrollbar: #9ececc;
+    --radius: 7px;
+    --radius-lg: 12px;
+    --font-sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  body { background: var(--color-bg); }
+  button, input, select, textarea { font: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #d90000;
+    outline-offset: 3px;
+  }
+
+  .top-nav {
+    max-width: 1120px;
+    padding: 1.5rem 2rem;
+    border-bottom: 0;
+    font-size: 0.78rem;
+  }
+  .top-nav::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 4.85rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #9ececc 18%, #9ececc 82%, transparent);
+    opacity: 0.55;
+  }
+  .top-nav-left a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid #9ececc;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--color-text);
+    font: 700 0.75rem/1 var(--font-mono);
+  }
+  .top-nav-right { gap: 1.7rem; }
+  .top-nav-right a { color: var(--color-text-secondary); text-decoration: none; }
+  .top-nav-right a:hover { color: #d90000; opacity: 1; }
+
+  .hero {
+    max-width: 1120px;
+    padding: clamp(5.5rem, 10vw, 8.5rem) 2rem clamp(4.5rem, 8vw, 7rem);
+    text-align: left;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(250px, 0.65fr);
+    gap: clamp(3rem, 9vw, 8rem);
+    align-items: center;
+  }
+  .hero-copy { max-width: 680px; }
+  .hero-kicker {
+    margin-bottom: 1.8rem;
+    color: #b44a55;
+    font: 600 0.7rem/1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    max-width: 680px;
+    margin-bottom: 1.6rem;
+    color: var(--color-text);
+    font: 560 clamp(2.8rem, 6vw, 5rem)/1.02 var(--font-sans);
+    letter-spacing: -0.06em;
+  }
+  .hero h1 em { color: var(--color-text); font-style: normal; font-weight: 560; }
+  .hero p {
+    max-width: 590px;
+    color: var(--color-text-secondary);
+    font-size: clamp(1rem, 1.8vw, 1.15rem);
+    line-height: 1.65;
+  }
+  .hero p strong { color: var(--color-text); font-weight: 600; }
+  .install-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cfe1e0;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--color-text);
+    font: 0.78rem/1 var(--font-mono);
+  }
+  .install-line::before { content: "$"; color: #b44a55; }
+  .install-line span { color: var(--color-text-secondary); font-size: 0.65rem; }
+  .hero-sample {
+    overflow: hidden;
+    border: 1px solid #9ececc;
+    border-radius: 9px;
+    background: #fff;
+  }
+  .hero-sample-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #dcebea;
+    color: var(--color-text-secondary);
+    font: 0.61rem/1 var(--font-mono);
+    text-transform: uppercase;
+  }
+  .hero-sample-header code { color: #b44a55; }
+  .hero-sample pre {
+    margin: 0;
+    padding: 1.4rem 1.2rem;
+    overflow-x: auto;
+    color: var(--color-text);
+    font: 0.72rem/1.75 var(--font-mono);
+  }
+  .hero-sample .comment { color: #718b89; }
+  .hero-sample .result {
+    padding: 0.8rem 1rem;
+    border-top: 1px solid #dcebea;
+    background: #f1f8f7;
+    color: #4e7775;
+    font: 0.65rem/1 var(--font-mono);
+  }
+  .browser-mark { background: linear-gradient(transparent 62%, #9ececc70 62%); color: var(--color-text); padding: 0 1px; }
+
+  .capability-overview {
+    max-width: 1120px;
+    margin: 0 auto clamp(3rem, 6vw, 5rem);
+    padding: clamp(4rem, 8vw, 7rem) 2rem;
+    border: solid #cfe1e0;
+    border-width: 1px 0;
+    display: grid;
+    grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.6fr);
+    gap: clamp(3rem, 8vw, 7rem);
+  }
+  .capability-intro .section-label,
+  .runtime-contract .section-label {
+    margin-bottom: 1rem;
+    color: #b44a55;
+    font: 600 0.65rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .capability-intro h2 {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    font-size: clamp(1.8rem, 3.5vw, 2.7rem);
+    font-weight: 560;
+    line-height: 1.12;
+    letter-spacing: -0.045em;
+  }
+  .capability-intro > p:last-child { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.7; }
+  .problem-types { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .problem-type {
+    min-width: 0;
+    padding: 0.35rem clamp(1.2rem, 3vw, 2rem);
+    border-left: 1px solid #9ececc;
+  }
+  .problem-type code { color: #d90000; font: 600 0.68rem/1 var(--font-mono); }
+  .problem-type h3 { margin: 1.1rem 0 0.65rem; font-size: 1rem; font-weight: 650; }
+  .problem-type p { color: var(--color-text-secondary); font-size: 0.8rem; line-height: 1.65; }
+  .runtime-contract {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.6fr);
+    gap: clamp(3rem, 8vw, 7rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid #dcebea;
+  }
+  .runtime-contract h3 { max-width: 230px; font-size: 1rem; font-weight: 600; line-height: 1.5; }
+  .runtime-contract dl { display: grid; grid-template-columns: 130px 1fr; margin: 0; }
+  .runtime-contract dt,
+  .runtime-contract dd { padding: 0.65rem 0; border-bottom: 1px solid #e4efee; }
+  .runtime-contract dt { color: var(--color-text-secondary); font: 0.65rem/1.6 var(--font-mono); text-transform: uppercase; }
+  .runtime-contract dd { margin: 0; color: var(--color-text); font: 0.75rem/1.6 var(--font-mono); }
+  .runtime-contract .limit { color: #a6434c; }
+
+  .prerelease-banner {
+    max-width: 1056px;
+    margin: 0 auto;
+    padding: 1rem 1.25rem;
+    border: 1px solid #cfe1e0;
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--color-text-secondary);
+    text-align: left;
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+  .prerelease-banner strong { color: var(--color-text); }
+  .prerelease-banner code { background: #edf6f5; color: var(--color-text); }
+  .prerelease-banner a { float: right; color: var(--color-link); text-decoration: none; }
+  .prerelease-banner a:hover { color: #d90000; }
+  .section-divider { display: none; }
+
+  .demo-heading {
+    max-width: 1440px;
+    margin: clamp(5rem, 9vw, 8rem) auto 1.8rem;
+    padding: 0 2rem;
+    text-align: left;
+    color: var(--color-text);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .demo-heading::after {
+    content: " Each one exercises the package API directly.";
+    color: var(--color-text-secondary);
+    font-weight: 400;
+  }
+
+  .container {
+    max-width: 1440px;
+    padding: 0 2rem 9rem;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+  .tabs {
+    position: sticky;
+    top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: visible;
+  }
+  .tabs::before {
+    content: "";
+    position: absolute;
+    top: 1.75rem;
+    bottom: 0.75rem;
+    left: 13px;
+    width: 1px;
+    background: #c7dfdd;
+  }
+  .tree-group {
+    position: relative;
+    z-index: 1;
+    min-height: 18px;
+    margin: 0.55rem 0 0.1rem;
+    padding-left: 34px;
+    color: #879293;
+    font: 600 0.58rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tree-group:first-child { margin-top: 0; }
+  .tree-group::before {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    border: 1px solid #9ececc;
+    border-radius: 2px;
+    background: var(--color-bg);
+  }
+  .tab-btn {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    align-content: center;
+    justify-content: start;
+    gap: 0.05rem 0.5rem;
+    min-width: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: 0.25rem 0.45rem 0.25rem 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.77rem;
+    text-align: left;
+    transition: background-color 140ms ease, box-shadow 160ms ease, color 140ms ease;
+  }
+  .tab-btn:hover { background: #edf6f5; color: var(--color-text); }
+  .tab-btn.active { background: #fff; color: var(--color-text); box-shadow: 0 0 0 1px #cfe1e0; }
+  .tab-index {
+    position: relative;
+    z-index: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border: 1px solid #9ececc;
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: #5c8987;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+  .tab-btn.active .tab-index {
+    border-color: #e27680;
+    background: #e27680;
+    color: #fff;
+    box-shadow: 0 0 0 4px #fff;
+  }
+  .tab-btn strong { font-size: 0.75rem; font-weight: 650; line-height: 1.2; }
+  .tab-btn small { color: var(--color-text-secondary); font: 0.57rem/1.3 var(--font-mono); }
+  .tree-branch { position: relative; z-index: 1; }
+  .tree-branch-header {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    align-items: center;
+    gap: 0.05rem 0.5rem;
+    min-height: 40px;
+    color: var(--color-text);
+  }
+  .tree-branch-header .tab-index { grid-row: 1 / 3; }
+  .tree-branch-header strong { align-self: end; font-size: 0.75rem; line-height: 1.2; }
+  .tree-branch-header small { align-self: start; color: var(--color-text-secondary); font: 0.57rem/1.3 var(--font-mono); }
+  .tree-branch:has(.active) > .tree-branch-header .tab-index { border-color: #e27680; color: #b44a55; }
+  .tree-children {
+    display: grid;
+    gap: 0;
+    margin: 0 0 0.15rem 13px;
+    padding-left: 0;
+    border-left: 1px solid #c7dfdd;
+  }
+  .tree-subitem {
+    position: relative;
+    display: grid;
+    gap: 0.05rem;
+    min-height: 30px;
+    padding: 0.2rem 0.4rem 0.2rem 21px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 140ms ease, box-shadow 160ms ease, color 140ms ease;
+  }
+  .tree-subitem::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 13px;
+    height: 1px;
+    background: #c7dfdd;
+  }
+  .tree-subitem strong { font-size: 0.68rem; font-weight: 600; line-height: 1.2; }
+  .tree-subitem small { color: var(--color-text-secondary); font: 0.52rem/1.25 var(--font-mono); }
+  .tree-subitem:hover { background: #edf6f5; }
+  .tree-subitem.active { background: #fff3f4; box-shadow: inset 2px 0 #e27680; }
+  .tabs button:focus-visible { outline: 1px solid #b44a55; outline-offset: 2px; }
+  .tabs button.active:focus-visible { outline: 0; }
+
+  .tab-panel.active { animation: panel-in 180ms ease-out; }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(3px); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  .example-card {
+    padding: clamp(1.5rem, 3.5vw, 3.25rem);
+    border-color: #cfe1e0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: none;
+  }
+  .example-card > * { max-width: none; margin-left: auto; margin-right: auto; }
+  .tech-header-line {
+    margin-bottom: clamp(2rem, 3vw, 2.75rem);
+    padding-bottom: 0.8rem;
+    border-bottom-color: #cfe1e0;
+    color: #b44a55;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+  }
+  .problem-header { max-width: none; margin-bottom: clamp(2rem, 3vw, 2.75rem); }
+  .problem-header h3 {
+    margin-bottom: 0.85rem;
+    color: var(--color-text);
+    font-size: clamp(1.7rem, 3.5vw, 2.55rem);
+    font-weight: 560;
+    line-height: 1.15;
+    letter-spacing: -0.045em;
+  }
+  .problem-header p { max-width: 920px; color: var(--color-text-secondary); font-size: 0.93rem; line-height: 1.7; }
+  .problem-header code { font-family: var(--font-mono); font-size: 0.82em; }
+
+  .sparse-explorer {
+    container-type: inline-size;
+    margin-bottom: clamp(2rem, 3vw, 3rem) !important;
+    overflow: hidden;
+    border: 1px solid #cfe1e0;
+    border-radius: 10px;
+    background: #fbfdfd;
+  }
+  .sparse-explorer-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid #dcebea;
+    background: #f1f8f7;
+  }
+  .sparse-explorer-header strong { display: block; margin-bottom: 0.25rem; font-size: 0.82rem; }
+  .sparse-explorer-header p { max-width: 650px; color: var(--color-text-secondary); font-size: 0.7rem; line-height: 1.55; }
+  .sparse-controls { display: flex; flex: 0 0 auto; gap: 0.35rem; }
+  .sparse-control {
+    min-width: 34px;
+    height: 32px;
+    padding: 0 0.65rem;
+    border: 1px solid #bad4d2;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--color-text);
+    font: 0.62rem/1 var(--font-mono);
+    cursor: pointer;
+  }
+  .sparse-control:hover { border-color: #e27680; }
+  .sparse-flow {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.95fr) minmax(230px, 1fr) minmax(360px, 1.5fr);
+  }
+  .sparse-stage { position: relative; min-width: 0; padding: 1.2rem; }
+  .sparse-stage + .sparse-stage { border-left: 1px solid #dcebea; }
+  .sparse-stage + .sparse-stage::before {
+    content: "→";
+    position: absolute;
+    top: 1.1rem;
+    left: -0.7rem;
+    display: grid;
+    width: 1.4rem;
+    height: 1.4rem;
+    place-items: center;
+    border: 1px solid #cfe1e0;
+    border-radius: 50%;
+    background: #fbfdfd;
+    color: #b44a55;
+    font-size: 0.7rem;
+  }
+  .sparse-stage-label {
+    margin-bottom: 1rem;
+    color: #718b89;
+    font: 600 0.58rem/1 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .formula-list { display: grid; gap: 0.4rem; }
+  .formula-row {
+    padding: 0.5rem 0.6rem;
+    border-left: 2px solid transparent;
+    color: var(--color-text-secondary);
+    font: 0.67rem/1.5 var(--font-mono);
+    transition: 160ms ease;
+  }
+  .formula-row.active { border-left-color: #e27680; background: #fff3f4; color: var(--color-text); }
+  .formula-term {
+    display: inline-block;
+    margin: -0.15rem -0.1rem;
+    padding: 0.15rem 0.1rem;
+    border-radius: 3px;
+    cursor: default;
+  }
+  .formula-term:hover { box-shadow: 0 0 0 1px #e27680; }
+  .formula-term.active { background: #e27680; color: #fff; }
+  .matrix-wrap { overflow-x: auto; }
+  .matrix-table { border-spacing: 4px; border-collapse: separate; margin: -4px; font: 0.63rem/1 var(--font-mono); }
+  .matrix-table th { min-width: 34px; height: 24px; color: #718b89; font-weight: 500; text-align: center; }
+  .matrix-axis-index { display: block; margin-bottom: 0.2rem; color: #b44a55; font: 0.5rem/1 var(--font-mono); }
+  .matrix-axis-name { display: block; font: 0.57rem/1 var(--font-mono); }
+  .matrix-table td {
+    min-width: 34px;
+    height: 32px;
+    border: 1px solid #dcebea;
+    border-radius: 4px;
+    background: #fff;
+    color: #889395;
+    text-align: center;
+    transition: 160ms ease;
+  }
+  .matrix-table td.nonzero { color: var(--color-text); }
+  .matrix-table td.active { border-color: #e27680; background: #e27680; color: #fff; transform: scale(1.08); }
+  .matrix-table td.mirror { border-color: #9ececc; background: #e4f3f2; color: #4e7775; }
+  .matrix-table td.zero-hover { border-style: dashed; border-color: #9ececc; background: #f2f8f7; color: #718b89; }
+  .array-stack { display: grid; gap: 0.7rem; padding-top: 0.35rem; }
+  .array-row { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0.3rem; align-items: start; }
+  .array-name { padding-top: 0.38rem; color: #718b89; font: 0.58rem/1 var(--font-mono); }
+  .array-cells { display: flex; width: 100%; min-width: 0; gap: 2px; padding: 2px; }
+  .array-cell {
+    display: grid;
+    flex: 1 1 30px;
+    min-width: 16px;
+    max-width: 34px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid #dcebea;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--color-text-secondary);
+    font: 0.54rem/1 var(--font-mono);
+    transition: 160ms ease;
+  }
+  .array-cell.active { border-color: #e27680; background: #fff1f2; color: #a6434c; font-weight: 700; }
+  .array-cell.boundary { border-color: #9ececc; background: #edf8f7; color: #4e7775; }
+  .array-cell:hover { box-shadow: 0 0 0 1px #e27680; }
+  .sparse-narration {
+    min-height: 52px;
+    padding: 0.85rem 1.2rem;
+    border-top: 1px solid #dcebea;
+    background: #fff;
+    color: var(--color-text-secondary);
+    font: 0.65rem/1.6 var(--font-mono);
+  }
+  .sparse-narration strong { color: #a6434c; }
+  .sparse-legend { color: #718b89; font-size: 0.62rem; }
+
+  @container (max-width: 840px) {
+    .sparse-flow { grid-template-columns: 1fr; }
+    .sparse-stage + .sparse-stage { border-left: 0; border-top: 1px solid #dcebea; }
+    .sparse-stage + .sparse-stage::before { top: -0.7rem; left: 1.1rem; content: "↓"; }
+  }
+
+  .code-section, .visual-inputs, .visual-solution, .textual-solution { margin-bottom: 1.5rem; }
+  .code-header { margin-bottom: 0.55rem; font: 600 0.65rem/1.4 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .code-editor-box {
+    padding: 1.3rem 1.4rem;
+    border: 0;
+    border-top: 3px solid #9ececc;
+    border-radius: 5px;
+    background: #222629;
+    color: #edf5f4;
+  }
+  .code-editor-box textarea { color: #edf5f4; }
+  .highlighted-code {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #edf5f4;
+    font: 0.825rem/1.5 var(--font-mono);
+  }
+  .syntax-editor {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid #d3e4e3;
+    border-radius: 5px;
+    background: #fff;
+  }
+  .syntax-editor:focus-within { border-color: #9ececc; box-shadow: 0 0 0 3px #9ececc30; }
+  .syntax-editor pre,
+  .syntax-editor textarea {
+    grid-area: 1 / 1;
+    width: 100%;
+    min-height: inherit;
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: normal;
+    font: 0.825rem/1.5 var(--font-mono);
+    tab-size: 2;
+  }
+  .syntax-editor pre { pointer-events: none; color: var(--color-text); }
+  .syntax-editor textarea {
+    z-index: 1;
+    resize: none;
+    background: transparent;
+    color: transparent;
+    caret-color: var(--color-text);
+    -webkit-text-fill-color: transparent;
+  }
+  .syntax-editor textarea:focus { background: transparent; box-shadow: none; }
+  .syntax-editor textarea::selection { background: #9ececc70; }
+  .token.comment { color: #718b89; font-style: italic; }
+  .token.keyword { color: #b13442; font-weight: 600; }
+  .token.string { color: #397c69; }
+  .token.number, .token.boolean { color: #9c5c23; }
+  .token.operator { color: #d90000; }
+  .token.property, .token.label { color: #476f9c; }
+  .token.variable { color: #3f6f6d; }
+  .code-editor-box .token.comment { color: #8baaa7; }
+  .code-editor-box .token.keyword { color: #f08b95; }
+  .code-editor-box .token.string { color: #9ececc; }
+  .code-editor-box .token.number { color: #f1c27d; }
+  .syntax-output .token.property { color: #476f9c; }
+  .visual-inputs, .visual-solution {
+    padding: clamp(1.15rem, 3vw, 1.8rem);
+    border-color: #d6e6e5;
+    background: #f4f9f8;
+  }
+  .visual-inputs h4, .visual-solution h4 { font-size: 0.76rem; letter-spacing: 0.035em; text-transform: none; }
+  .visual-grid { grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); }
+  .item-card, .stat-box, .capacity-packing { border-color: #d3e4e3; background: #fff; }
+  .item-card { padding: 1rem; }
+  .item-card.selected { border-color: #9ececc; background: #e8f5f4; }
+  .stat-box { min-height: 76px; justify-content: space-between; padding: 0.8rem 1rem; }
+  .stat-box .stat-val { color: var(--color-text); font-size: 1.1rem; font-weight: 600; }
+  .progress-track, .interval-scale-track { background: #dcebea; }
+  .progress-fill, .interval-scale-fill { background: #e27680; }
+  .packing-track { height: 32px; background: #dcebea; }
+  .pack-block { background: #e27680; font-family: var(--font-mono); font-size: 0.65rem; }
+
+  textarea, .output {
+    border-color: #d3e4e3;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--color-text);
+    word-break: normal;
+  }
+  textarea:focus { border-color: #9ececc; background: #fff; box-shadow: 0 0 0 3px #9ececc30; }
+  .output { min-height: 120px; }
+  .output.placeholder { font-style: normal; }
+  .output.error { color: #d90000; border-color: #e27680; background: #fff5f5; }
+  .timing-bar {
+    border: 0;
+    background: transparent;
+    color: #5c8987;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+  .metadata-footer { color: #899496; font-family: var(--font-mono); font-size: 0.61rem; }
+
+  .btn {
+    min-height: 40px;
+    padding: 0.55rem 1.05rem;
+    border-color: var(--color-text);
+    border-radius: 5px;
+    background: var(--color-text);
+    color: #fff;
+    font-size: 0.78rem;
+  }
+  .btn:hover { border-color: #b44a55; background: #b44a55; }
+  .btn:disabled { cursor: wait; opacity: 0.55; }
+  .btn.ghost { color: var(--color-text); border-color: #bad4d2; background: #fff; }
+  .btn.ghost:hover { border-color: #9ececc; background: #e9f5f4; }
+  label { color: var(--color-text-secondary); font-size: 0.76rem; }
+  select, input[type=text], input[type=number] {
+    min-height: 40px;
+    border-color: #c9dddc;
+    border-radius: 5px;
+    background: #fff;
+  }
+  .opts-filter { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+  .opts-filter input { flex: 1; }
+  .opts-table th { background: #edf6f5; }
+  .opts-table tr:hover td { background: #f1f8f7; }
+  .iis-empty-state {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.25rem;
+    border: 1px dashed #bad4d2;
+    border-radius: 7px;
+    background: #fff;
+  }
+  .iis-preview-lines { display: grid; gap: 0.45rem; }
+  .iis-preview-lines span { height: 7px; border-radius: 4px; background: #dcebea; }
+  .iis-preview-lines span:nth-child(2) { width: 78%; background: #e2768060; }
+  .iis-empty-state strong { display: block; margin-bottom: 0.25rem; font-size: 0.8rem; }
+  .iis-empty-state p { color: var(--color-text-secondary); font-size: 0.73rem; line-height: 1.55; }
+  .conflict-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-secondary);
+    font-size: 0.72rem;
+  }
+  .conflict-summary strong { color: #a6434c; }
+  .conflict-list { position: relative; display: grid; gap: 0.65rem; padding-left: 1rem; }
+  .conflict-list::before {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: 3px;
+    width: 2px;
+    background: #e27680;
+  }
+  .conflict-node {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    gap: 0.8rem;
+    align-items: center;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid #ebc5c9;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .conflict-node::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #d90000;
+  }
+  .conflict-node > span:first-child { color: #a6434c; font: 600 0.65rem/1 var(--font-mono); }
+  .conflict-node code { color: var(--color-text); font: 0.72rem/1.45 var(--font-mono); }
+  .conflict-node small { color: var(--color-text-secondary); font-size: 0.65rem; }
+  .iis-clear { padding: 1rem; border: 1px solid #9ececc; border-radius: 6px; background: #fff; color: #4e7775; font-size: 0.78rem; }
+
+  @media (max-width: 980px) {
+    .container { grid-template-columns: 1fr; }
+    .tabs { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+    .tabs::before { display: none; }
+    .tree-group { grid-column: 1 / -1; margin-top: 1rem; padding-left: 0; }
+    .tree-group::before { display: none; }
+    .tree-branch { min-width: 0; }
+    .tree-branch-header { padding: 0 0.55rem; }
+    .tree-children { margin-left: 22px; }
+    .tab-btn { padding: 0.55rem; background: #fff; box-shadow: 0 0 0 1px #d9e8e7; }
+    .tab-btn.active { box-shadow: 0 0 0 1px #e27680; }
+    .sparse-flow { grid-template-columns: 1fr; }
+    .sparse-stage + .sparse-stage { border-left: 0; border-top: 1px solid #dcebea; }
+    .sparse-stage + .sparse-stage::before { top: -0.7rem; left: 1.1rem; content: "↓"; }
+  }
+
+  @media (max-width: 760px) {
+    .top-nav { padding: 1rem; flex-direction: row; align-items: center; }
+    .top-nav::after { top: 4.1rem; }
+    .top-nav-right a:not(:last-child) { display: none; }
+    .hero { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1rem 4.5rem; }
+    .hero h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
+    .hero-sample { max-width: 390px; }
+    .capability-overview { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1rem; }
+    .problem-types { grid-template-columns: 1fr; gap: 2rem; }
+    .problem-type { padding: 0.1rem 0 0.1rem 1.25rem; }
+    .runtime-contract { grid-template-columns: 1fr; gap: 1.5rem; }
+    .runtime-contract dl { grid-template-columns: 1fr; }
+    .runtime-contract dt { padding-bottom: 0; border-bottom: 0; }
+    .runtime-contract dd { padding-top: 0.2rem; }
+    .prerelease-banner { margin: 0 1rem; padding: 1rem; }
+    .prerelease-banner a { display: block; float: none; margin-top: 0.4rem; }
+    .demo-heading { margin-top: 5rem; padding: 0 1rem; line-height: 1.6; }
+    .demo-heading::after { display: block; }
+    .container { padding: 0 1rem 5rem; }
+    .tab-btn { min-height: 58px; }
+    .example-card { margin-bottom: 1rem; }
+    .tech-header-line { align-items: flex-start; gap: 1rem; }
+    .tech-header-line span:last-child { text-align: right; }
+    .capacity-header-row, .interval-scale-header { gap: 0.75rem; align-items: flex-start; }
+    .capacity-header-row span:last-child, .interval-scale-header span:last-child { text-align: right; }
+    .packing-track { height: 42px; }
+    .iis-empty-state { grid-template-columns: 80px 1fr; }
+    .conflict-node { grid-template-columns: 42px 1fr; }
+    .conflict-node small { grid-column: 2; }
+    .sparse-explorer-header { flex-direction: column; }
+    .sparse-stage { padding: 1rem; }
+  }
 </style>
 </head>
 <body>
@@ -711,42 +1494,113 @@
 <!-- ═══════════ TOP NAVIGATION ═══════════ -->
 <nav class="top-nav">
   <div class="top-nav-left">
-    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">Github project page</a>
+    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener"><span class="brand-mark">H</span> highs-js</a>
   </div>
   <div class="top-nav-right">
-    <a href="#" class="active">Demo</a>
-    <a href="https://www.npmjs.com/package/highs" target="_blank" rel="noopener">NPM package</a>
-    <a href="https://highs.dev/" target="_blank" rel="noopener">HiGHS solver</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#examples">Examples</a>
+    <a href="https://www.npmjs.com/package/highs" target="_blank" rel="noopener">npm</a>
   </div>
 </nav>
 
 <!-- ═══════════ HERO ═══════════ -->
 <header class="hero">
-  <h1><u>HiGHS</u> online linear programming solver</h1>
-  <p>A linear, mixed-integer, and quadratic optimization solver you can use directly from your <mark class="browser-mark">browser</mark></p>
+  <div class="hero-copy">
+    <div class="hero-kicker">highs-js / JavaScript + WebAssembly</div>
+    <h1>HiGHS for JavaScript.</h1>
+    <p><strong>The open-source HiGHS optimization solver, packaged for Node.js and modern browsers.</strong> Build and solve linear, mixed-integer, and convex quadratic models from JavaScript.</p>
+    <div class="install-line">npm install highs <span>Node.js 18+</span></div>
+  </div>
+  <div class="hero-sample" aria-label="JavaScript API example">
+    <div class="hero-sample-header"><span>quick start</span><code>ES module</code></div>
+    <pre><span class="comment">// Load the WebAssembly runtime</span>
+import loadHighs from "highs";
+const highs = await loadHighs();
+
+<span class="comment">// Solve a model in CPLEX LP format</span>
+const result = highs.solve(lpText);
+console.log(result.ObjectiveValue);</pre>
+    <div class="result">LP · MIP · convex QP</div>
+  </div>
 </header>
 
+<section class="capability-overview" id="capabilities" aria-labelledby="capability-title">
+  <div class="capability-intro">
+    <p class="section-label">What it solves</p>
+    <h2 id="capability-title">Three useful classes of optimization problem.</h2>
+    <p>HiGHS is designed for models whose objective and constraints are linear, plus continuous convex quadratic objectives. Choose the class that matches which variables must be discrete and whether the objective contains quadratic terms.</p>
+  </div>
+  <div class="problem-types">
+    <article class="problem-type">
+      <code>LP</code>
+      <h3>Linear programs</h3>
+      <p>Continuous decisions with a linear objective and linear row bounds. HiGHS provides revised simplex, interior-point with crossover, and PDLP algorithms.</p>
+    </article>
+    <article class="problem-type">
+      <code>MILP</code>
+      <h3>Mixed-integer programs</h3>
+      <p>Linear models with integer, binary, or semi-continuous columns. HiGHS uses branch-and-cut with presolve, heuristics, and gap-based stopping.</p>
+    </article>
+    <article class="problem-type">
+      <code>QP</code>
+      <h3>Convex quadratic programs</h3>
+      <p>Continuous columns, linear constraints, and a convex quadratic objective supplied as a sparse Hessian. Non-convex QP and MIQP are outside HiGHS’ scope.</p>
+    </article>
+  </div>
+  <div class="runtime-contract">
+    <div>
+      <p class="section-label">For a closer look</p>
+      <h3>The browser package exposes both the convenient path and the solver machinery underneath it.</h3>
+    </div>
+    <dl>
+      <dt>APIs</dt><dd><code>solve(lpText)</code> · persistent <code>createModel()</code> · raw C interface</dd>
+      <dt>Model input</dt><dd>LP and MPS text · typed sparse CSC/CSR matrices · incremental mutation</dd>
+      <dt>MIP</dt><dd>binary/integer variables · starts · SOS1/SOS2 · callbacks · solution injection</dd>
+      <dt>Analysis</dt><dd>basis access · primal/dual rays · ranging · IIS · feasibility relaxation</dd>
+      <dt>Execution</dt><dd>Node.js or browser WebAssembly · in-memory model import/export</dd>
+      <dt>Problem scope</dt><dd class="limit">no general nonlinear models · no mixed-integer quadratic programs</dd>
+      <dt>Browser limits</dt><dd class="limit">single-threaded solve · no native filesystem paths</dd>
+    </dl>
+  </div>
+</section>
+
 <aside class="prerelease-banner">
-  <strong>🚀 Prerelease available:</strong> <code>highs@1.15.3-pre.0</code> adds a persistent model API, MIP, QP, IIS, ranging, and more.
-  <a href="https://github.com/lovasoa/highs-js/issues/new" target="_blank" rel="noopener">Try it and share feedback →</a>
+  <strong>Extended API preview</strong> <code>highs@1.15.3-pre.0</code> includes persistent models, MIP, QP, IIS, and ranging.
+  <a href="https://github.com/lovasoa/highs-js/issues/new" target="_blank" rel="noopener">Found something odd? Tell us &rarr;</a>
 </aside>
 
 <hr class="section-divider">
 
-<h2 class="demo-heading">Demo</h2>
+<h2 class="demo-heading" id="examples">Runnable API examples</h2>
 
 <div class="container">
 
 <!-- ═══════════ TABS ═══════════ -->
 <nav class="tabs" id="tabs">
-  <button class="tab-btn active" data-tab="lp"><span class="icon">📝</span> LP</button>
-  <button class="tab-btn" data-tab="build"><span class="icon">🔧</span> Build &amp; Mutate</button>
-  <button class="tab-btn" data-tab="mip"><span class="icon">🔢</span> MILP</button>
-  <button class="tab-btn" data-tab="qp"><span class="icon">📈</span> QP</button>
-  <button class="tab-btn" data-tab="ranging"><span class="icon">📊</span> Ranging</button>
-  <button class="tab-btn" data-tab="options"><span class="icon">⚙️</span> Options &amp; Hooks</button>
-  <button class="tab-btn" data-tab="iis"><span class="icon">🔍</span> IIS</button>
-  <button class="tab-btn" data-tab="io"><span class="icon">💾</span> Model I/O</button>
+  <div class="tree-group">Model lifecycle</div>
+  <button class="tab-btn active" data-tab="lp" role="tab" aria-selected="true"><span class="tab-index">01</span><strong>One-shot solve</strong><small>solve(lpText)</small></button>
+  <div class="tree-branch">
+    <div class="tree-branch-header"><span class="tab-index">02</span><strong>Persistent models</strong><small>createModel()</small></div>
+    <div class="tree-children">
+      <button class="tree-subitem" data-tab="build" data-example="production" role="tab" aria-selected="false"><strong>Production planning</strong><small>maximize revenue</small></button>
+      <button class="tree-subitem" data-tab="build" data-example="diet" role="tab" aria-selected="false"><strong>Diet problem</strong><small>minimize cost</small></button>
+      <button class="tree-subitem" data-tab="build" data-example="transport" role="tab" aria-selected="false"><strong>Transportation</strong><small>route shipments</small></button>
+    </div>
+  </div>
+  <div class="tree-group">Problem structure</div>
+  <div class="tree-branch">
+    <div class="tree-branch-header"><span class="tab-index">03</span><strong>Integer decisions</strong><small>integrality · MIP</small></div>
+    <div class="tree-children">
+      <button class="tree-subitem" data-tab="mip" data-example="knapsack" role="tab" aria-selected="false"><strong>0/1 knapsack</strong><small>binary selection</small></button>
+      <button class="tree-subitem" data-tab="mip" data-example="facility" role="tab" aria-selected="false"><strong>Facility location</strong><small>fixed-charge model</small></button>
+    </div>
+  </div>
+  <button class="tab-btn" data-tab="qp" role="tab" aria-selected="false"><span class="tab-index">04</span><strong>Quadratic objectives</strong><small>passHessian()</small></button>
+  <div class="tree-group">Inspect and exchange</div>
+  <button class="tab-btn" data-tab="ranging" role="tab" aria-selected="false"><span class="tab-index">05</span><strong>Sensitivity</strong><small>getRanging()</small></button>
+  <button class="tab-btn" data-tab="options" role="tab" aria-selected="false"><span class="tab-index">06</span><strong>Solver options</strong><small>options.describe()</small></button>
+  <button class="tab-btn" data-tab="iis" role="tab" aria-selected="false"><span class="tab-index">07</span><strong>Infeasibility</strong><small>getIis()</small></button>
+  <button class="tab-btn" data-tab="io" role="tab" aria-selected="false"><span class="tab-index">08</span><strong>Model exchange</strong><small>LP · MPS · export</small></button>
 </nav>
 
 <!-- ═══════════ TAB 1: LP FORMAT ═══════════ -->
@@ -758,22 +1612,30 @@
     </div>
 
     <div class="problem-header">
-      <h3>CPLEX LP Model Optimization</h3>
-      <p>Parses CPLEX LP text and returns primal variable assignments, dual shadow prices, row slacks, and basis status flags in a single call without manual matrix construction.</p>
+      <h3>Solve a model from LP text</h3>
+      <p>Use this entry point when a model already exists in CPLEX LP format, or when generating readable model text is simpler than assembling sparse arrays. <code>solve()</code> parses and solves the text in one call, then returns a name-keyed result with the objective, column values, row values, duals, and basis statuses. It reparses the model on every call; use a persistent model for repeated solves or incremental changes.</p>
     </div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>4 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="lp-core-code" spellcheck="false">// 1. One-shot solve call for LP text
+        <textarea id="lp-core-code" spellcheck="false">// lpText uses the human-readable CPLEX LP format. It can include
+// continuous, integer, and binary variables in one model.
 const result = highs.solve(lpText, { output_flag: false });
 
-// 2. Extract optimal objective and column result dictionary
-const { ObjectiveValue, Columns } = result;</textarea>
+// Always inspect Status before reading a solution: a model may be
+// infeasible, unbounded, or stopped by a configured limit.
+if (result.Status !== "Optimal") {
+  throw new Error(`Solve ended with status: ${result.Status}`);
+}
+
+// Columns is keyed by the variable names declared in the LP text.
+const objective = result.ObjectiveValue;
+const x0 = result.Columns.x0.Primal;</textarea>
       </div>
     </div>
 
@@ -781,14 +1643,14 @@ const { ObjectiveValue, Columns } = result;</textarea>
     <div class="visual-inputs">
       <h4>Interactive CPLEX LP Text Model</h4>
       <textarea id="lp-input" spellcheck="false" style="min-height:160px">Maximize
- obj: x1 + 2 x2 + 3 x3 + x4
+ obj: x0 + 2 x1 + 3 x2 + x3
 Subject To
- c1: - x1 + x2 + x3 + 10 x4 &lt;= 20
- c2: x1 - 3 x2 + x3 &lt;= 30
- c3: x2 - 3.5 x4 = 0
+ r0: - x0 + x1 + x2 + 10 x3 &lt;= 20
+ r1: x0 - 3 x1 + x2 &lt;= 30
+ r2: x1 - 3.5 x3 = 0
 Bounds
- 0 &lt;= x1 &lt;= 40
- 2 &lt;= x4 &lt;= 3
+ 0 &lt;= x0 &lt;= 40
+ 2 &lt;= x3 &lt;= 3
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="lp-solve">Solve LP</button>
@@ -801,7 +1663,7 @@ End</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">STATUS</span>
-          <span class="stat-val">OPTIMAL</span>
+          <span class="stat-val" id="lp-status">READY</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">OPTIMAL OBJECTIVE</span>
@@ -811,7 +1673,7 @@ End</textarea>
       <h4>Primal Solution Breakdown</h4>
       <div class="progress-bar-group" id="lp-visual-bars">
         <div class="progress-item">
-          <div class="progress-label"><span>x1</span><span>--</span></div>
+          <div class="progress-label"><span>x0</span><span>--</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
         </div>
       </div>
@@ -824,11 +1686,11 @@ End</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="lp-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="lp-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS WebAssembly • Legacy solve() API • Primal Simplex Engine • IEEE 754 64-bit Precision
+      Compatibility solve() API • CPLEX LP parser • Name-keyed result object • Reparsed on each call
     </div>
   </div>
 </section>
@@ -843,41 +1705,54 @@ End</textarea>
 
     <div class="problem-header">
       <h3 id="build-title">Production Planning Optimization</h3>
-      <p id="build-explain">Allocates factory manufacturing capacity across 4 products to maximize revenue subject to plant labor and machine limits.</p>
+      <p id="build-explain">Use a persistent model when an application builds models from data, changes coefficients or bounds, or solves the same structure repeatedly. This production example maximizes revenue under capacity constraints and passes the constraint matrix in compressed sparse column (CSC) form.</p>
     </div>
+
+    <div class="sparse-explorer" id="build-matrix-explorer" aria-label="Interactive constraint matrix storage explanation"></div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>9 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="build-core-code" spellcheck="false">// 1. Instantiate persistent model and pass CSC problem structure
+        <textarea id="build-core-code" spellcheck="false">// A persistent model owns one native HiGHS instance. Reuse it for
+// coefficient changes and repeated solves; dispose it when finished.
 const model = highs.createModel();
+
 model.passModel({
-  numCols: colCost.length, numRows: rowLower.length, sense: -1,
+  numCols: colCost.length, numRows: rowLower.length,
+  // objectiveDirection is "minimize" or "maximize" in application data.
+  sense: highs.constants.objectiveSense[objectiveDirection],
+
+  // Each column has an objective coefficient and lower/upper bounds.
+  // Each row has lower/upper activity bounds; equal values mean equality.
   colCost, colLower, colUpper, rowLower, rowUpper,
-  matrix: { format: "csc", numRows, numCols, starts, indices, values }
+
+  matrix: {
+    format: "csc", // Store A one column at a time.
+    numRows, numCols,
+    starts, // starts[j] is the first entry belonging to column j.
+    indices, // Row index for each nonzero matrix entry.
+    values   // Coefficient paired with each row index.
+  }
 });
 
-// 2. Solve and query primal & dual vectors
-model.run();
-const { colValue, colDual } = model.getSolution();</textarea>
+const run = model.run();
+if (run.modelStatus !== highs.constants.modelStatus.optimal) {
+  throw new Error(`Model status: ${run.modelStatus}`);
+}
+
+// colValue is the primal decision vector; colDual contains reduced costs.
+const { colValue, colDual } = model.getSolution();
+model.dispose();</textarea>
       </div>
     </div>
 
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
-      <div class="form-row">
-        <select id="build-example" style="flex:1">
-          <option value="production">Production Planning</option>
-          <option value="diet">Diet Problem</option>
-          <option value="transport">Transportation</option>
-        </select>
-        <button class="btn ghost" id="build-load">Load Example</button>
-      </div>
-      <h4 style="margin-top:0.75rem">Interactive Variable Inputs</h4>
+      <h4>Interactive Variable Inputs</h4>
       <div id="build-vars"></div>
       <div class="btn-row">
         <button class="btn" id="build-solve">Solve Model</button>
@@ -890,7 +1765,7 @@ const { colValue, colDual } = model.getSolution();</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">STATUS</span>
-          <span class="stat-val">OPTIMAL</span>
+          <span class="stat-val" id="build-status">READY</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">OBJECTIVE</span>
@@ -900,7 +1775,7 @@ const { colValue, colDual } = model.getSolution();</textarea>
       <h4>Primal Assignment Allocation</h4>
       <div class="progress-bar-group" id="build-visual-bars">
         <div class="progress-item">
-          <div class="progress-label"><span>x1</span><span>--</span></div>
+          <div class="progress-label"><span>x0</span><span>--</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
         </div>
       </div>
@@ -909,15 +1784,15 @@ const { colValue, colDual } = model.getSolution();</textarea>
     <!-- Textual Solution -->
     <div class="textual-solution">
       <label>Structured Solution Output:</label>
-      <div class="output placeholder" id="build-output">Select an example and click Solve.</div>
+      <div class="output placeholder" id="build-output">Choose a model in the navigation tree, then click Solve Model.</div>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="build-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="build-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS Extended API • highs.createModel() • Compressed Sparse Column (CSC) Matrix • Dual Simplex
+      Persistent Model API • Compressed Sparse Column (CSC) matrix • Explicit native lifetime
     </div>
   </div>
 </section>
@@ -927,45 +1802,61 @@ const { colValue, colDual } = model.getSolution();</textarea>
   <div class="example-card">
     <div class="tech-header-line">
       <span>MILP // BINARY &amp; INTEGER VARIABLES</span>
-      <span>integrality: [1, 1, ...]</span>
+      <span>constants.variableType.integer</span>
     </div>
 
     <div class="problem-header">
       <h3 id="mip-title">0/1 Knapsack Discrete Optimization</h3>
-      <p id="mip-explain">Selects the highest-value subset of discrete items (each either taken or left behind) without exceeding backpack weight capacity.</p>
+      <p id="mip-explain">Use integer or binary variables when decisions represent indivisible quantities, selections, or on/off choices. This knapsack model chooses items without exceeding capacity; HiGHS solves it as a mixed-integer linear program using branch-and-cut, and reports a bound-based MIP gap when optimality has not yet been proven.</p>
     </div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>10 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="mip-core-code" spellcheck="false">// 1. Pass MIP model with integrality array (1 = INTEGER / BINARY)
+        <textarea id="mip-core-code" spellcheck="false">// A MIP uses the same linear objective, bounds, and sparse matrix as
+// an LP. The integrality vector changes how each column is treated.
 const model = highs.createModel();
+
+// columnKinds contains names such as "integer" or "continuous". Looking
+// them up keeps native enum numbers out of model-building code.
+const integrality = columnKinds.map(
+  (kind) => highs.constants.variableType[kind]
+);
+
 model.passModel({
-  numCols, numRows, sense: -1, colCost, colLower, colUpper, rowLower, rowUpper,
+  numCols, numRows,
+  sense: highs.constants.objectiveSense[objectiveDirection],
+  colCost, colLower, colUpper, rowLower, rowUpper,
+
+  // CSC layout: starts partitions nonzeros by column; indices contains
+  // row numbers; values contains the corresponding coefficients.
   matrix: { format: "csc", numRows, numCols, starts, indices, values },
-  integrality: [1, 1, 1, 1, 1]
+
+  // Integer columns with bounds [0, 1] become binary decisions. Other
+  // columns can remain continuous in the same mixed-integer model.
+  integrality
 });
 
-// 2. Solve via Branch-and-Bound and extract binary assignments
-model.run();
-const { colValue } = model.getSolution();</textarea>
+const run = model.run(); // HiGHS uses its MIP branch-and-cut solver.
+const { colValue } = model.getSolution();
+
+// A feasible incumbent can exist before optimality is proven. Read mip_gap
+// from model.info when a time, node, or solution limit may stop the search.
+const mipGap = model.info.get("mip_gap");
+model.dispose();</textarea>
       </div>
     </div>
 
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <div class="form-row">
-        <select id="mip-example" style="flex:1">
-          <option value="knapsack">0/1 Knapsack</option>
-          <option value="facility">Facility Location</option>
-        </select>
-        <label>Capacity: <input type="number" id="mip-capacity" value="15" min="1" max="100"></label>
+        <label id="mip-capacity-control">Capacity: <input type="number" id="mip-capacity" value="15" min="1" max="100"></label>
       </div>
-      <h4>Knapsack Items (Value, Weight per line)</h4>
+      <h4 id="mip-items-label">Knapsack items (value, weight per line)</h4>
       <textarea id="mip-items" style="min-height:90px" spellcheck="false">4, 12
 2, 2
 10, 4
@@ -981,23 +1872,23 @@ const { colValue } = model.getSolution();</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">STATUS</span>
-          <span class="stat-val">OPTIMAL</span>
+          <span class="stat-val" id="mip-status">READY</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">MIP GAP</span>
-          <span class="stat-val">0.00%</span>
+          <span class="stat-val" id="mip-gap-stat">--</span>
         </div>
         <div class="stat-box">
-          <span class="stat-label">TOTAL VALUE</span>
-          <span class="stat-val" id="mip-val-stat">$15.00</span>
+          <span class="stat-label" id="mip-primary-label">TOTAL VALUE</span>
+          <span class="stat-val" id="mip-val-stat">--</span>
         </div>
       </div>
 
       <!-- Capacity Packing Bar -->
       <div class="capacity-packing" id="mip-packing-box">
         <div class="capacity-header-row">
-          <span>KNAPSACK WEIGHT DISTRIBUTION</span>
-          <span id="mip-weight-stat">8 / 15 kg</span>
+          <span id="mip-packing-title">KNAPSACK WEIGHT DISTRIBUTION</span>
+          <span id="mip-weight-stat">-- / 15 kg</span>
         </div>
         <div class="packing-track" id="mip-packing-track">
           <div class="pack-block" style="width:100%">Run MILP to visualize weight packing</div>
@@ -1014,11 +1905,11 @@ const { colValue } = model.getSolution();</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="mip-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="mip-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS MIP Engine • Branch-and-Bound with Cuts • Binary Integrality [0,1] • MIP Gap: 0.0%
+      HiGHS branch-and-cut MIP solver • Binary/integer columns • Incumbent and bound-based MIP gap
     </div>
   </div>
 </section>
@@ -1033,34 +1924,49 @@ const { colValue } = model.getSolution();</textarea>
 
     <div class="problem-header">
       <h3>Markowitz Portfolio Risk Minimization</h3>
-      <p>Allocates capital across 3 investment assets (Tech, Energy, Bonds) to achieve a target annual return while minimizing portfolio variance. Passes a symmetric covariance Hessian matrix $Q$ in CSC format via <code>model.passHessian({ format: "triangular", dimension, starts, indices, values })</code>.</p>
+      <p>Use a convex quadratic program when cost or risk depends on interactions between continuous decisions, such as portfolio covariance or least-squares penalties. This model minimizes portfolio variance while meeting a target return. HiGHS evaluates <code>½xᵀQx + cᵀx</code>, so <code>Q</code> is twice the covariance matrix here. The Hessian must have the correct semidefinite sign for the objective sense; HiGHS does not solve non-convex QP or mixed-integer QP.</p>
     </div>
+
+    <div class="sparse-explorer" id="qp-matrix-explorer" aria-label="Interactive Hessian storage explanation"></div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>10 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="qp-core-code" spellcheck="false">// 1. Pass linear budget (x1 + x2 + x3 = 1) and return (>= 8%) constraints
+        <textarea id="qp-core-code" spellcheck="false">// First pass the linear part of the model. r0 fixes the total
+// allocation at 1; r1 requires the requested minimum return.
 const model = highs.createModel();
 model.passModel({
-  numCols: 3, numRows: 2, sense: 1, colCost: [0, 0, 0],
+  numCols: 3, numRows: 2,
+  sense: highs.constants.objectiveSense.minimize,
+  colCost: [0, 0, 0],
   colLower: [0, 0, 0], colUpper: [1, 1, 1],
   rowLower: [1.0, 0.08], rowUpper: [1.0, Infinity],
-  matrix: { format: "csc", numRows: 2, numCols: 3, starts: [0, 2, 4, 6], indices: [0, 1, 0, 1, 0, 1], values: [1, 0.12, 1, 0.08, 1, 0.04] }
+  matrix: {
+    format: "csc",
+    // Every asset appears in both rows, so each column has two entries.
+    starts: [0, 2, 4, 6],
+    indices: [0, 1, 0, 1, 0, 1], // budget row, return row
+    values: [1, .12, 1, .08, 1, .04]
+  }
 });
 
-// 2. Pass Covariance Matrix Q (Hessian) via passHessian()
+// HiGHS stores one triangle of symmetric Q in column-wise form.
+// starts[j] locates Hessian column j; indices gives its row numbers.
+// Because the objective is 1/2 x'Qx, these values are 2 * covariance.
 model.passHessian({
   format: "triangular", dimension: 3,
-  starts: [0, 2, 3, 4], indices: [0, 1, 1, 2], values: [0.04, 0.01, 0.02, 0.005]
+  starts: [0, 2, 3, 4],
+  indices: [0, 1, 1, 2],
+  values: [0.08, 0.02, 0.04, 0.01]
 });
 
-// 3. Solve Quadratic Program (minimize portfolio variance)
 model.run();
-const { colValue } = model.getSolution();</textarea>
+const { colValue } = model.getSolution(); // Optimal portfolio weights.
+model.dispose();</textarea>
       </div>
     </div>
 
@@ -1094,11 +2000,11 @@ const { colValue } = model.getSolution();</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">STATUS</span>
-          <span class="stat-val">OPTIMAL</span>
+          <span class="stat-val" id="qp-status">READY</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">MINIMIZED VARIANCE</span>
-          <span class="stat-val" id="qp-risk-stat">0.0047</span>
+          <span class="stat-val" id="qp-risk-stat">--</span>
         </div>
       </div>
 
@@ -1121,11 +2027,11 @@ const { colValue } = model.getSolution();</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="qp-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="qp-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS QP Solver • passHessian() • Symmetric Positive Semidefinite Covariance Q Matrix
+      Convex QP • Objective ½xᵀQx + cᵀx • Triangular sparse Hessian • No MIQP
     </div>
   </div>
 </section>
@@ -1140,23 +2046,33 @@ const { colValue } = model.getSolution();</textarea>
 
     <div class="problem-header">
       <h3>Objective Cost &amp; Constraint Sensitivity</h3>
-      <p>Calculates exact allowable lower and upper stability bounds for objective cost coefficients (<code>colCostDown</code>, <code>colCostUp</code>) and constraint right-hand sides before the current optimal basis changes.</p>
+      <p>Use ranging after an LP solve to ask how far one objective coefficient or row bound can move while the current optimal simplex basis remains optimal. HiGHS reports independent up/down ranges for column costs and row or column bounds; these are local, one-at-a-time basis-stability intervals, not guarantees for simultaneous changes. Ranging requires an optimal LP basis and is not available for MIP or QP solutions.</p>
     </div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>5 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="ranging-core-code" spellcheck="false">// 1. Load LP model and solve to optimal basis
+        <textarea id="ranging-core-code" spellcheck="false">// Ranging is defined for an optimal LP simplex basis. Check the run
+// status before requesting it; MIP and QP solutions are not supported.
 const model = highs.createModel({ format: "lp", data: lpText });
-model.run();
+const run = model.run();
+if (run.modelStatus !== highs.constants.modelStatus.optimal) {
+  throw new Error("Ranging requires an optimal LP solution");
+}
 
-// 2. Query sensitivity ranging intervals
 const ranging = model.getRanging();
-const x1CostBounds = [ranging.colCostDown.value[0], ranging.colCostUp.value[0]];</textarea>
+
+// Each record has value, objective, inVariable, and outVariable arrays.
+// This interval changes x0's cost alone and keeps the same optimal basis.
+const x0CostInterval = [
+  ranging.colCostDown.value[0],
+  ranging.colCostUp.value[0]
+];
+model.dispose();</textarea>
       </div>
     </div>
 
@@ -1164,15 +2080,15 @@ const x1CostBounds = [ranging.colCostDown.value[0], ranging.colCostUp.value[0]];
     <div class="visual-inputs">
       <h4>LP Model Definition</h4>
       <textarea id="ranging-lp" spellcheck="false" style="min-height:140px">Maximize
- obj: 3 x1 + 2 x2
+ obj: 3 x0 + 2 x1
 Subject To
- c1: x1 + x2 &lt;= 6
- c2: 2 x1 + x2 &lt;= 8
- c3: -x1 + x2 &lt;= 1
- c4: x2 &lt;= 2
+ r0: x0 + x1 &lt;= 6
+ r1: 2 x0 + x1 &lt;= 8
+ r2: -x0 + x1 &lt;= 1
+ r3: x1 &lt;= 2
 Bounds
+ 0 &lt;= x0
  0 &lt;= x1
- 0 &lt;= x2
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="ranging-solve">Solve &amp; Range</button>
@@ -1184,11 +2100,11 @@ End</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">STATUS</span>
-          <span class="stat-val">OPTIMAL</span>
+          <span class="stat-val" id="ranging-status">READY</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">BASIS STABILITY</span>
-          <span class="stat-val">STABLE</span>
+          <span class="stat-val" id="ranging-stability">--</span>
         </div>
       </div>
 
@@ -1196,7 +2112,7 @@ End</textarea>
       <div id="ranging-visual-bars">
         <div class="interval-scale">
           <div class="interval-scale-header">
-            <span>x1 Cost Stability Range</span>
+            <span>x0 Cost Stability Range</span>
             <span>[1.0000 ⟷ 4.0000]</span>
           </div>
           <div class="interval-scale-track">
@@ -1213,11 +2129,11 @@ End</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="ranging-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="ranging-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS Extended API • getRanging() • Simplex Basis Inverse Tableau Analysis
+      Optimal LP basis required • One coefficient or bound changes at a time • No MIP/QP ranging
     </div>
   </div>
 </section>
@@ -1232,7 +2148,31 @@ End</textarea>
 
     <div class="problem-header">
       <h3>HiGHS Parameter Introspection</h3>
-      <p>Queries, describes, and modifies C++ solver parameters (tolerances, presolve reductions, pivoting rules) on active WebAssembly instances at runtime.</p>
+      <p>Use options to control stopping criteria, feasibility tolerances, presolve, algorithm selection, logging, and MIP search behavior for a persistent model. <code>options.describe()</code> returns the native type, current value, default, and numeric range so applications do not need to hard-code metadata. The WebAssembly API rejects thread/concurrency settings and options that write to native filesystem paths.</p>
+    </div>
+
+    <div class="code-section">
+      <div class="code-header">
+        <span>Core Solving Code</span>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="options-core-code" spellcheck="false">const model = highs.createModel();
+
+// Describe an option before presenting or changing it. The descriptor
+// includes its native type, current/default values, and numeric limits.
+const tolerance = model.options.describe("primal_feasibility_tolerance");
+console.log(tolerance.minimum, tolerance.maximum);
+
+// Option values are validated by name and native type. Settings belong to
+// this model instance and affect subsequent presolve/run calls.
+model.options.set("presolve", "on");
+model.options.set("time_limit", 30.0);
+
+// Restore every option on this model to the HiGHS defaults.
+model.options.reset();
+model.dispose();</textarea>
+      </div>
     </div>
 
     <div class="visual-inputs">
@@ -1261,7 +2201,7 @@ End</textarea>
       <button class="btn ghost" id="opt-reset-all" style="margin-top:0.5rem">Reset All Options</button>
     </div>
     <div class="metadata-footer">
-      HiGHS Option System • Dynamic C++ Option Table • Single-Threaded WASM Exclusions Active
+      Native HiGHS option metadata • Per-model settings • Thread and filesystem options rejected in Wasm
     </div>
   </div>
 </section>
@@ -1275,24 +2215,33 @@ End</textarea>
     </div>
 
     <div class="problem-header">
-      <h3>Minimal Conflicting Subsystem Isolation</h3>
-      <p>Isolates the smallest irreducible subset of contradictory constraints and variable bounds that cause mathematical infeasibility.</p>
+      <h3>Explain why a model is infeasible</h3>
+      <p>Use an irreducible infeasible subsystem (IIS) when a model has no feasible solution and you need a smaller set of rows and variable bounds to inspect. “Irreducible” means every returned member is necessary for that particular conflict: removing any one makes the subsystem feasible. It does not mean HiGHS found the conflict with the fewest possible members, and a model can contain several different IISs.</p>
     </div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>5 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="iis-core-code" spellcheck="false">// 1. Load infeasible LP model
+        <textarea id="iis-core-code" spellcheck="false">// Solve first and confirm infeasibility. Calling getIis() on a feasible
+// model has no useful conflict to return.
 const model = highs.createModel({ format: "lp", data: lpText });
-model.run();
+const run = model.run();
+if (run.modelStatus !== highs.constants.modelStatus.infeasible) {
+  throw new Error("IIS analysis requires an infeasible model");
+}
 
-// 2. Extract minimal irreducible inconsistent subsystem
+// HiGHS computes one irreducible conflict, not necessarily the globally
+// smallest one. Indices refer to columns and rows in the loaded model.
 const iis = model.getIis();
-const { colIndices, rowIndices } = iis;</textarea>
+const { colIndex, rowIndex, colBound, rowBound } = iis;
+
+// colBound/rowBound identify which lower, upper, or boxed bound participates.
+// Use highs.constants.iis to interpret those status values.
+model.dispose();</textarea>
       </div>
     </div>
 
@@ -1300,14 +2249,12 @@ const { colIndices, rowIndices } = iis;</textarea>
     <div class="visual-inputs">
       <h4>Infeasible Model Inputs</h4>
       <textarea id="iis-lp" spellcheck="false" style="min-height:120px">Minimize
- obj: x1 + x2
+ obj: x0 + x1
 Subject To
- c1: x1 + x2 &lt;= 5
- c2: x1 &gt;= 10
- c3: x2 &gt;= 10
+ r0: x0 + x1 &lt;= 5
 Bounds
- 0 &lt;= x1
- 0 &lt;= x2
+ 10 &lt;= x0
+ 10 &lt;= x1
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="iis-solve">Find IIS</button>
@@ -1319,22 +2266,17 @@ End</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">FEASIBILITY STATUS</span>
-          <span class="stat-val" style="color:#dc2626">INFEASIBLE</span>
+          <span class="stat-val" id="iis-status">READY</span>
         </div>
       </div>
       <h4>Conflicting Subsystem Isolation</h4>
-      <div class="visual-grid" id="iis-visual-tags">
-        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
-          <h5 style="color:#dc2626">c2: x1 &gt;= 10</h5>
-          <span style="font-size:0.75rem;color:#991b1b">Lower Bound Conflict</span>
-        </div>
-        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
-          <h5 style="color:#dc2626">c3: x2 &gt;= 10</h5>
-          <span style="font-size:0.75rem;color:#991b1b">Lower Bound Conflict</span>
-        </div>
-        <div class="item-card" style="border-color:#fca5a5;background:#fef2f2">
-          <h5 style="color:#dc2626">c1: x1 + x2 &lt;= 5</h5>
-          <span style="font-size:0.75rem;color:#991b1b">RHS Conflict</span>
+      <div id="iis-visual-tags">
+        <div class="iis-empty-state">
+          <div class="iis-preview-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <strong>No conflict analysis yet</strong>
+            <p>Run <code>getIis()</code> to compute one irreducible conflict among the model's rows and bounds.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1346,11 +2288,11 @@ End</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="iis-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="iis-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS Extended API • getIis() • Infeasibility Analysis Engine
+      One irreducible conflict • Not guaranteed minimum-cardinality • Bound status identifies lower/upper participation
     </div>
   </div>
 </section>
@@ -1364,24 +2306,31 @@ End</textarea>
     </div>
 
     <div class="problem-header">
-      <h3>CPLEX LP &amp; MPS Model Serialization</h3>
-      <p>Parses LP/MPS text directly in WebAssembly memory, normalizes variable names and constraint matrices, and exports clean LP strings without filesystem dependencies.</p>
+      <h3>Import, inspect, and export models</h3>
+      <p>Use in-memory model I/O to accept LP or MPS data from uploads, generated files, or another service, then solve or convert it without exposing a native filesystem path. LP is readable text; MPS preserves a more rigid interchange structure and is represented as bytes where required. Exported models are normalized representations of HiGHS’ internal model, so comments and original formatting are not preserved.</p>
     </div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
       <div class="code-header">
         <span>Core Solving Code</span>
-        <span>6 lines</span>
+        <span>annotated example</span>
       </div>
       <div class="code-editor-box">
-        <textarea id="io-core-code" spellcheck="false">// 1. Parse CPLEX LP text into persistent model
+        <textarea id="io-core-code" spellcheck="false">// Parse model data already held in JavaScript memory. For LP, data is a
+// string; MPS import/export may use Uint8Array to preserve exact bytes.
 const model = highs.createModel({ format: "lp", data: lpText });
 
-// 2. Export normalized LP and optimize instance
+// Export serializes HiGHS' current internal model. It is suitable for model
+// exchange and debugging, but does not preserve comments or source layout.
 const normalizedLp = model.exportModel("lp");
-model.run();
-const { colValue } = model.getSolution();</textarea>
+
+const run = model.run();
+if (run.modelStatus === highs.constants.modelStatus.optimal) {
+  const { colValue } = model.getSolution();
+  console.log(colValue);
+}
+model.dispose();</textarea>
       </div>
     </div>
 
@@ -1389,13 +2338,13 @@ const { colValue } = model.getSolution();</textarea>
     <div class="visual-inputs">
       <h4>CPLEX LP Input Text</h4>
       <textarea id="io-input" spellcheck="false" style="min-height:120px">Maximize
- obj: 2 x1 + 3 x2
+ obj: 2 x0 + 3 x1
 Subject To
- c1: x1 + x2 &lt;= 10
- c2: 2 x1 + x2 &lt;= 16
+ r0: x0 + x1 &lt;= 10
+ r1: 2 x0 + x1 &lt;= 16
 Bounds
+ 0 &lt;= x0
  0 &lt;= x1
- 0 &lt;= x2
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="io-load">Load LP</button>
@@ -1429,18 +2378,31 @@ End</textarea>
     </div>
 
     <!-- Time to Solve -->
-    <div class="timing-bar" id="io-timing">⚡ Solved in -- ms</div>
+    <div class="timing-bar" id="io-timing">Waiting for solver</div>
 
     <!-- Metadata -->
     <div class="metadata-footer">
-      HiGHS Extended API • In-Memory C++ Parser &amp; Exporter • LP/MPS Format
+      In-memory LP/MPS parser and exporter • Normalized output • Source comments and formatting not preserved
     </div>
   </div>
 </section>
 
 </div><!-- /container -->
 
-<script src="demo.js" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+<script>
+  Prism.languages.lp = {
+    comment: /\\[^\n]*/,
+    keyword: /^\s*(?:Maximize|Minimize|Subject To|Such That|Bounds|Generals?|Binar(?:y|ies)|Integers|End)\s*$/im,
+    label: { pattern: /^[ \t]*[A-Za-z_][\w.]*:/m, alias: "property" },
+    operator: /<=|>=|=/,
+    number: /[+-]?\b\d+(?:\.\d+)?\b|\b(?:inf|infinity)\b/i,
+    boolean: /\bfree\b/i,
+    variable: /\b[A-Za-z_][\w.]*\b/
+  };
+</script>
+<script src="demo.js"></script>
 <link rel="prefetch" href="highs.js">
 <link rel="prefetch" href="highs.wasm">
 <link rel="prefetch" href="worker.js">
