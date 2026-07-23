@@ -2,13 +2,10 @@
 // https://github.com/devcontainers/images/tree/main/src/javascript-node
 {
 	"name": "Node.js",
-	"build": {
-		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick a Node version.
-		"args": {
-			"VARIANT": "24-trixie"
-		}
-	},
+	"dockerComposeFile": "../compose.yaml",
+	"service": "tests",
+	"workspaceFolder": "/work",
+	"overrideCommand": true,
 	"customizations": {
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.

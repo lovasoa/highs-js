@@ -5,19 +5,26 @@
 services:
   tests:
     build:
-      context: .devcontainer
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: .devcontainer/Dockerfile
       args:
-        # Keep this in sync with .devcontainer/devcontainer.json.
-        VARIANT: 24-trixie
+        NODE_VARIANT: ${NODE_VERSION:?NODE_VERSION must be set in .env}-trixie
+        EMSDK_VERSION: ${EMSDK_VERSION:?EMSDK_VERSION must be set in .env}
     working_dir: /work
     user: node
     volumes:
       # Mount the checkout so the container tests the current working tree.
       - .:/work:Z
+      # Keep container-owned dependencies away from host ownership and ABI
+      # differences while still testing the exact mounted source tree.
+      - node-modules:/work/node_modules
+      # Native build outputs have the same ownership and host-ABI concerns.
+      - build-cache:/work/build
       # Persist Emscripten's generated system libraries across `run --rm`.
       - emscripten-cache:/emsdk/upstream/emscripten/cache
     command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && HIGHS_REQUIRE_EXTENDED=1 npm test"
 
 volumes:
+  node-modules:
+  build-cache:
   emscripten-cache:
