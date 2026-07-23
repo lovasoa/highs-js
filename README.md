@@ -101,6 +101,36 @@ structured operations while preserving native status codes.
 | Exact C-style status handling | `highs.raw` |
 | Long browser solve | Put the loader and model in a Web Worker |
 
+## Model I/O
+
+Export and re-import models in LP or MPS format, and export solutions as
+human-readable text:
+
+```js
+const highs = await loadHighs();
+const model = highs.createModel(/* ... */);
+model.run();
+
+// Round-trip a model through LP text
+const lpText = model.exportModel("lp");
+const clone = highs.createModel();
+clone.readModel({ format: "lp", data: lpText });
+
+// MPS binary export
+const mpsBytes = model.exportModel("mps");
+
+// Export the current solution
+console.log(model.exportSolution(true)); // pretty
+console.log(model.exportSolution());       // machine-readable
+
+// After presolve, export the reduced model
+model.presolve();
+const reducedLp = model.exportPresolvedModel("lp");
+
+clone.dispose();
+model.dispose();
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
