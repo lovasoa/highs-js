@@ -400,6 +400,35 @@ console.log(model.getColIntegrality(0));  // 0 = continuous
 const rows = model.getRows({ kind: "range", from: 0, to: 1 });
 ```
 
+## Callbacks
+
+Register callbacks during `model.run()` for logging, interrupts, MIP solutions,
+and cut pools:
+
+```js
+model.options.set("output_flag", false);
+model.run({
+  [highs.constants.callbackType.logging](event) {
+    console.log(event.data.log_type);
+  },
+  [highs.constants.callbackType.simplexInterrupt](event) {
+    event.interrupt();  // request early termination
+  },
+  [highs.constants.callbackType.mipSolution](event) {
+    // event.data.mip_solution is a Float64Array of primal values
+  },
+  [highs.constants.callbackType.mipCutPool](event) {
+    const { numCuts, starts, values } = event.data.cut_pool;
+  },
+  [highs.constants.callbackType.mipUserSolution](event) {
+    event.setSolution({ indices: new Int32Array([0]), values: new Float64Array([1]) });
+  },
+});
+
+// Callbacks are synchronous. Returning a Promise throws HighsValidationError.
+// Use model.raw.setCallback / startCallback / stopCallback for C-style control.
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
