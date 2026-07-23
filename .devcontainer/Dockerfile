@@ -12,7 +12,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Entrypoint that sources the Emscripten environment before every command.
 # This lets callers run e.g. "docker compose run --rm tests npm run build"
 # without manually sourcing emsdk_env.sh.
-COPY entrypoint.sh /entrypoint.sh
+COPY .devcontainer/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
