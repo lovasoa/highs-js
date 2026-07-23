@@ -193,6 +193,66 @@ model.run();
 model.crossover({ colValue: model.getSolution().colValue });
 ```
 
+## Model mutation
+
+Build models incrementally without rebuilding from scratch:
+
+```js
+const model = highs.createModel();
+
+// Add variables and constraints one at a time or in batches
+model.addVar(0, 10);
+model.addVars(new Float64Array([0, 5]), new Float64Array([1, 10]));
+model.addRow(0, 100, {
+  indices: new Int32Array([0, 1]),
+  values: new Float64Array([1, 2]),
+});
+model.addRows({
+  lower: new Float64Array([0]),
+  upper: new Float64Array([10]),
+  matrix: {
+    format: "csr",  // addRows requires CSR (row-wise)
+    numRows: 1, numCols: 3,
+    starts: new Int32Array([0, 2]),
+    indices: new Int32Array([0, 2]),
+    values: new Float64Array([1, 1]),
+  },
+});
+
+// Add columns with matrix coefficients
+model.addCol(5, 0, 1, {
+  indices: new Int32Array([0]),
+  values: new Float64Array([3]),
+});
+model.addCols({
+  cost: new Float64Array([1, 2]),
+  lower: new Float64Array([0, 0]),
+  upper: new Float64Array([1, 1]),
+  matrix: {
+    format: "csc",  // addCols requires CSC (column-wise)
+    numRows: 2, numCols: 2,
+    starts: new Int32Array([0, 1, 2]),
+    indices: new Int32Array([0, 0]),
+    values: new Float64Array([1, 2]),
+  },
+});
+
+// Modify existing entries
+model.changeCoefficient(0, 0, 99);
+model.changeColBounds(0, 0, 5);
+model.changeColIntegrality(0, highs.constants.variableType.integer);
+model.changeObjectiveSense(highs.constants.objectiveSense.minimize);
+model.changeObjectiveOffset(100);
+
+// Remove columns or rows
+model.deleteCols({ kind: "range", from: 1, to: 2 });
+model.deleteRows({ kind: "set", indices: new Int32Array([0]) });
+
+// Scale individual rows or columns
+model.scaleCol(0, 2);
+model.scaleRow(0, 0.5);
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
