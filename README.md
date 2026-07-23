@@ -4,465 +4,355 @@
 [![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
 [![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)
 
-highs-js brings the [HiGHS](https://highs.dev/) linear, mixed-integer, and
-quadratic optimization solver to JavaScript and WebAssembly. It works in Node.js
-and browsers, supports CommonJS and native ES modules, and remains compatible
-with the original one-shot `solve(problem, options)` API.
-
-## Install
+Use the [HiGHS](https://highs.dev/) optimization solver from JavaScript.
+`highs-js` compiles HiGHS to WebAssembly and solves linear, mixed-integer, and
+convex quadratic models in Node.js and modern browsers. Everything runs
+locally. There is no native add-on and no solver service to operate.
 
 ```sh
 npm install highs
 ```
 
-## Quick start
+The package supports CommonJS and native ES modules, includes TypeScript
+declarations, and offers a small one-shot API alongside a persistent API for
+larger applications.
 
-The compatibility API accepts a model in CPLEX LP text format and returns the
-established name-keyed result:
+## What can it solve?
 
-```js
-const loadHighs = require("highs");
-const highs = await loadHighs();
+Optimization finds the best decision that still satisfies every constraint.
+The decision might be how much to produce, which jobs to schedule, where to
+open facilities, or how to balance return against risk.
 
-const result = highs.solve(
-  `Maximize
-   obj: x + 2 y
-  Subject To
-   capacity: x + y <= 20
-  Bounds
-   x >= 0
-   y >= 0
-  End`,
-  { output_flag: false },
-);
+| Model | Best suited to | Examples |
+| --- | --- | --- |
+| **LP (linear programming)** | Continuous decisions with linear costs and constraints | Blending, transportation, energy dispatch, production planning |
+| **MILP/MIP (mixed-integer linear programming)** | Whole-number or yes/no decisions with linear costs and constraints | Scheduling, assignment, packing, facility location, routing models |
+| **Convex QP (quadratic programming)** | Continuous decisions with a convex quadratic objective | Portfolio risk, constrained least squares, control, smooth resource allocation |
 
-console.log(result.Status, result.ObjectiveValue);
-console.log(result.Columns.x.Primal, result.Columns.y.Primal);
+HiGHS represents these models as
+
+```text
+minimize or maximize    1/2 xᵀQx + cᵀx
+subject to              rowLower ≤ Ax ≤ rowUpper
+                        colLower ≤  x ≤ colUpper
 ```
 
-Existing `require("highs")`, loader options, `solve()` inputs, option names, and
-result shapes remain supported.
+With `Q = 0`, continuous variables give an LP and integer variables give a MIP.
+For a convex QP, `Q` is positive semidefinite when minimizing and negative
+semidefinite when maximizing.
 
-## Persistent models
+HiGHS is a linear and convex quadratic solver. It does not handle general
+nonlinear models or mixed-integer quadratic programs.
 
-Use a persistent model for repeated solves, structured sparse input, LP/MIP/QP
-models, mutation, callbacks, basis analysis, IIS, ranging, and the stable
-non-deprecated HiGHS C API:
+## Quick start
+
+A workshop makes chairs and tables. Each product earns a profit and uses
+carpentry and finishing time, both in limited supply. Chairs and tables must be
+produced in whole units, so the model is a MIP.
 
 ```js
 import loadHighs from "highs";
 
 const highs = await loadHighs();
-const model = highs.createModel({
-  numCols: 2,
-  numRows: 1,
-  sense: highs.constants.objectiveSense.maximize,
-  colCost: new Float64Array([1, 2]),
-  colLower: new Float64Array([0, 0]),
-  colUpper: new Float64Array([highs.infinity, highs.infinity]),
-  rowLower: new Float64Array([-highs.infinity]),
-  rowUpper: new Float64Array([20]),
-  matrix: {
-    format: "csc",
-    numRows: 1,
-    numCols: 2,
-    starts: new Int32Array([0, 1, 2]),
-    indices: new Int32Array([0, 0]),
-    values: new Float64Array([1, 1]),
-  },
-  colNames: ["x", "y"],
-  rowNames: ["capacity"],
-});
+
+const problem = `Maximize
+   profit: 30 chairs + 50 tables
+  Subject To
+   carpentry: chairs + 2 tables <= 40
+   finishing: 2 chairs + tables <= 50
+  Bounds
+   chairs >= 0
+   tables >= 0
+  Generals
+   chairs tables
+  End`;
+
+const result = highs.solve(problem, { output_flag: false });
+
+if (result.Status !== "Optimal") {
+  throw new Error(`Solve ended with status: ${result.Status}`);
+}
+
+console.log(result.ObjectiveValue);         // 1100
+console.log(result.Columns.chairs.Primal);  // 20
+console.log(result.Columns.tables.Primal);  // 10
+```
+
+The optimum is 20 chairs and 10 tables, for a profit of 1100. Remove the
+`Generals` section to allow fractional quantities and solve the model as an LP.
+
+CommonJS uses the same loader:
+
+```js
+const loadHighs = require("highs");
+```
+
+## Choose an API
+
+Most programs need one of these three entry points.
+
+| Task | API |
+| --- | --- |
+| Solve one model already written in CPLEX LP format | `highs.solve(lpText, options)` |
+| Keep a model in memory, modify it, and solve it again | `highs.createModel(...)` |
+| Call the stable HiGHS C API directly and retain numeric status codes | `highs.raw` |
+
+`highs.solve()` is the original compatibility API. It accepts CPLEX LP text and
+returns results keyed by variable name.
+
+A persistent `Model` owns one HiGHS instance until `dispose()`. Use it for
+structured sparse input, repeated solves, model changes, callbacks, bases,
+ranging, IIS analysis, and other advanced features.
+
+## Algorithms
+
+HiGHS chooses a suitable algorithm when `solver` is set to its default value,
+`"choose"`. The JavaScript API exposes the main controls and diagnostics used
+by the native solver.
+
+| Model | Algorithms available | Main controls |
+| --- | --- | --- |
+| **LP** | Primal and dual revised simplex, an interior-point method with optional crossover, and PDLP | `solver`, `simplex_strategy`, edge-weight strategies, `run_crossover`, tolerances, iteration limits |
+| **MIP** | Branch-and-cut with presolve, LP relaxations, cutting planes, heuristics, restarts, and symmetry detection | Gap limits, node limits, solution limits, feasibility settings, heuristic effort, symmetry, restarts, callbacks |
+| **Convex QP** | Primal active-set QP solver | `qp_iteration_limit`, `qp_nullspace_limit`, sparse Hessian input |
+
+For LP models, `solver` accepts:
+
+- `"choose"`: let HiGHS choose
+- `"simplex"`: revised simplex
+- `"ipm"`: interior-point method
+- `"pdlp"`: a first-order method based on primal-dual hybrid gradient
+
+`simplex_strategy` selects automatic mode, serial dual simplex, the PAMI and SIP
+dual variants, or primal simplex. The edge-weight options include Dantzig,
+Devex, and steepest edge where the selected algorithm supports them.
+
+For MIP and QP models, leave `solver` at `"choose"` unless you explicitly want
+the LP relaxation. Selecting `"simplex"`, `"ipm"`, or `"pdlp"` tells HiGHS to
+ignore integrality and the quadratic term.
+
+This WebAssembly build is single-threaded. Run independent solves in Web
+Workers when an application needs parallelism or must keep a browser interface
+responsive.
+
+The upstream [HiGHS solver overview](https://ergo-code.github.io/HiGHS/dev/solvers/)
+describes the algorithms in more depth.
+
+## Persistent models
+
+Create a model from LP text, MPS bytes, sparse arrays, or an empty instance. The
+following example keeps the production model in memory, changes one bound, and
+solves it again without reparsing the LP text.
+
+```js
+const model = highs.createModel({ format: "lp", data: problem });
 
 try {
   model.options.set({ output_flag: false, presolve: "on" });
-  let run = model.run();
-  console.log(run.modelStatus, model.getSolution().colValue);
 
-  // Re-solve without rebuilding or reparsing the model.
-  model.changeColBounds(1, 0, 5);
-  run = model.run();
-  console.log(run.modelStatus, model.getObjectiveValue());
+  model.run();
+  console.log(model.getObjectiveValue());
+
+  const tables = model.getColByName("tables");
+  model.changeColBounds(tables, 0, 6);
+  model.run();
+
+  console.log(model.getSolution().colValue);
 } finally {
   model.dispose();
 }
 ```
 
-Inputs are validated before entering WebAssembly. Public array results are
-detached JavaScript-owned typed arrays, so they remain valid after another
-solver call or `dispose()`. The lower-level `highs.raw` API exposes the same
-structured operations while preserving native status codes.
+Inputs are validated before they enter WebAssembly. Arrays returned by the
+public API are JavaScript-owned copies, so a later solver call or `dispose()`
+does not invalidate them.
 
-| Workload | API |
-| --- | --- |
-| One solve from existing LP text | `highs.solve(lpText, options)` |
-| Repeated solves or model mutation | `highs.createModel(...)` |
-| Existing CSC/CSR arrays or QP Hessian data | `highs.createModel(modelData)` |
-| Exact C-style status handling | `highs.raw` |
-| Long browser solve | Put the loader and model in a Web Worker |
-
-## Model I/O
-
-Export and re-import models in LP or MPS format, and export solutions as
-human-readable text:
-
-```js
-const highs = await loadHighs();
-const model = highs.createModel(/* ... */);
-model.run();
-
-// Round-trip a model through LP text
-const lpText = model.exportModel("lp");
-const clone = highs.createModel();
-clone.readModel({ format: "lp", data: lpText });
-
-// MPS binary export
-const mpsBytes = model.exportModel("mps");
-
-// Export the current solution
-console.log(model.exportSolution(true)); // pretty
-console.log(model.exportSolution());       // machine-readable
-
-// After presolve, export the reduced model
-model.presolve();
-const reducedLp = model.exportPresolvedModel("lp");
-
-clone.dispose();
-model.dispose();
-```
-
-## Options and solver info
-
-Inspect and modify solver options, and read solver statistics after a run:
-
-```js
-const model = highs.createModel(/* ... */);
-
-// Set options individually or in bulk
-model.options.set("time_limit", 30);
-model.options.set({ presolve: "on", mip_rel_gap: 0.01 });
-
-// Query current values and metadata
-console.log(model.options.get("time_limit"));          // 30
-console.log(model.options.describe("mip_rel_gap"));     // { type, current, default, min, max }
-console.log(model.options.names());                     // all option names
-
-// Round-trip options as text
-const saved = model.options.export(true);               // only non-default values
-model.options.reset();                                  // restore defaults
-model.options.read(saved);                              // re-apply
-
-model.run();
-
-// Solver statistics after the run
-console.log(model.info.get("simplex_iteration_count")); // number
-console.log(model.info.get("mip_node_count"));          // bigint
-model.info.type("objective_function_value")); // "integer" | "double" | "int64"
-```
-
-## Basis operations
-
-After an optimal simplex solve, inspect and manipulate the basis:
-
-```js
-model.run();
-
-// Get the current basis and basic variable indices
-const basis = model.getBasis();
-// basis.colStatus: Int32Array -- per-column status (lower, basic, upper, zero, nonbasic)
-// basis.rowStatus: Int32Array -- per-row status
-const basicVars = model.getBasicVariables(); // indices of basic variables
-
-// Seed a new model with a warm-start basis
-const newModel = highs.createModel(/* ... */);
-newModel.setBasis(basis);  // or newModel.setLogicalBasis() for slack-only start
-newModel.run();
-
-// Basis inverse operations (dense or sparse)
-const invRow = model.getBasisInverseRow(0);            // { values: Float64Array }
-const invRowSparse = model.getBasisInverseRow(0, true); // { values, nonzeroIndices }
-const solve = model.getBasisSolve(new Float64Array([1, 0]));
-
-// Simplex tableau rows and columns
-const reducedRow = model.getReducedRow(0);
-const reducedCol = model.getReducedColumn(0);
-
-// Convert IPM solution to a basic solution
-model.options.set("solver", "ipm");
-model.run();
-model.crossover({ colValue: model.getSolution().colValue });
-```
-
-## Model mutation
-
-Build models incrementally without rebuilding from scratch:
+You can also build a model incrementally:
 
 ```js
 const model = highs.createModel();
-
-// Add variables and constraints one at a time or in batches
-model.addVar(0, 10);
-model.addVars(new Float64Array([0, 5]), new Float64Array([1, 10]));
-model.addRow(0, 100, {
-  indices: new Int32Array([0, 1]),
-  values: new Float64Array([1, 2]),
-});
-model.addRows({
-  lower: new Float64Array([0]),
-  upper: new Float64Array([10]),
-  matrix: {
-    format: "csr",  // addRows requires CSR (row-wise)
-    numRows: 1, numCols: 3,
-    starts: new Int32Array([0, 2]),
-    indices: new Int32Array([0, 2]),
-    values: new Float64Array([1, 1]),
-  },
-});
-
-// Add columns with matrix coefficients
-model.addCol(5, 0, 1, {
-  indices: new Int32Array([0]),
-  values: new Float64Array([3]),
-});
-model.addCols({
-  cost: new Float64Array([1, 2]),
-  lower: new Float64Array([0, 0]),
-  upper: new Float64Array([1, 1]),
-  matrix: {
-    format: "csc",  // addCols requires CSC (column-wise)
-    numRows: 2, numCols: 2,
-    starts: new Int32Array([0, 1, 2]),
-    indices: new Int32Array([0, 0]),
-    values: new Float64Array([1, 2]),
-  },
-});
-
-// Modify existing entries
-model.changeCoefficient(0, 0, 99);
-model.changeColBounds(0, 0, 5);
+model.addVar(0, highs.infinity);
+model.changeColCost(0, 12);
 model.changeColIntegrality(0, highs.constants.variableType.integer);
-model.changeObjectiveSense(highs.constants.objectiveSense.minimize);
-model.changeObjectiveOffset(100);
-
-// Remove columns or rows
-model.deleteCols({ kind: "range", from: 1, to: 2 });
-model.deleteRows({ kind: "set", indices: new Int32Array([0]) });
-
-// Scale individual rows or columns
-model.scaleCol(0, 2);
-model.scaleRow(0, 0.5);
+model.addRow(-highs.infinity, 20, { indices: [0], values: [3] });
 ```
 
-## Names and lookups
+For large application-generated models, pass CSC or CSR arrays directly to
+`highs.createModel(modelData)`. Add `integrality` for a MIP or `hessian` for a
+convex QP.
 
-Work with human-readable column, row, and model names:
+## API map
 
-```js
-const model = highs.createModel({
-  /* ... */
-  colNames: ["x", "y"],
-  rowNames: ["capacity"],
-  modelName: "production-plan",
-});
+The table below is a compact index to the persistent API. See the
+[generated API reference](https://lovasoa.github.io/highs-js/docs/) or
+[`types.d.ts`](./types.d.ts) for complete signatures.
 
-// Forward lookups
-console.log(model.getColName(0));  // "x"
-console.log(model.getRowName(0));  // "capacity"
+| Area | Representative API |
+| --- | --- |
+| Create and replace models | `passModel`, `readModel`, `addVar(s)`, `addRow(s)`, `addCol(s)` |
+| Change models | `changeColBounds`, `changeRowBounds`, `changeColCost`, `changeCoefficient`, `changeColIntegrality`, `deleteRows`, `deleteCols`, `scaleRow`, `scaleCol` |
+| Manage the solve lifecycle | `presolve`, `run`, `postsolve`, `clearSolver`, `clearModel`, `releaseMemory`, `dispose` |
+| Read and seed solutions | `getModelStatus`, `getObjectiveValue`, `getSolution`, `setSolution`, `getPrimalRay`, `getDualRay` |
+| Work with simplex bases | `getBasis`, `setBasis`, `setLogicalBasis`, `getBasicVariables`, basis inverse and solve methods, reduced rows and columns, `crossover` |
+| Diagnose infeasibility and sensitivity | `getIis`, `getIisLp`, `feasibilityRelaxation`, `getRanging`, `getFixedLp` |
+| Inspect model data | `getModel`, `getLp`, `getPresolvedLp`, `getCols`, `getRows`, name lookups |
+| Import and export | LP text, MPS bytes, presolved models, human-readable and machine-readable solutions |
+| Set multiple objectives | `passLinearObjectives`, `addLinearObjective`, `clearLinearObjectives` |
+| Configure the solver | `model.options.get/set/describe/names/reset/read/export` |
+| Read solver statistics | `model.info.get/type`, `getRunTime`, `zeroAllClocks` |
+| Receive callbacks | Logging, simplex/IPM/MIP interrupts, MIP solutions, improving solutions, cut pools, user solutions |
+| Keep native status handling | `highs.raw.lpCall`, `mipCall`, `qpCall`, `highs.raw.createModel()` |
 
-// Reverse lookups
-console.log(model.getColByName("y"));  // 1
-console.log(model.getRowByName("capacity"));  // 0
+## Advanced use
 
-// Rename after creation
-model.passColName(0, "widgets");
-model.passRowName(0, "machine-hours");
-model.passModelName("updated-plan");
-
-// After presolve, inspect presolved names
-model.presolve();
-console.log(model.getPresolvedColName(0));
-console.log(model.getPresolvedRowName(0));
-```
-
-## Model views and advanced solve
-
-Extract model data in different formats, inspect presolved and IIS subsystems,
-and work with unboundedness certificates:
+### Options and solver information
 
 ```js
-// Get model data in CSC or CSR format
-const csc = model.getLp("csc");
-const csr = model.getLp("csr");
+model.options.set("time_limit", 30);
+model.options.set({ presolve: "on", mip_rel_gap: 0.01 });
 
-// After presolve, inspect the reduced model
-model.presolve();
-const reduced = model.getPresolvedLp();
-const dims = model.getPresolvedDimensions();
+console.log(model.options.describe("mip_rel_gap"));
+console.log(model.options.names());
 
-// For infeasible models, export the IIS subsystem
 model.run();
-if (model.getModelStatus() === highs.constants.modelStatus.infeasible) {
-  const iisLp = model.getIisLp();
-}
-
-// Pipeline: presolve -> run -> postsolve
-model.presolve();
-model.run();
-const sol = model.getSolution();
-const pDims = model.getPresolvedDimensions();
-model.postsolve({
-  colValue: sol.colValue.slice(0, pDims.numCols),
-  colDual: sol.colDual.slice(0, pDims.numCols),
-  rowDual: sol.rowDual.slice(0, pDims.numRows),
-});
-
-// Unboundedness certificates
-const primalRay = model.getPrimalRay();  // { values: Float64Array }
-
-// Solver timing
-model.zeroAllClocks();
-model.run();
-console.log(model.getRunTime());  // seconds
+console.log(model.info.get("simplex_iteration_count"));
+console.log(model.info.get("mip_node_count")); // bigint
 ```
 
-## Runtime properties and raw API
+Option names match HiGHS and use `snake_case`. `describe()` reports an option's
+type, current value, default, and numeric limits when available.
 
-Access HiGHS version, constants, and the low-level C API:
+### Convex QP Hessian
 
-```js
-console.log(highs.version.string);                         // "1.7.1"
-console.log(highs.infinity);                                // Infinity
-console.log(highs.constants.modelStatus.optimal);           // 7
-```
-
-The `highs.raw` API exposes status-preserving one-shot calls matching the
-stable C API:
+A QP objective has the form `1/2 xᵀQx + cᵀx`. Pass `Q` as a sparse triangular
+or square Hessian.
 
 ```js
-const lpResult = highs.raw.lpCall({
-  numCols: 2, numRows: 1, sense: highs.constants.objectiveSense.maximize,
-  colCost: new Float64Array([1, 2]),
-  colLower: new Float64Array([0, 0]),
-  colUpper: new Float64Array([highs.infinity, highs.infinity]),
-  rowLower: new Float64Array([-highs.infinity]),
-  rowUpper: new Float64Array([20]),
-  matrix: {
-    format: "csc", numRows: 1, numCols: 2,
-    starts: new Int32Array([0, 1, 2]), indices: new Int32Array([0, 0]),
-    values: new Float64Array([1, 1]),
-  },
-});
-// lpResult.status === 0 (ok), lpResult.value.solution.colValue
-
-// MIP and QP one-shot variants work similarly
-highs.raw.mipCall({ ...model, integrality: new Int32Array([1, 1]) });
-highs.raw.qpCall({ ...model, sense: 1, hessian: { ... } });
-```
-
-## Quadratic programming and multi-objective
-
-Pass a Hessian for QP, or use lexicographic multi-objective optimization:
-
-```js
-model.changeObjectiveSense(highs.constants.objectiveSense.minimize);
 model.passHessian({
-  format: "triangular", dimension: 4,
-  starts: new Int32Array([0, 1, 2, 3, 4]),
-  indices: new Int32Array([0, 1, 2, 3]),
-  values: new Float64Array([2, 4, 6, 8]),
+  format: "triangular",
+  dimension: 2,
+  starts: new Int32Array([0, 1, 2]),
+  indices: new Int32Array([0, 1]),
+  values: new Float64Array([2, 4]),
 });
 model.run();
-
-// Multi-objective: lexicographic priorities
-model.passLinearObjectives([{
-  weight: 1, offset: 0, coefficients: new Float64Array([1, 0, 0, 0]),
-  absoluteTolerance: 0, relativeTolerance: 0, priority: -1,
-}]);
-model.clearLinearObjectives();
 ```
 
-## Lifecycle, warm-start, and row/col queries
+For minimization, HiGHS expects a positive-semidefinite Hessian. For
+maximization, it expects a negative-semidefinite Hessian.
 
-Control solver state, warm-start from solutions, and query integrality or row data:
+### Warm starts and bases
 
 ```js
-model.clearSolver();         // keep model, remove solution
-model.clearModel();          // keep instance, remove model
-model.clear();               // combined clearModel + clearSolver
-model.releaseMemory();       // free internal HiGHS memory
+const basis = model.getBasis();
+const solution = model.getSolution();
 
-// Warm-start with a dense or sparse solution
-model.setSolution({ colValue: new Float64Array([1, 2, 3, 4]) });
-model.setSolution({ indices: new Int32Array([0]), values: new Float64Array([1]) });
-
-// Query per-column integrality and row data
-console.log(model.getColIntegrality(0));  // 0 = continuous
-const rows = model.getRows({ kind: "range", from: 0, to: 1 });
+const next = highs.createModel(relatedModelData);
+next.setBasis(basis);
+next.setSolution({ colValue: solution.colValue });
+next.run();
 ```
 
-## Callbacks
+You can warm-start a related LP from an existing simplex basis. The API also
+provides basis inverse rows and columns, basis solves, transpose solves, and
+reduced tableau rows and columns.
 
-Register callbacks during `model.run()` for logging, interrupts, MIP solutions,
-and cut pools:
+### Infeasibility analysis
 
 ```js
-model.options.set("output_flag", false);
+model.run();
+
+if (model.getModelStatus() === highs.constants.modelStatus.infeasible) {
+  const iis = model.getIis();
+  const conflictingModel = model.getIisLp();
+}
+```
+
+Related tools include feasibility relaxation, primal and dual rays, ranging,
+fixed-LP extraction after a MIP solve, and inspection of the presolved model.
+
+### Callbacks
+
+```js
 model.run({
-  [highs.constants.callbackType.logging](event) {
-    console.log(event.data.log_type);
+  [highs.constants.callbackType.mipLogging](event) {
+    console.log(event.data.mip_node_count);
   },
-  [highs.constants.callbackType.simplexInterrupt](event) {
-    event.interrupt();  // request early termination
-  },
-  [highs.constants.callbackType.mipSolution](event) {
-    // event.data.mip_solution is a Float64Array of primal values
-  },
-  [highs.constants.callbackType.mipCutPool](event) {
-    const { numCuts, starts, values } = event.data.cut_pool;
+  [highs.constants.callbackType.mipInterrupt](event) {
+    if (shouldStop()) event.interrupt();
   },
   [highs.constants.callbackType.mipUserSolution](event) {
-    event.setSolution({ indices: new Int32Array([0]), values: new Float64Array([1]) });
+    event.setSolution({ indices: [0], values: [1] });
   },
 });
-
-// Callbacks are synchronous. Returning a Promise throws HighsValidationError.
-// Use model.raw.setCallback / startCallback / stopCallback for C-style control.
 ```
+
+Callbacks run synchronously. Returning a Promise throws
+`HighsValidationError`. Put long browser solves in a Worker to keep the main
+thread free.
+
+## Raw API
+
+`highs.raw` follows the stable, non-deprecated HiGHS C API while replacing
+pointers with structured JavaScript values.
+
+```js
+const result = highs.raw.lpCall(modelData);
+
+if (result.status !== highs.constants.status.error) {
+  console.log(result.value.modelStatus);
+  console.log(result.value.solution.colValue);
+}
+```
+
+Use `highs.raw.createModel()` for persistent C-style operations. Warnings and
+errors remain numeric status values.
+
+## Model and solution I/O
+
+```js
+const lpText = model.exportModel("lp");
+const mpsBytes = model.exportModel("mps");
+const solutionText = model.exportSolution(true);
+
+const clone = highs.createModel({ format: "lp", data: lpText });
+```
+
+LP models use text; MPS models use bytes. The JavaScript API accepts and returns
+data, so callers never need virtual filesystem paths.
 
 ## WebAssembly loading
 
-The package ships `build/highs.wasm`. Node.js normally finds it next to the
-JavaScript build. In a browser, copy the file into your served assets and use
-`locateFile` when it is not next to `highs.js` or `highs.mjs`:
+Node.js normally finds `highs.wasm` beside the package loader. In a browser,
+serve the file as an asset and provide `locateFile` when it lives elsewhere.
 
 ```js
-import loadHighs from "highs";
-
 const highs = await loadHighs({
   locateFile: (file) => new URL(`/solver-assets/${file}`, location.href).href,
 });
 ```
 
-Loading is asynchronous; solver operations are synchronous after the loader
-resolves. This WebAssembly build is deliberately single-threaded. The extended
-API rejects thread/concurrency and public file/path options; use Workers for
-application-level parallelism and the data-only model, option, and solution I/O
-methods.
+The loader also accepts `wasmBinary` or a precompiled `wasmModule`.
+
+Loading is asynchronous; solver calls are synchronous after initialization. A
+model cannot be used reentrantly. Call `dispose()` when a persistent model is no
+longer needed.
 
 ## Documentation and demos
 
-- [Extended API documentation](https://lovasoa.github.io/highs-js/docs/)
+- [Extended API reference](https://lovasoa.github.io/highs-js/docs/)
+- [Online one-shot demo](https://lovasoa.github.io/highs-js/)
+- [Persistent API Worker demo](https://lovasoa.github.io/highs-js/extended/)
 - [Migration guide](./docs/migration.md)
 - [JavaScript-to-C API mapping](./docs/c-api-mapping.md)
-- [Online compatibility demo](https://lovasoa.github.io/highs-js/)
-- [Persistent API Worker demo](https://lovasoa.github.io/highs-js/extended/)
+- [Canonical TypeScript declarations](./types.d.ts)
+- [Upstream HiGHS documentation](https://ergo-code.github.io/HiGHS/)
 
-The single canonical TypeScript declaration is [`types.d.ts`](./types.d.ts).
-The `highs/legacy-types` compatibility entry points to that same declaration.
+The `highs/legacy-types` compatibility entry points to the same `types.d.ts`
+declaration.
 
 ## Versioning
 
-The package major and minor version match the embedded HiGHS major and minor
-version. For example, `1.14.x` contains HiGHS `v1.14.x`. The package patch
-version may change for JavaScript API fixes without changing the embedded
-solver version.
+The package major and minor version match the embedded HiGHS version. For
+example, `highs-js` 1.14.x contains HiGHS 1.14.x. Patch releases may contain
+JavaScript API fixes without changing the solver version.
