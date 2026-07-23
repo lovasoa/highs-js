@@ -96,6 +96,31 @@ function defaultRawName(cName) {
   return bare[0].toLowerCase() + bare.slice(1);
 }
 
+function expandConstants(policy, constants) {
+  const values = new Map(constants.map((entry) => [entry.cName, entry.value]));
+  const classified = new Set();
+  const contract = {};
+  for (const [groupName, members] of Object.entries(policy.constantPolicy.groups)) {
+    contract[groupName] = {};
+    for (const [jsName, cName] of Object.entries(members)) {
+      if (!values.has(cName)) fail(`Unknown constant in policy: ${cName}`);
+      if (classified.has(cName)) fail(`Constant classified more than once: ${cName}`);
+      classified.add(cName);
+      contract[groupName][jsName] = values.get(cName);
+    }
+  }
+  for (const cName of Object.keys(policy.constantPolicy.excluded)) {
+    if (!values.has(cName)) fail(`Unknown excluded constant: ${cName}`);
+    if (classified.has(cName)) fail(`Constant classified more than once: ${cName}`);
+    classified.add(cName);
+  }
+  const missing = constants
+    .map((entry) => entry.cName)
+    .filter((cName) => !classified.has(cName));
+  if (missing.length) fail(`Unclassified stable C constants: ${missing.join(", ")}`);
+  return contract;
+}
+
 function expandManifest(policy, declarations, constants) {
   const declarationByName = new Map(declarations.map((entry) => [entry.cName, entry]));
   const classified = new Map();
@@ -140,6 +165,19 @@ function expandManifest(policy, declarations, constants) {
       ...override,
     };
   });
+  const rawRuntimeMethods = new Set();
+  const rawModelMethods = new Set();
+  for (const entry of functions) {
+    for (const js of entry.js) {
+      const match = /^(RawRuntimeApi|RawModel)\.([A-Za-z0-9_]+)/.exec(js);
+      if (!match) continue;
+      (match[1] === "RawRuntimeApi" ? rawRuntimeMethods : rawModelMethods).add(
+        match[2],
+      );
+    }
+  }
+  rawRuntimeMethods.add("createModel");
+  rawModelMethods.add("dispose");
 
   return {
     schemaVersion: policy.schemaVersion,
@@ -148,6 +186,11 @@ function expandManifest(policy, declarations, constants) {
     functionCount: functions.length,
     constantCount: constants.length,
     constants,
+    constantContract: expandConstants(policy, constants),
+    runtimeContract: {
+      rawRuntimeMethods: [...rawRuntimeMethods].sort(),
+      rawModelMethods: [...rawModelMethods].sort(),
+    },
     functions,
   };
 }

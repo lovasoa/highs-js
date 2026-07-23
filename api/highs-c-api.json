@@ -11,8 +11,120 @@
   "constantPolicy": {
     "includePattern": "^kHighs",
     "cType": "HighsInt",
-    "exposure": "Highs.constants",
-    "valuePolicy": "exact-number"
+    "exposure": "curated-grouped-names",
+    "valuePolicy": "exact-number",
+    "groups": {
+      "status": {
+        "error": "kHighsStatusError",
+        "ok": "kHighsStatusOk",
+        "warning": "kHighsStatusWarning"
+      },
+      "variableType": {
+        "continuous": "kHighsVarTypeContinuous",
+        "integer": "kHighsVarTypeInteger",
+        "semiContinuous": "kHighsVarTypeSemiContinuous",
+        "semiInteger": "kHighsVarTypeSemiInteger",
+        "implicitInteger": "kHighsVarTypeImplicitInteger"
+      },
+      "objectiveSense": {
+        "minimize": "kHighsObjSenseMinimize",
+        "maximize": "kHighsObjSenseMaximize"
+      },
+      "matrixFormat": {
+        "columnWise": "kHighsMatrixFormatColwise",
+        "rowWise": "kHighsMatrixFormatRowwise"
+      },
+      "hessianFormat": {
+        "triangular": "kHighsHessianFormatTriangular",
+        "square": "kHighsHessianFormatSquare"
+      },
+      "optionType": {
+        "boolean": "kHighsOptionTypeBool",
+        "integer": "kHighsOptionTypeInt",
+        "double": "kHighsOptionTypeDouble",
+        "string": "kHighsOptionTypeString"
+      },
+      "infoType": {
+        "int64": "kHighsInfoTypeInt64",
+        "integer": "kHighsInfoTypeInt",
+        "double": "kHighsInfoTypeDouble"
+      },
+      "solutionStatus": {
+        "none": "kHighsSolutionStatusNone",
+        "infeasible": "kHighsSolutionStatusInfeasible",
+        "feasible": "kHighsSolutionStatusFeasible"
+      },
+      "basisValidity": {
+        "invalid": "kHighsBasisValidityInvalid",
+        "valid": "kHighsBasisValidityValid"
+      },
+      "basisStatus": {
+        "lower": "kHighsBasisStatusLower",
+        "basic": "kHighsBasisStatusBasic",
+        "upper": "kHighsBasisStatusUpper",
+        "zero": "kHighsBasisStatusZero",
+        "nonbasic": "kHighsBasisStatusNonbasic"
+      },
+      "callbackType": {
+        "logging": "kHighsCallbackLogging",
+        "simplexInterrupt": "kHighsCallbackSimplexInterrupt",
+        "ipmInterrupt": "kHighsCallbackIpmInterrupt",
+        "mipSolution": "kHighsCallbackMipSolution",
+        "mipImprovingSolution": "kHighsCallbackMipImprovingSolution",
+        "mipLogging": "kHighsCallbackMipLogging",
+        "mipInterrupt": "kHighsCallbackMipInterrupt",
+        "mipCutPool": "kHighsCallbackMipGetCutPool",
+        "mipUserSolution": "kHighsCallbackCallbackMipUserSolution"
+      },
+      "presolveStatus": {
+        "notPresolved": "kHighsPresolveStatusNotPresolved",
+        "notReduced": "kHighsPresolveStatusNotReduced",
+        "infeasible": "kHighsPresolveStatusInfeasible",
+        "unboundedOrInfeasible": "kHighsPresolveStatusUnboundedOrInfeasible",
+        "reduced": "kHighsPresolveStatusReduced",
+        "reducedToEmpty": "kHighsPresolveStatusReducedToEmpty",
+        "timeout": "kHighsPresolveStatusTimeout",
+        "nullError": "kHighsPresolveStatusNullError",
+        "optionsError": "kHighsPresolveStatusOptionsError",
+        "outOfMemory": "kHighsPresolveStatusOutOfMemory"
+      },
+      "modelStatus": {
+        "notSet": "kHighsModelStatusNotset",
+        "loadError": "kHighsModelStatusLoadError",
+        "modelError": "kHighsModelStatusModelError",
+        "presolveError": "kHighsModelStatusPresolveError",
+        "solveError": "kHighsModelStatusSolveError",
+        "postsolveError": "kHighsModelStatusPostsolveError",
+        "empty": "kHighsModelStatusModelEmpty",
+        "optimal": "kHighsModelStatusOptimal",
+        "infeasible": "kHighsModelStatusInfeasible",
+        "unboundedOrInfeasible": "kHighsModelStatusUnboundedOrInfeasible",
+        "unbounded": "kHighsModelStatusUnbounded",
+        "objectiveBound": "kHighsModelStatusObjectiveBound",
+        "objectiveTarget": "kHighsModelStatusObjectiveTarget",
+        "timeLimit": "kHighsModelStatusTimeLimit",
+        "iterationLimit": "kHighsModelStatusIterationLimit",
+        "unknown": "kHighsModelStatusUnknown",
+        "solutionLimit": "kHighsModelStatusSolutionLimit",
+        "interrupted": "kHighsModelStatusInterrupt"
+      },
+      "iis": {
+        "strategyLight": "kHighsIisStrategyLight",
+        "strategyRowPriority": "kHighsIisStrategyFromLpRowPriority",
+        "strategyColPriority": "kHighsIisStrategyFromLpColPriority",
+        "boundFree": "kHighsIisBoundFree",
+        "boundLower": "kHighsIisBoundLower",
+        "boundUpper": "kHighsIisBoundUpper",
+        "boundBoxed": "kHighsIisBoundBoxed",
+        "notInConflict": "kHighsIisStatusNotInConflict",
+        "maybeInConflict": "kHighsIisStatusMaybeInConflict",
+        "inConflict": "kHighsIisStatusInConflict"
+      }
+    },
+    "excluded": {
+      "kHighsMaximumStringLength": "Internal buffer sizing is not a solver semantic.",
+      "kHighsCallbackMipDefineLazyConstraints": "This callback type is inert in the bundled HiGHS version."
+    }
   },
   "defaults": {
     "rawName": "lowerCamelCase C name without the Highs_ prefix",

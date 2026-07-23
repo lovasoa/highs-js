@@ -8,6 +8,16 @@
     "schemaVersion": {"const": 1},
     "header": {"type": "string"},
     "deprecatedBoundary": {"type": "string"},
+    "constantPolicy": {
+      "type": "object",
+      "required": ["exposure", "groups", "excluded"],
+      "properties": {
+        "exposure": {"const": "curated-grouped-names"},
+        "groups": {"type": "object"},
+        "excluded": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
     "groups": {
       "type": "array",
       "items": {
