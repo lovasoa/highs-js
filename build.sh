@@ -16,7 +16,10 @@ node "$root/scripts/generate-highs-api.mjs" --check
 cd "$root/build"
 
 # Run emconfigure with the normal configure command as an argument.
-emcmake cmake ../HiGHS \
+# Re-run compiler and platform probes from a clean CMake cache. Object files in
+# the build volume remain reusable, but a previously interrupted configure or
+# a changed Emscripten version cannot poison later devcontainer builds.
+emcmake cmake --fresh ../HiGHS \
 	-DZLIB=OFF \
 	-DFAST_BUILD=OFF \
 	-DBUILD_SHARED_LIBS=OFF \
