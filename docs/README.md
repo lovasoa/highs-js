@@ -10,6 +10,8 @@ Choose the narrowest interface that fits the job:
   persistent model without changing results all at once.
 - [API guide](api.md): model data, status handling, options, callbacks, I/O,
   ownership, CommonJS, and ES modules.
+- [Options reference](options.md): every HiGHS option available in highs-js,
+  generated from the runtime.
 - [C API mapping](c-api-mapping.md): the native HiGHS function behind each
   JavaScript operation and the deliberately excluded surface.
 

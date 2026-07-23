@@ -51,6 +51,12 @@ jobs:
         run: npm test
       - name: verify package contents
         run: npm run test:package
+      - name: prepare demo
+        run: npm run build:demo
+      - name: install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: test demo in headless browser
+        run: npm run test:demo
       - name: create package artifact
         run: |
           npm pack

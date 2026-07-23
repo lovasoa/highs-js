@@ -53,7 +53,9 @@ jobs:
         run: npm test
       - name: verify packed package
         run: npm run test:package
-      - run: cp build/highs.* demo/
+      - run: npm run build:demo
+      - name: generate options reference
+        run: npm run docs:options
       - run: cp -R docs demo/docs
       - name: publish the package to NPM
         run: npm publish --provenance

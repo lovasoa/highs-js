@@ -851,7 +851,7 @@ export interface HighsConstants {
     semiInteger: 3;
     implicitInteger: 4;
   }>;
-  readonly objectiveSense: Readonly<{ minimize: 1; maximize: -1 }>;
+  readonly objectiveSense: Readonly<{ minimize: ObjectiveSense; maximize: ObjectiveSense }>;
   readonly matrixFormat: Readonly<{ columnWise: 1; rowWise: 2 }>;
   readonly hessianFormat: Readonly<{ triangular: 1; square: 2 }>;
   readonly optionType: Readonly<{
@@ -931,7 +931,18 @@ export type NumberInput = readonly number[] | Float64Array;
 export type IndexInput = readonly number[] | Int32Array;
 export type MaskInput = readonly boolean[] | Uint8Array | Int32Array;
 export type VariableType = 0 | 1 | 2 | 3 | 4;
-export type ObjectiveSense = 1 | -1;
+declare const __objectiveSenseBrand: unique symbol;
+/**
+ * Objective sense: `1` (minimize) or `-1` (maximize).
+ *
+ * The raw numeric literals are intentionally *not* assignable to this type.
+ * Use the named constants exposed at `highs.constants.objectiveSense`
+ * (`minimize` / `maximize`) so the intent is self-documenting and the
+ * minimize/maximize encoding cannot be silently swapped.
+ */
+export type ObjectiveSense = (1 | -1) & {
+  readonly [__objectiveSenseBrand]: true;
+};
 export type MatrixFormat = "csc" | "csr";
 export type HessianFormat = "triangular" | "square";
 export type BasisStatus = 0 | 1 | 2 | 3 | 4;

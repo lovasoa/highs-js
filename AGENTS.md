@@ -233,6 +233,9 @@ node scripts/generate-highs-api.mjs --write-exports
 
 ## Release Process
 
+Versioning: we strictly follow the upstream HiGHS versioning, but allow ourselves to
+publish patch releases that do not match HiGHS' versions when we need to fix something in the js interface.
+
 1. CI runs all quality gates (see [CI pipeline](./.github/workflows/CI.yml)).
 2. On a release tag, the [release workflow](./.github/workflows/release.yml)
    publishes to npm.

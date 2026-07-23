@@ -21,6 +21,8 @@ fits the workload.
 
 - [Extended API guide](api/): loading, model data, ownership, errors, options,
   callbacks, and data-only I/O.
+- [Solver options reference](options/): complete list of every HiGHS option
+  available in highs-js, generated from the runtime.
 - [Migration guide](migration/): keep results stable while moving one workflow
   at a time, with an exact result mapping and parity harness.
 - [JavaScript-to-C API mapping](c-api-mapping/): the native function behind

@@ -4,27 +4,9 @@ import loadHighs, {
   type LegacyHighsOptions,
   type ModelData,
   type ModelStatusCode,
+  type ObjectiveSense,
   type SparseEntriesInput,
 } from "../types";
-
-const modelData = {
-  numCols: 2,
-  numRows: 1,
-  sense: -1,
-  colCost: new Float64Array([1, 2]),
-  colLower: [0, 0],
-  colUpper: [Infinity, Infinity],
-  rowLower: [-Infinity],
-  rowUpper: [4],
-  matrix: {
-    format: "csc",
-    numRows: 1,
-    numCols: 2,
-    starts: new Int32Array([0, 1, 2]),
-    indices: new Int32Array([0, 0]),
-    values: new Float64Array([1, 2]),
-  },
-} satisfies ModelData;
 
 const legacyThreadOptions: LegacyHighsOptions = {
   threads: 1,
@@ -42,6 +24,26 @@ async function exerciseContract() {
   const highs = await loadHighs();
   const memoryBytes: number = highs.memoryBytes;
   highs.solve("Minimize\nEnd", legacyThreadOptions);
+
+  const modelData = {
+    numCols: 2,
+    numRows: 1,
+    sense: highs.constants.objectiveSense.maximize,
+    colCost: new Float64Array([1, 2]),
+    colLower: [0, 0],
+    colUpper: [Infinity, Infinity],
+    rowLower: [-Infinity],
+    rowUpper: [4],
+    matrix: {
+      format: "csc",
+      numRows: 1,
+      numCols: 2,
+      starts: new Int32Array([0, 1, 2]),
+      indices: new Int32Array([0, 0]),
+      values: new Float64Array([1, 2]),
+    },
+  } satisfies ModelData;
+
   const model = highs.createModel(modelData);
   const raw = highs.raw.createModel();
 
@@ -57,7 +59,11 @@ async function exerciseContract() {
     values: new Float64Array(),
   };
   model.addCol(0, 0, 1, entries);
-  const sense: 1 | -1 = model.getObjectiveSense();
+  const sense: ObjectiveSense = model.getObjectiveSense();
+  // Raw numeric literals are intentionally rejected; use the constants.
+  // @ts-expect-error
+  const badSense: ObjectiveSense = 1;
+  void badSense;
   const offset: number = model.getObjectiveOffset();
   const int64AwareInfo: number | bigint = model.info.get("mip_node_count");
   void detached;

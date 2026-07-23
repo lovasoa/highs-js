@@ -3,3 +3,6 @@ build/*
 !build/*json
 cbuild/
 node_modules/
+demo/highs.js
+demo/highs.wasm
+demo/highs.mjs

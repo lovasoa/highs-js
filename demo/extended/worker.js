@@ -44,8 +44,9 @@ self.addEventListener("message", async ({ data }) => {
       persistentModel.options.set("output_flag", false);
     } else if (action === "mutate") {
       if (!persistentModel) throw new Error("Load an LP model first");
-      if (!Number.isFinite(data.cost) || !Number.isFinite(data.upper))
+      if (!Number.isFinite(data.cost) || !Number.isFinite(data.upper)) {
         throw new TypeError("Cost and upper bound must be finite numbers");
+      }
       persistentModel.changeColCost(0, data.cost);
       persistentModel.changeColBounds(0, 0, data.upper);
     } else {
@@ -59,6 +60,7 @@ self.addEventListener("message", async ({ data }) => {
       Object.entries(highs.constants.modelStatus).find(
         ([, value]) => value === run.modelStatus,
       )?.[0] || "unknown";
+
     const ranging =
       run.modelStatus === highs.constants.modelStatus.optimal
         ? persistentModel.getRanging()
