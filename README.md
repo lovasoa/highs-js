@@ -284,6 +284,47 @@ console.log(model.getPresolvedColName(0));
 console.log(model.getPresolvedRowName(0));
 ```
 
+## Model views and advanced solve
+
+Extract model data in different formats, inspect presolved and IIS subsystems,
+and work with unboundedness certificates:
+
+```js
+// Get model data in CSC or CSR format
+const csc = model.getLp("csc");
+const csr = model.getLp("csr");
+
+// After presolve, inspect the reduced model
+model.presolve();
+const reduced = model.getPresolvedLp();
+const dims = model.getPresolvedDimensions();
+
+// For infeasible models, export the IIS subsystem
+model.run();
+if (model.getModelStatus() === highs.constants.modelStatus.infeasible) {
+  const iisLp = model.getIisLp();
+}
+
+// Pipeline: presolve -> run -> postsolve
+model.presolve();
+model.run();
+const sol = model.getSolution();
+const pDims = model.getPresolvedDimensions();
+model.postsolve({
+  colValue: sol.colValue.slice(0, pDims.numCols),
+  colDual: sol.colDual.slice(0, pDims.numCols),
+  rowDual: sol.rowDual.slice(0, pDims.numRows),
+});
+
+// Unboundedness certificates
+const primalRay = model.getPrimalRay();  // { values: Float64Array }
+
+// Solver timing
+model.zeroAllClocks();
+model.run();
+console.log(model.getRunTime());  // seconds
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
