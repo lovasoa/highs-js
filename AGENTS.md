@@ -20,19 +20,10 @@ The project provides a pre-configured dev container via
 [compose.yaml](./compose.yaml). The container installs Emscripten, CMake,
 and all npm dependencies, then runs a full build (`npm ci && npm run build`).
 
-When you are running outside the dev container:
-  ```sh
-  # Run the full CI pipeline (install, build, test) in a disposable container:
-  docker compose run --rm tests
-
-  # Open a shell in the container for iterative development:
-  docker compose run --rm tests bash -l
-  ```
-
 Any command that requires Emscripten (such as `npm run build`) should be run
 inside the container via `docker compose run --rm tests <command>` if the host
 system does not have a working Emscripten installed. The container's entrypoint
-sources `/emsdk/emsdk_env.sh` automatically, so no manual setup is needed.
+sources `/emsdk/emsdk_env.sh` automatically, so no manual setup is needed. If installed, and when changing the container itself, use the `devcontainer` CLI to rebuild the container (`devcontainer [build|up|exec]`).
 
 ```sh
 # Run a build inside the container
