@@ -1,4 +1,6 @@
-# See here for image contents: https://github.com/devcontainers/images/tree/main/src/javascript-node
+# check=skip=InvalidDefaultArgInFrom
+# NODE_VARIANT deliberately has no Dockerfile default: compose.yaml requires
+# the single canonical value from ../.env.
 
 ARG NODE_VARIANT
 FROM mcr.microsoft.com/devcontainers/javascript-node:${NODE_VARIANT}
