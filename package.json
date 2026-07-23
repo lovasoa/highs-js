@@ -21,6 +21,7 @@
   },
   "scripts": {
     "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && node tests/test.js && node --test tests/extended/*.test.cjs",
+    "test:package": "node scripts/test-packed-package.mjs",
     "build": "./build.sh",
     "check:api": "node scripts/generate-highs-api.mjs --check",
     "bench:runtime": "node benchmarks/runtime.mjs",
@@ -45,6 +46,9 @@
     "url": "https://github.com/lovasoa/highs-js/issues"
   },
   "homepage": "https://lovasoa.github.io/highs-js/",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.13",
     "typescript": "^7.0.2"
@@ -56,6 +60,8 @@
     "package.json",
     "types.d.ts",
     "api/highs-c-api.generated.json",
+    "HiGHS/LICENSE.txt",
+    "HiGHS/THIRD_PARTY_NOTICES.md",
     "docs",
     "README.md"
   ]

@@ -19,23 +19,32 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: "recursive"
+      - id: versions
+        name: Read canonical toolchain versions
+        run: |
+          . ./.env
+          echo "emsdk=$EMSDK_VERSION" >> "$GITHUB_OUTPUT"
+          echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Cache CMake build
         uses: actions/cache@v5
         with:
           path: |
-            HiGHS/src/CMakeFiles
-            HiGHS/build
-          key: ${{ runner.os }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt') }}
+            build/CMakeFiles
+            build/highs/CMakeFiles
+            build/lib
+          key: ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt', 'HiGHS/highs/**/*.cpp', 'HiGHS/highs/**/*.h', 'build.sh') }}
           restore-keys: |
-            ${{ runner.os }}-cmake-
+            ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-cmake-
       - uses: mymindstorm/setup-emsdk@v16
-        with: { version: "6.0.3" }
+        with: { version: "${{ steps.versions.outputs.emsdk }}" }
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "${{ steps.versions.outputs.node }}"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
       - run: npm ci
+      - name: verify tag matches package version
+        run: test "$GITHUB_REF_NAME" = "v$(node -p 'require(\"./package.json\").version')"
       - name: verify generated C API inventory
         run: npm run check:api
       - name: build
@@ -44,13 +53,12 @@ jobs:
         env:
           HIGHS_REQUIRE_EXTENDED: "1"
         run: npm test
+      - name: verify packed package
+        run: npm run test:package
       - run: cp build/highs.* demo/
       - run: cp -R docs demo/docs
-      - name: Deploy demo 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: demo
+      - name: publish the package to NPM
+        run: npm publish --provenance
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
@@ -61,5 +69,8 @@ jobs:
           fail_on_unmatched_files: true
           draft: false
           prerelease: false
-      - name: publish the package to NPM
-        run: npm publish
+      - name: Deploy demo and documentation
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: demo

@@ -3,24 +3,47 @@ on: [push, pull_request]
 name: Continuous Integration
 
 jobs:
+  toolchain:
+    name: Resolve toolchain
+    runs-on: ubuntu-latest
+    outputs:
+      emsdk: ${{ steps.versions.outputs.emsdk }}
+      node: ${{ steps.versions.outputs.node }}
+      node-matrix: ${{ steps.versions.outputs.node-matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: versions
+        name: Read canonical versions
+        run: |
+          . ./.env
+          echo "emsdk=$EMSDK_VERSION" >> "$GITHUB_OUTPUT"
+          echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "node-matrix=[18,20,22,$NODE_VERSION]" >> "$GITHUB_OUTPUT"
+
   build:
     name: Continuous Integration
+    needs: toolchain
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           submodules: "recursive"
       - name: Cache CMake build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
-            HiGHS/src/CMakeFiles
-            HiGHS/build
-          key: ${{ runner.os }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt') }}
+            build/CMakeFiles
+            build/highs/CMakeFiles
+            build/lib
+          key: ${{ runner.os }}-emsdk-${{ needs.toolchain.outputs.emsdk }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt', 'HiGHS/highs/**/*.cpp', 'HiGHS/highs/**/*.h', 'build.sh') }}
           restore-keys: |
-            ${{ runner.os }}-cmake-
+            ${{ runner.os }}-emsdk-${{ needs.toolchain.outputs.emsdk }}-cmake-
       - uses: mymindstorm/setup-emsdk@v16
-        with: { version: "6.0.3" }
+        with: { version: "${{ needs.toolchain.outputs.emsdk }}" }
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "${{ needs.toolchain.outputs.node }}"
+          package-manager-cache: false
       - run: npm ci
       - name: verify generated C API inventory
         run: npm run check:api
@@ -31,4 +54,41 @@ jobs:
           HIGHS_REQUIRE_EXTENDED: "1"
         run: npm test
       - name: verify package contents
-        run: npm pack --dry-run
+        run: npm run test:package
+      - name: create package artifact
+        run: |
+          npm pack
+          mv highs-*.tgz highs-package.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: highs-package.tgz
+          if-no-files-found: error
+
+  package-consumers:
+    name: Package consumer (Node ${{ matrix.node }})
+    needs: [toolchain, build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ${{ fromJSON(needs.toolchain.outputs.node-matrix) }}
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+      - run: mkdir consumer
+      - name: install packed package
+        working-directory: consumer
+        run: npm install --ignore-scripts --no-audit --no-fund ../highs-package.tgz
+      - name: exercise CommonJS and wasm overrides
+        working-directory: consumer
+        run: |
+          node -e 'const fs=require("node:fs"); const load=require("highs"); const wasm=fs.readFileSync(require.resolve("highs/runtime")); Promise.all([load({wasmBinary:wasm}), load({wasmModule:new WebAssembly.Module(wasm)})]).then(xs => { for (const h of xs) { if (typeof h.createModel !== "function") process.exit(1); } })'
+      - name: exercise native ESM
+        working-directory: consumer
+        run: node --input-type=module -e 'import load from "highs"; const h=await load(); if (typeof h.solve !== "function") process.exit(1)'
