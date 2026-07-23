@@ -253,6 +253,37 @@ model.scaleCol(0, 2);
 model.scaleRow(0, 0.5);
 ```
 
+## Names and lookups
+
+Work with human-readable column, row, and model names:
+
+```js
+const model = highs.createModel({
+  /* ... */
+  colNames: ["x", "y"],
+  rowNames: ["capacity"],
+  modelName: "production-plan",
+});
+
+// Forward lookups
+console.log(model.getColName(0));  // "x"
+console.log(model.getRowName(0));  // "capacity"
+
+// Reverse lookups
+console.log(model.getColByName("y"));  // 1
+console.log(model.getRowByName("capacity"));  // 0
+
+// Rename after creation
+model.passColName(0, "widgets");
+model.passRowName(0, "machine-hours");
+model.passModelName("updated-plan");
+
+// After presolve, inspect presolved names
+model.presolve();
+console.log(model.getPresolvedColName(0));
+console.log(model.getPresolvedRowName(0));
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
