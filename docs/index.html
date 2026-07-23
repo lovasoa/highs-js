@@ -1,0 +1,125 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><link rel="canonical" href="https://lovasoa.github.io/highs-js/docs/"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>highs-js API reference</title><meta name="description" content="Documentation for highs-js API reference"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><link rel="stylesheet" href="assets/custom.css"/><script defer src="assets/main.js"></script><script defer src="assets/custom.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">highs-js API reference</a>
+<div id="tsd-toolbar-links"><a href="https://lovasoa.github.io/highs-js/">Demo</a><a href="https://www.npmjs.com/package/highs">npm</a><a href="https://github.com/lovasoa/highs-js">GitHub</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<h1>highs-js API reference</h1></div>
+<div class="tsd-panel tsd-typography"><h1 id="highs-js-api-reference" class="tsd-anchor-link">highs-js API reference<a href="#highs-js-api-reference" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>TypeScript declarations for the HiGHS WebAssembly runtime. Initialization is asynchronous; model operations and solves are synchronous. Browser applications should run non-trivial solves in a Web Worker.</p>
+<h2 id="api-surfaces" class="tsd-anchor-link">API surfaces<a href="#api-surfaces" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Entry point</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legacy one-shot API</td>
+<td><a href="#" data-api-link="types/LegacyHighs.html"><code>highs.solve()</code></a></td>
+<td>The model already exists as CPLEX LP text and no solver state must persist.</td>
+</tr>
+<tr>
+<td>Persistent API</td>
+<td><a href="#" data-api-link="interfaces/Model.html"><code>highs.createModel()</code> / <code>Model</code></a></td>
+<td>Building typed models, changing data, solving repeatedly, callbacks, basis access, ranging, IIS, or model I/O.</td>
+</tr>
+<tr>
+<td>Raw API</td>
+<td><a href="#" data-api-link="interfaces/RawRuntimeApi.html"><code>highs.raw</code></a></td>
+<td>Native HiGHS status codes are required instead of exceptions. Inputs are still validated and copied.</td>
+</tr>
+</tbody>
+</table>
+<p>Search covers every exported method, property, type, constant, and enum. Start with <a href="#" data-api-link="types/Highs.html"><code>Highs</code></a>, <a href="#" data-api-link="interfaces/Model.html"><code>Model</code></a>, and <a href="#" data-api-link="interfaces/ModelData.html"><code>ModelData</code></a>.</p>
+<h2 id="persistent-milp-example" class="tsd-anchor-link">Persistent MILP example<a href="#persistent-milp-example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>This capacitated facility-location model chooses which facilities to open and routes customer demand through the open sites. It combines binary and continuous variables, named sparse model data, options, MIP callbacks, solve information, serialization, mutation, and repeated solves.</p>
+<div id="facility-example"></div>
+<pre><code class="ts"><span class="hl-0">import</span><span class="hl-1"> loadHighs </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-2">&quot;highs&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">highs</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-4">loadHighs</span><span class="hl-1">();</span><br/><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-3">minimize</span><span class="hl-1"> } </span><span class="hl-0">=</span><span class="hl-1"> highs.constants.objectiveSense;</span><br/><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-3">continuous</span><span class="hl-1">, </span><span class="hl-3">integer</span><span class="hl-1"> } </span><span class="hl-0">=</span><span class="hl-1"> highs.constants.variableType;</span><br/><br/><span class="hl-5">// x0..x1 open facilities; x2..x7 ship from two facilities to three customers.</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">model</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> highs.</span><span class="hl-4">createModel</span><span class="hl-1">({</span><br/><span class="hl-1">  modelName: </span><span class="hl-2">&quot;facility-location&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  numCols: </span><span class="hl-3">8</span><span class="hl-1">,</span><br/><span class="hl-1">  numRows: </span><span class="hl-3">5</span><span class="hl-1">,</span><br/><span class="hl-1">  sense: minimize,</span><br/><span class="hl-1">  colCost: [</span><span class="hl-3">500</span><span class="hl-1">, </span><span class="hl-3">300</span><span class="hl-1">, </span><span class="hl-3">2</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">, </span><span class="hl-3">5</span><span class="hl-1">, </span><span class="hl-3">3</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">3</span><span class="hl-1">],</span><br/><span class="hl-1">  colLower: [</span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">],</span><br/><span class="hl-1">  colUpper: [</span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-3">Infinity</span><span class="hl-1">],</span><br/><span class="hl-1">  rowLower: [</span><span class="hl-3">80</span><span class="hl-1">, </span><span class="hl-3">60</span><span class="hl-1">, </span><span class="hl-3">40</span><span class="hl-1">, </span><span class="hl-0">-</span><span class="hl-3">Infinity</span><span class="hl-1">, </span><span class="hl-0">-</span><span class="hl-3">Infinity</span><span class="hl-1">],</span><br/><span class="hl-1">  rowUpper: [</span><span class="hl-3">80</span><span class="hl-1">, </span><span class="hl-3">60</span><span class="hl-1">, </span><span class="hl-3">40</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">],</span><br/><span class="hl-1">  integrality: [integer, integer, continuous, continuous, continuous, continuous, continuous, continuous],</span><br/><span class="hl-1">  colNames: [</span><span class="hl-2">&quot;open-north&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;open-south&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;n-a&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;n-b&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;n-c&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;s-a&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;s-b&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;s-c&quot;</span><span class="hl-1">],</span><br/><span class="hl-1">  rowNames: [</span><span class="hl-2">&quot;demand-a&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;demand-b&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;demand-c&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;north-capacity&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;south-capacity&quot;</span><span class="hl-1">],</span><br/><span class="hl-1">  matrix: {</span><br/><span class="hl-1">    format: </span><span class="hl-2">&quot;csc&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    numRows: </span><span class="hl-3">5</span><span class="hl-1">,</span><br/><span class="hl-1">    numCols: </span><span class="hl-3">8</span><span class="hl-1">,</span><br/><span class="hl-1">    starts: [</span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">2</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">, </span><span class="hl-3">6</span><span class="hl-1">, </span><span class="hl-3">8</span><span class="hl-1">, </span><span class="hl-3">10</span><span class="hl-1">, </span><span class="hl-3">12</span><span class="hl-1">, </span><span class="hl-3">14</span><span class="hl-1">],</span><br/><span class="hl-1">    indices: [</span><span class="hl-3">3</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">3</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">3</span><span class="hl-1">, </span><span class="hl-3">2</span><span class="hl-1">, </span><span class="hl-3">3</span><span class="hl-1">, </span><span class="hl-3">0</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">, </span><span class="hl-3">2</span><span class="hl-1">, </span><span class="hl-3">4</span><span class="hl-1">],</span><br/><span class="hl-1">    values: [</span><span class="hl-0">-</span><span class="hl-3">200</span><span class="hl-1">, </span><span class="hl-0">-</span><span class="hl-3">200</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">1</span><span class="hl-1">],</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-0">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  model.options.</span><span class="hl-4">set</span><span class="hl-1">({ output_flag: </span><span class="hl-3">false</span><span class="hl-1">, mip_rel_gap: </span><span class="hl-3">1e-4</span><span class="hl-1"> });</span><br/><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">progress</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> [];</span><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">firstRun</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> model.</span><span class="hl-4">run</span><span class="hl-1">({</span><br/><span class="hl-1">    [highs.constants.callbackType.mipLogging](</span><span class="hl-6">event</span><span class="hl-1">) {</span><br/><span class="hl-1">      progress.</span><span class="hl-4">push</span><span class="hl-1">({</span><br/><span class="hl-1">        nodes: event.data.mip_node_count,</span><br/><span class="hl-1">        gap: event.data.mip_gap,</span><br/><span class="hl-1">      });</span><br/><span class="hl-1">      </span><span class="hl-0">return</span><span class="hl-1"> </span><span class="hl-3">undefined</span><span class="hl-1">;</span><br/><span class="hl-1">    },</span><br/><span class="hl-1">  });</span><br/><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">firstSolution</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> model.</span><span class="hl-4">getSolution</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">firstPlan</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> Array.</span><span class="hl-4">from</span><span class="hl-1">(firstSolution.colValue, (</span><span class="hl-6">value</span><span class="hl-1">, </span><span class="hl-6">index</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> ({</span><br/><span class="hl-1">    variable: model.</span><span class="hl-4">getColName</span><span class="hl-1">(index),</span><br/><span class="hl-1">    value,</span><br/><span class="hl-1">  }));</span><br/><br/><span class="hl-1">  console.</span><span class="hl-4">log</span><span class="hl-1">({</span><br/><span class="hl-1">    status: firstRun.modelStatus,</span><br/><span class="hl-1">    objective: model.</span><span class="hl-4">getObjectiveValue</span><span class="hl-1">(),</span><br/><span class="hl-1">    nodes: model.info.</span><span class="hl-4">get</span><span class="hl-1">(</span><span class="hl-2">&quot;mip_node_count&quot;</span><span class="hl-1">),</span><br/><span class="hl-1">    dimensions: model.</span><span class="hl-4">getDimensions</span><span class="hl-1">(),</span><br/><span class="hl-1">    lp: model.</span><span class="hl-4">exportModel</span><span class="hl-1">(</span><span class="hl-2">&quot;lp&quot;</span><span class="hl-1">),</span><br/><span class="hl-1">    progress,</span><br/><span class="hl-1">    firstPlan,</span><br/><span class="hl-1">  });</span><br/><br/><span class="hl-1">  </span><span class="hl-5">// Reuse the native model for a scenario where the south facility is cheaper.</span><br/><span class="hl-1">  model.</span><span class="hl-4">changeColCost</span><span class="hl-1">(</span><span class="hl-3">1</span><span class="hl-1">, </span><span class="hl-3">250</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">secondRun</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> model.</span><span class="hl-4">run</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">secondSolution</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> model.</span><span class="hl-4">getSolution</span><span class="hl-1">();</span><br/><span class="hl-1">  console.</span><span class="hl-4">log</span><span class="hl-1">(secondRun.modelStatus, secondSolution.colValue);</span><br/><span class="hl-1">} </span><span class="hl-0">finally</span><span class="hl-1"> {</span><br/><span class="hl-1">  model.</span><span class="hl-4">dispose</span><span class="hl-1">();</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="what-the-example-exercises" class="tsd-anchor-link">What the example exercises<a href="#what-the-example-exercises" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Reference</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typed model construction</td>
+<td><a href="#" data-api-link="interfaces/ModelData.html"><code>ModelData</code></a></td>
+<td>Exact array dimensions, objective sense, names, integrality, and bounds are validated before native entry.</td>
+</tr>
+<tr>
+<td>Sparse constraints</td>
+<td><a href="#" data-api-link="interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a></td>
+<td><code>starts</code>, <code>indices</code>, and <code>values</code> use zero-based compressed sparse column storage.</td>
+</tr>
+<tr>
+<td>Solver configuration</td>
+<td><a href="#" data-api-link="interfaces/OptionStore.html"><code>OptionStore.set()</code></a></td>
+<td>Option names are exact HiGHS snake_case names; the persistent wrapper rejects unsupported thread and path options.</td>
+</tr>
+<tr>
+<td>Progress callbacks</td>
+<td><a href="#" data-api-link="types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a></td>
+<td>Callbacks run synchronously inside <code>run()</code>; callback controls expire when the handler returns.</td>
+</tr>
+<tr>
+<td>Repeated scenarios</td>
+<td><a href="#" data-api-link="interfaces/Model.html#changecolcost"><code>Model.changeColCost()</code></a></td>
+<td>Mutate the existing native model and solve again without rebuilding the sparse matrix.</td>
+</tr>
+<tr>
+<td>Ownership</td>
+<td><a href="#" data-api-link="interfaces/Model.html#dispose"><code>Model.dispose()</code></a></td>
+<td>Persistent models own native memory and should be disposed in <code>finally</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reference-map" class="tsd-anchor-link">Reference map<a href="#reference-map" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li><strong>Model data:</strong> <a href="#" data-api-link="interfaces/ModelData.html"><code>ModelData</code></a>, <a href="#" data-api-link="interfaces/HessianInput.html"><code>HessianInput</code></a>, <a href="#" data-api-link="types/IndexSelection.html"><code>IndexSelection</code></a></li>
+<li><strong>Solving and results:</strong> <a href="#" data-api-link="interfaces/Model.html#run"><code>Model.run()</code></a>, <a href="#" data-api-link="interfaces/Solution.html"><code>Solution</code></a>, <a href="#" data-api-link="types/ModelStatusCode.html"><code>ModelStatusCode</code></a></li>
+<li><strong>Advanced analysis:</strong> <a href="#" data-api-link="interfaces/RangingResult.html"><code>RangingResult</code></a>, <a href="#" data-api-link="interfaces/IisResult.html"><code>IisResult</code></a>, <a href="#" data-api-link="interfaces/Basis.html"><code>Basis</code></a></li>
+<li><strong>Configuration and diagnostics:</strong> <a href="#" data-api-link="interfaces/OptionStore.html"><code>OptionStore</code></a>, <a href="#" data-api-link="interfaces/InfoStore.html"><code>InfoStore</code></a>, <a href="#" data-api-link="interfaces/HighsConstants.html"><code>HighsConstants</code></a></li>
+<li><strong>Lower-level access:</strong> <a href="#" data-api-link="interfaces/RawRuntimeApi.html"><code>RawRuntimeApi</code></a>, <a href="#" data-api-link="interfaces/RawModelApi.html"><code>RawModelApi</code></a></li>
+</ul>
+</div></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#highs-js-api-reference"><span>highs-<wbr/>js <wbr/>API reference</span></a>
+<ul>
+<li><a href="#api-surfaces"><span>API surfaces</span></a></li>
+<li><a href="#persistent-milp-example"><span>Persistent <wbr/>MILP example</span></a></li>
+<li>
+<ul>
+<li><a href="#what-the-example-exercises"><span>What the example exercises</span></a></li></ul></li>
+<li><a href="#reference-map"><span>Reference map</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://lovasoa.github.io/highs-js/" class="tsd-nav-link">Demo</a><a href="https://www.npmjs.com/package/highs" class="tsd-nav-link">npm</a><a href="https://github.com/lovasoa/highs-js" class="tsd-nav-link">GitHub</a></nav>
+<nav class="tsd-navigation"><a href="modules.html">highs-js API reference</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer></footer>
+<div class="overlay"></div></body></html>

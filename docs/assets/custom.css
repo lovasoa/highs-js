@@ -1,0 +1,186 @@
+:root {
+  --light-color-background: #f8fbfa;
+  --light-color-background-secondary: #eef5f4;
+  --light-color-background-active: #dbe9e8;
+  --light-color-accent: #9ececc;
+  --light-color-active-menu-item: #9ececc26;
+  --light-color-text: #222629;
+  --light-color-contrast-text: #222629;
+  --light-color-text-aside: #667174;
+  --light-color-link: #b44a55;
+  --light-color-focus-outline: #d90000;
+  --light-color-ts-enum: #7a3b43;
+  --light-color-ts-enum-member: #7a3b43;
+  --light-color-ts-interface: #286866;
+  --light-color-ts-property: #a44724;
+  --dark-color-background: #f8fbfa;
+  --dark-color-background-secondary: #eef5f4;
+  --dark-color-background-active: #dbe9e8;
+  --dark-color-accent: #9ececc;
+  --dark-color-active-menu-item: #9ececc26;
+  --dark-color-text: #222629;
+  --dark-color-contrast-text: #222629;
+  --dark-color-text-aside: #667174;
+  --dark-color-link: #b44a55;
+  --dark-color-focus-outline: #d90000;
+  --dark-color-icon-background: #f8fbfa;
+  --dark-color-icon-text: #222629;
+  --dark-color-comment-tag: #dbe9e8;
+  --dark-color-comment-tag-text: #222629;
+  --dark-color-ts-enum: #7a3b43;
+  --dark-color-ts-enum-member: #7a3b43;
+  --dark-color-ts-interface: #286866;
+  --dark-color-ts-property: #a44724;
+  --dark-color-ts-type-alias: #8b3f59;
+  --dark-color-ts-method: #8b3f59;
+  --dark-color-ts-function: #704b8f;
+  --light-code-background: #f3f7f6;
+  --dark-code-background: #f3f7f6;
+  --code-background: #f3f7f6;
+  --dark-color-scheme: light;
+  --font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --code-font: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  letter-spacing: -0.005em;
+}
+
+.container-main {
+  max-width: 1180px;
+}
+
+html[data-base="./"] .container-main {
+  display: block;
+  max-width: 1040px;
+  padding-top: 2.75rem;
+}
+
+html[data-base="./"] .col-sidebar,
+html[data-base="./"] .tsd-page-title,
+html[data-base="./"] .col-content > .tsd-member-group {
+  display: none;
+}
+
+html[data-base="./"] .col-content {
+  width: 100%;
+}
+
+.tsd-page-toolbar {
+  border-bottom-color: #9ececc;
+  box-shadow: 0 8px 24px rgb(34 38 41 / 5%);
+}
+
+.tsd-page-title h1,
+.tsd-page-title h2,
+.tsd-signature-type,
+.tsd-kind-icon {
+  color: #b44a55;
+}
+
+.tsd-kind-enum,
+.tsd-kind-enum-member {
+  color: #7a3b43;
+}
+
+code.tsd-tag {
+  color: #285a58;
+  background: #dbe9e8;
+  border-color: #78aaa7;
+  font-weight: 650;
+}
+
+html[data-base="./"] .tsd-typography > h1 {
+  margin: 0 0 0.75rem;
+  color: #222629;
+  font-size: 2.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+html[data-base="./"] .tsd-typography > h1 + p {
+  max-width: 850px;
+  margin-bottom: 2rem;
+  color: #536064;
+  font-size: 1.05rem;
+}
+
+html[data-base="./"] .tsd-typography h2 {
+  margin-top: 2.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #bdd9d7;
+}
+
+html[data-base="./"] .tsd-typography table {
+  display: table;
+  width: 100%;
+  margin: 1rem 0 2rem;
+  border-collapse: collapse;
+}
+
+html[data-base="./"] .tsd-typography th {
+  color: #285a58;
+  background: #dbe9e8;
+  font-size: 0.78rem;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+html[data-base="./"] .tsd-typography th,
+html[data-base="./"] .tsd-typography td {
+  border: 1px solid #bdd9d7;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+html[data-base="./"] .tsd-typography tbody tr:nth-child(even) {
+  background: #f2f7f6;
+}
+
+#facility-example + pre {
+  max-height: 50rem;
+  border: 1px solid #9ececc;
+  overflow: auto;
+}
+
+.api-code-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #b44a55;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.api-code-link:hover {
+  color: #8f3540;
+  text-decoration-thickness: 2px;
+}
+
+@media (max-width: 700px) {
+  html[data-base="./"] .container-main {
+    padding-top: 2.25rem;
+  }
+
+  html[data-base="./"] .tsd-typography > h1 {
+    font-size: 1.9rem;
+  }
+
+  html[data-base="./"] .tsd-typography table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.tsd-panel,
+.tsd-member,
+pre {
+  border-radius: 7px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #d90000;
+  outline-offset: 3px;
+}
