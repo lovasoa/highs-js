@@ -5,6 +5,7 @@ const runtimePromise = Module({
 });
 
 let persistentModel;
+let compatibilityProblem;
 
 function serializableSolution(solution) {
   return {
@@ -15,7 +16,8 @@ function serializableSolution(solution) {
   };
 }
 
-self.addEventListener("message", async ({ data: { revision, problem } }) => {
+self.addEventListener("message", async ({ data }) => {
+  const { revision, action } = data;
   let mode = "Loading solver…";
 
   try {
@@ -23,22 +25,44 @@ self.addEventListener("message", async ({ data: { revision, problem } }) => {
 
     if (typeof highs.createModel !== "function") {
       mode = "Compatibility API (this build predates the extended API)";
+      if (action === "load") compatibilityProblem = data.problem;
+      if (!compatibilityProblem) throw new Error("Load an LP model first");
       self.postMessage({
         revision,
         mode,
-        result: highs.solve(problem, { output_flag: false }),
+        result: highs.solve(compatibilityProblem, { output_flag: false }),
       });
       return;
     }
 
-    mode = "Persistent Model API with detached typed-array results";
-    persistentModel ||= highs.createModel();
-    persistentModel.clearModel();
-    persistentModel.readModel({ format: "lp", data: problem });
-    persistentModel.options.set("output_flag", false);
+    if (action === "load") {
+      persistentModel?.dispose();
+      persistentModel = highs.createModel({
+        format: "lp",
+        data: data.problem,
+      });
+      persistentModel.options.set("output_flag", false);
+    } else if (action === "mutate") {
+      if (!persistentModel) throw new Error("Load an LP model first");
+      if (!Number.isFinite(data.cost) || !Number.isFinite(data.upper))
+        throw new TypeError("Cost and upper bound must be finite numbers");
+      persistentModel.changeColCost(0, data.cost);
+      persistentModel.changeColBounds(0, 0, data.upper);
+    } else {
+      throw new Error(`Unknown action: ${action}`);
+    }
 
+    mode = "Persistent Model: retained handle, direct cost/bound mutation";
     const run = persistentModel.run();
     const solution = persistentModel.getSolution();
+    const statusName =
+      Object.entries(highs.constants.modelStatus).find(
+        ([, value]) => value === run.modelStatus,
+      )?.[0] || "unknown";
+    const ranging =
+      run.modelStatus === highs.constants.modelStatus.optimal
+        ? persistentModel.getRanging()
+        : undefined;
 
     self.postMessage({
       revision,
@@ -46,9 +70,15 @@ self.addEventListener("message", async ({ data: { revision, problem } }) => {
       result: {
         status: run.status,
         warnings: run.warnings,
-        modelStatus: run.modelStatus,
+        modelStatus: { code: run.modelStatus, name: statusName },
         objectiveValue: persistentModel.getObjectiveValue(),
         solution: serializableSolution(solution),
+        firstColumnCostRange: ranging
+          ? {
+              down: ranging.colCostDown.value[0],
+              up: ranging.colCostUp.value[0],
+            }
+          : undefined,
       },
     });
   } catch (error) {

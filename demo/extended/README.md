@@ -12,6 +12,7 @@ The release workflow places `highs.js` and `highs.wasm` in the parent `demo/`
 directory. Serve that directory over HTTP and open `/extended/`; WebAssembly
 loading will not work reliably from a `file:` URL.
 
-The model handle is retained inside the Worker. Each edit clears and reloads
-the model, while repeated runs of unchanged structured models can instead use
-the mutation methods documented in [`docs/api.md`](../../docs/api.md).
+The model handle is retained inside the Worker. “Load edited LP” is the explicit
+parse boundary. The cost/bound controls then call `changeColCost()` and
+`changeColBounds()` before rerunning that same native model. The result includes
+a readable model status and the first column's cost-ranging interval.

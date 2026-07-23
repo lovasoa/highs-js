@@ -1,20 +1,30 @@
 const problem = document.getElementById("problem");
 const result = document.getElementById("result");
 const mode = document.getElementById("mode");
+const loadButton = document.getElementById("load");
+const rerunButton = document.getElementById("rerun");
+const cost = document.getElementById("cost");
+const upper = document.getElementById("upper");
 const worker = new Worker("worker.js");
 
 let revision = 0;
-let debounce;
 
-function solve() {
+function send(message) {
   const currentRevision = ++revision;
   result.textContent = "Solving…";
-  worker.postMessage({ revision: currentRevision, problem: problem.value });
+  worker.postMessage({ revision: currentRevision, ...message });
 }
 
-problem.addEventListener("input", () => {
-  clearTimeout(debounce);
-  debounce = setTimeout(solve, 150);
+loadButton.addEventListener("click", () => {
+  send({ action: "load", problem: problem.value });
+});
+
+rerunButton.addEventListener("click", () => {
+  send({
+    action: "mutate",
+    cost: Number(cost.value),
+    upper: Number(upper.value),
+  });
 });
 
 worker.addEventListener("message", ({ data }) => {
@@ -35,4 +45,4 @@ worker.addEventListener("error", (error) => {
   result.textContent = `Error: ${error.message || error}`;
 });
 
-solve();
+send({ action: "load", problem: problem.value });

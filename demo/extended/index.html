@@ -43,16 +43,42 @@
       #mode {
         font-weight: 600;
       }
+
+      .controls {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-block: 1rem;
+      }
+
+      .controls label {
+        display: grid;
+        gap: 0.25rem;
+      }
     </style>
   </head>
   <body>
     <h1>HiGHS extended JavaScript API</h1>
     <p>
       This example solves in a Web Worker. It uses a persistent native model
-      when supported and automatically falls back to the legacy API.
-      <a href="../docs/api.md">Read the extended API documentation.</a>
+      when supported: load the LP once, then change a cost or bound and rerun
+      without reparsing it. It automatically falls back to the legacy API.
+      <a href="../docs/api/">Read the extended API documentation.</a>
     </p>
     <p id="mode">Loading solver…</p>
+    <div class="controls">
+      <button id="load" type="button">Load edited LP</button>
+      <label>
+        x1 objective cost
+        <input id="cost" type="number" value="1" step="0.25" />
+      </label>
+      <label>
+        x1 upper bound
+        <input id="upper" type="number" value="40" min="0" step="1" />
+      </label>
+      <button id="rerun" type="button">Apply changes and solve</button>
+    </div>
     <div class="grid">
       <label>
         LP model
