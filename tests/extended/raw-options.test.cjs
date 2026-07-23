@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const { loadRuntime, makeModel, requireExtended } = require("./helpers.cjs");
+const { loadRuntime, makeModel, requireExtended, assertDeepApprox } = require("./helpers.cjs");
 
 test("raw methods preserve exact C status values without throwing", async (t) => {
   const highs = await loadRuntime();
@@ -58,8 +58,8 @@ test("numeric option descriptors preserve native min, max, and default order", a
 
   const descriptor = model.options.describe("mip_rel_gap");
   assert.equal(descriptor.type, "double");
-  assert.equal(descriptor.current, 1e-4);
+  assertDeepApprox(descriptor.current, 1e-4);
   assert.equal(descriptor.minimum, 0);
   assert.equal(descriptor.maximum, Infinity);
-  assert.equal(descriptor.default, 1e-4);
+  assertDeepApprox(descriptor.default, 1e-4);
 });

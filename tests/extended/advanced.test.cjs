@@ -26,8 +26,8 @@ const EXPECTED_RANGING = {
     outVariable: [3, 3, -1, 3],
   },
   colCostDown: {
-    value: [-4, -Infinity, 1.94, -Infinity],
-    objective: [0, -Infinity, 53.52, -Infinity],
+    value: [-4, -Infinity, 1.9411764705882353, -Infinity],
+    objective: [0, -Infinity, 53.52941176470588, -Infinity],
     inVariable: [5, -1, 3, -1],
     outVariable: [2, -1, 3, -1],
   },

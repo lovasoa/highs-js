@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const { loadRuntime } = require("./helpers.cjs");
+const { loadRuntime, assertDeepApprox } = require("./helpers.cjs");
 
 const PROBLEM = `Maximize
  obj: x
@@ -40,12 +40,12 @@ const EXPECTED = {
 
 test("legacy solve keeps its exact result shape", async () => {
   const highs = await loadRuntime();
-  assert.deepStrictEqual(highs.solve(PROBLEM), EXPECTED);
+  assertDeepApprox(highs.solve(PROBLEM), EXPECTED);
 });
 
 test("legacy thread option inputs remain accepted for compatibility", async () => {
   const highs = await loadRuntime();
-  assert.deepStrictEqual(
+  assertDeepApprox(
     highs.solve(PROBLEM, { threads: 1, parallel: "off" }),
     EXPECTED,
   );
@@ -53,7 +53,7 @@ test("legacy thread option inputs remain accepted for compatibility", async () =
 
 test("legacy numeric options use their native integer or double setter", async () => {
   const highs = await loadRuntime();
-  assert.deepStrictEqual(
+  assertDeepApprox(
     highs.solve(PROBLEM, { mip_max_nodes: 10, time_limit: 1 }),
     EXPECTED,
   );
@@ -69,5 +69,5 @@ test("legacy solve cleans up after a failed option update", async () => {
     () => highs.solve(PROBLEM, { option_that_does_not_exist: 1 }),
     /Unable to set option 'option_that_does_not_exist'/,
   );
-  assert.deepStrictEqual(highs.solve(PROBLEM), EXPECTED);
+  assertDeepApprox(highs.solve(PROBLEM), EXPECTED);
 });

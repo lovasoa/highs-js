@@ -818,6 +818,9 @@
 
     getSolution() {
       const pointer = this._require(false);
+      const modelStatus = this.getModelStatus();
+      if (modelStatus === 0 || modelStatus === 6)
+        throw new HighsError("The model has not been solved", "getSolution");
       const shape = dimensions(pointer);
       return withArena(function (arena) {
         const colValue = arena.outDoubles(shape.numCols);
@@ -1601,6 +1604,9 @@
 
     getBasis() {
       const pointer = this._require(false);
+      const modelStatus = this.getModelStatus();
+      if (modelStatus === 0 || modelStatus === 6)
+        throw new HighsError("The model has not been solved", "getBasis");
       const shape = dimensions(pointer);
       return withArena(function (arena) {
         const colStatus = arena.outInts(shape.numCols);
@@ -2634,8 +2640,9 @@
     }
 
     setSolution(solution) {
+      if (solution == null) throw validationError("solution is required");
       return this._status(
-        solution && solution.indices ? "setSparseSolution" : "setSolution",
+        solution.indices ? "setSparseSolution" : "setSolution",
         [solution]
       );
     }

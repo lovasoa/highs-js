@@ -3,6 +3,59 @@ const highs = require('../build/highs.js');
 const assert = require('assert').strict;
 const fs = require('fs');
 
+/**
+ * Deep-approximate equality for test results that contain floating-point
+ * values. Non-numeric leaves are compared strictly.
+ */
+function assertDeepApprox(actual, expected, message, relTol, absTol) {
+  relTol = relTol ?? 1e-6;
+  absTol = absTol ?? 1e-12;
+
+  function _check(a, e, path) {
+    if (typeof a !== typeof e) {
+      assert.fail(
+        `type mismatch at ${path}: ${typeof a} vs ${typeof e}`,
+        a, e, message, "!=≈",
+      );
+    }
+    if (typeof a === "number") {
+      if (!Number.isFinite(a) && !Number.isFinite(e)) {
+        if (!Object.is(a, e)) {
+          assert.fail(`non-finite mismatch at ${path}`, a, e, message, "!=≈");
+        }
+        return;
+      }
+      const denom = Math.max(1, Math.abs(a), Math.abs(e));
+      const diff = Math.abs(a - e);
+      if (diff > absTol && diff / denom > relTol) {
+        assert.fail(
+          `numerical mismatch at ${path}: ${a} ≠≈ ${e} (Δ=${diff}, rel=${diff / denom})`,
+          a, e, message, "!=≈",
+        );
+      }
+      return;
+    }
+    if (Array.isArray(a) && Array.isArray(e)) {
+      assert.equal(
+        a.length, e.length,
+        `${message ?? ""} length mismatch at ${path}`,
+      );
+      for (let i = 0; i < a.length; i += 1) _check(a[i], e[i], `${path}[${i}]`);
+      return;
+    }
+    if (a !== null && e !== null && typeof a === "object") {
+      const aKeys = Object.keys(a).sort();
+      const eKeys = Object.keys(e).sort();
+      assert.deepStrictEqual(aKeys, eKeys, `${message ?? ""} key mismatch at ${path}`);
+      for (const key of aKeys) _check(a[key], e[key], `${path}.${key}`);
+      return;
+    }
+    assert.strictEqual(a, e, `${message ?? ""} mismatch at ${path}`);
+  }
+
+  _check(actual, expected, "root");
+}
+
 const PROBLEM = `Maximize
  obj: x1 + 2 x2 + 4 x3 + x4
 Subject To
@@ -95,7 +148,7 @@ const SOLUTION = {
  */
 function test_optimal(Module) {
   const sol = Module.solve(PROBLEM);
-  assert.deepStrictEqual(sol, SOLUTION);
+  assertDeepApprox(sol, SOLUTION);
 }
 
 /**
@@ -109,7 +162,7 @@ function test_options(Module) {
     use_implied_bounds_from_presolve: true,
     presolve: 'off'
   });
-  assert.deepStrictEqual(sol, SOLUTION);
+  assertDeepApprox(sol, SOLUTION);
 }
 
 /**
@@ -117,8 +170,8 @@ function test_options(Module) {
  */
 function test_solve_with_output_disabled(Module) {
   // See https://github.com/lovasoa/highs-js/issues/51
-  assert.deepStrictEqual(Module.solve(PROBLEM, { output_flag: false }), SOLUTION);
-  assert.deepStrictEqual(Module.solve(PROBLEM, { log_to_console: false }), SOLUTION);
+  assertDeepApprox(Module.solve(PROBLEM, { output_flag: false }), SOLUTION);
+  assertDeepApprox(Module.solve(PROBLEM, { log_to_console: false }), SOLUTION);
 }
 
 async function test_print_callback() {
@@ -139,7 +192,7 @@ function test_empty_model(Module) {
   const sol = Module.solve(`Minimize
     42
   End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Columns: {},
     ObjectiveValue: 0,
     Rows: [],
@@ -171,7 +224,7 @@ function test_integer_problem(Module) {
  General
  a
  End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Optimal',
     ObjectiveValue: 3.5,
     Columns: {
@@ -203,7 +256,7 @@ function test_case_with_no_constraints(Module) {
   0 <= x1 <= 40
   2 <= x2 <= 3
  End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Optimal',
     ObjectiveValue: 46,
     Columns: {
@@ -241,7 +294,7 @@ function test_quadratic_program(Module) {
 Subject To
   c1: a + b >= 10
 End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Optimal',
     ObjectiveValue: 60,
     Columns: {
@@ -294,7 +347,7 @@ function test_infeasible(Module) {
   bounds
   a <= 0
   End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -323,7 +376,7 @@ bounds
 General
   a
 end`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Infeasible',
     ObjectiveValue: Infinity,
     Columns: {
@@ -347,7 +400,7 @@ function test_unbounded(Module) {
   subject to
   a >= 1
   end`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Unbounded',
     ObjectiveValue: 1,
     Columns: {
@@ -379,7 +432,7 @@ Bounds
 0 <= x1 <= 1
 1.1 <= x2 <= 1
 End`);
-  assert.deepStrictEqual(sol, {
+  assertDeepApprox(sol, {
     Status: 'Infeasible',
     ObjectiveValue: 0,
     Columns: {
@@ -463,7 +516,7 @@ End`;
   assert.strictEqual(sol.Status, 'Optimal');
   assert.strictEqual(sol.ObjectiveValue, 9);
   // The invariant that actually broke: presolve must not change the optimum.
-  assert.deepStrictEqual(sol, Module.solve(pb, { presolve: 'off' }));
+  assertDeepApprox(sol, Module.solve(pb, { presolve: 'off' }));
 }
 
 

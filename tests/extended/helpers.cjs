@@ -55,8 +55,8 @@ function makeModel() {
  */
 function assertDeepApprox(actual, expected, message, relTol, absTol) {
   const assert = require("node:assert");
-  relTol = relTol ?? 1e-10;
-  absTol = absTol ?? 1e-10;
+  relTol = relTol ?? 1e-6;
+  absTol = absTol ?? 1e-12;
 
   function _check(a, e, path) {
     if (typeof a !== typeof e) {

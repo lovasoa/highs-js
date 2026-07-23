@@ -29,10 +29,78 @@ const Highs_getOptionType = Module["cwrap"]("Highs_getOptionType", "number", [
   "string",
   "number",
 ]);
-Module.Highs_writeSolutionPretty = Module["cwrap"](
-  "Highs_writeSolutionPretty",
+
+const Highs_getNumCol = Module["cwrap"]("Highs_getNumCol", "number", [
   "number",
-  ["number", "string"]
+]);
+const Highs_getNumRow = Module["cwrap"]("Highs_getNumRow", "number", [
+  "number",
+]);
+const Highs_getObjectiveValue = Module["cwrap"](
+  "Highs_getObjectiveValue",
+  "number",
+  ["number"]
+);
+const Highs_getInfinity = Module["cwrap"]("Highs_getInfinity", "number", []);
+const Highs_getSolution = Module["cwrap"]("Highs_getSolution", "number", [
+  "number",
+  "number",
+  "number",
+  "number",
+  "number",
+]);
+const Highs_getBasis = Module["cwrap"]("Highs_getBasis", "number", [
+  "number",
+  "number",
+  "number",
+]);
+const Highs_getColsByRange = Module["cwrap"](
+  "Highs_getColsByRange",
+  "number",
+  [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+  ]
+);
+const Highs_getRowsByRange = Module["cwrap"](
+  "Highs_getRowsByRange",
+  "number",
+  [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+  ]
+);
+const Highs_getColIntegrality = Module["cwrap"](
+  "Highs_getColIntegrality",
+  "number",
+  ["number", "number", "number"]
+);
+const Highs_js_getColName = Module["cwrap"](
+  "Highs_js_getColName",
+  "number",
+  ["number", "number", "number", "number", "number"]
+);
+const Highs_js_getRowName = Module["cwrap"](
+  "Highs_js_getRowName",
+  "number",
+  ["number", "number", "number", "number", "number"]
 );
 
 const MODEL_STATUS_CODES = /** @type {const} */ ({
@@ -63,6 +131,33 @@ var /** @type {()=>Highs} */ _Highs_create,
   /** @type {any} */ FS;
 
 /**
+ * Map HiGHS C API kHighsBasisStatus integers to the legacy text format.
+ * 0=kLower, 1=kBasic, 2=kUpper, 3=kZero, 4=kNonbasic
+ */
+const BASIS_STATUS_RAW = { 0: "LB", 1: "BS", 2: "UB", 3: "FX" };
+function basisLabel(basisCode, lower, upper) {
+  if (basisCode === 3) return "FX";
+  if (basisCode === 2 && lower === upper) return "FX";
+  return BASIS_STATUS_RAW[basisCode] || "";
+}
+
+/**
+ * Model statuses for which the solver did not produce a feasible
+ * primal solution and therefore Primal/Status/Dual are omitted.
+ */
+const NO_SOLUTION_STATUSES = new Set([
+  "Not Set",
+  "Load error",
+  "Model error",
+  "Presolve error",
+  "Solve error",
+  "Postsolve error",
+  "Empty",
+  "Infeasible",
+  "Unknown",
+]);
+
+/**
  * Solve a model in the CPLEX LP file format.
  * @param {string} model_str The problem to solve in the .lp format
  * @param {undefined | import("../types").HighsOptions} highs_options Options to pass the solver. See https://github.com/ERGO-Code/HiGHS/blob/v1.14.0/src/lp_data/HighsOptions.h
@@ -71,10 +166,59 @@ var /** @type {()=>Highs} */ _Highs_create,
 Module["solve"] = function (model_str, highs_options) {
   const solveId = ++legacySolveSequence;
   const modelFilename = `highs-model-${solveId}.lp`;
-  const solutionFilename = `highs-solution-${solveId}.txt`;
   let highs;
-  let solution;
-  let status;
+  const allocations = [];
+
+  /**
+   * Allocate wasm memory and track it for cleanup.
+   * @param {number} size
+   * @returns {number}
+   */
+  function alloc(size) {
+    const ptr = _malloc(size);
+    if (!ptr) throw new Error("malloc failed");
+    allocations.push(ptr);
+    return ptr;
+  }
+
+  /**
+   * Retrieve a column name via the bridge function.
+   * @param {number} highsPtr
+   * @param {number} index
+   * @returns {string}
+   */
+  function getColName(highsPtr, index) {
+    const reqPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
+    let st = Highs_js_getColName(highsPtr, index, 0, 0, reqPtr);
+    if (st !== 0 && st !== 1) return "";
+    const capacity = HEAP32[reqPtr >> 2];
+    if (capacity <= 0) return "";
+    const buf = _malloc(capacity);
+    allocations.push(buf);
+    st = Highs_js_getColName(highsPtr, index, buf, capacity, reqPtr);
+    if (st !== 0 && st !== 1) return "";
+    return UTF8ToString(buf);
+  }
+
+  /**
+   * Retrieve a row name via the bridge function.
+   * @param {number} highsPtr
+   * @param {number} index
+   * @returns {string}
+   */
+  function getRowName(highsPtr, index) {
+    const reqPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
+    let st = Highs_js_getRowName(highsPtr, index, 0, 0, reqPtr);
+    if (st !== 0 && st !== 1) return "";
+    const capacity = HEAP32[reqPtr >> 2];
+    if (capacity <= 0) return "";
+    const buf = _malloc(capacity);
+    allocations.push(buf);
+    st = Highs_js_getRowName(highsPtr, index, buf, capacity, reqPtr);
+    if (st !== 0 && st !== 1) return "";
+    return UTF8ToString(buf);
+  }
+
   try {
     FS.writeFile(modelFilename, model_str);
     highs = _Highs_create();
@@ -101,21 +245,172 @@ Module["solve"] = function (model_str, highs_options) {
       );
     }
     assert_ok(() => _Highs_run(highs), "solve the problem");
-    status = MODEL_STATUS_CODES[_Highs_getModelStatus(highs)] || "Unknown";
+
+    const statusCode = _Highs_getModelStatus(highs);
+    const status = MODEL_STATUS_CODES[statusCode] || "Unknown";
+
+    if (status === "Empty") {
+      return { Columns: {}, Rows: [], ObjectiveValue: 0, Status: "Empty" };
+    }
+
+    const numCol = Highs_getNumCol(highs);
+    const numRow = Highs_getNumRow(highs);
+    const infinity = Highs_getInfinity();
+
+    let objValue = Highs_getObjectiveValue(highs);
+    if (Math.abs(objValue) >= infinity * 0.5) {
+      objValue = objValue > 0 ? Infinity : -Infinity;
+    }
+
+    // Allocate solution buffers
+    const colValuePtr =
+      numCol > 0 ? alloc(numCol * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const colDualPtr =
+      numCol > 0 ? alloc(numCol * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const rowValuePtr =
+      numRow > 0 ? alloc(numRow * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const rowDualPtr =
+      numRow > 0 ? alloc(numRow * Float64Array.BYTES_PER_ELEMENT) : 0;
+
     assert_ok(
-      () => Module.Highs_writeSolutionPretty(highs, solutionFilename),
-      "write and extract solution"
+      () =>
+        Highs_getSolution(
+          highs,
+          colValuePtr,
+          colDualPtr,
+          rowValuePtr,
+          rowDualPtr
+        ),
+      "get solution"
     );
-    solution = FS.readFile(solutionFilename, { encoding: "utf8" });
+
+    // Try to get basis (not available for MIP)
+    const colBasisPtr =
+      numCol > 0 ? alloc(numCol * Int32Array.BYTES_PER_ELEMENT) : 0;
+    const rowBasisPtr =
+      numRow > 0 ? alloc(numRow * Int32Array.BYTES_PER_ELEMENT) : 0;
+    let hasBasis = false;
+    const basisResult = Highs_getBasis(highs, colBasisPtr, rowBasisPtr);
+    if (basisResult === 0 || basisResult === 1) {
+      hasBasis = true;
+    }
+
+    // Get column bounds
+    const numColOutPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
+    const colCostPtr =
+      numCol > 0 ? alloc(numCol * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const colLowerPtr =
+      numCol > 0 ? alloc(numCol * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const colUpperPtr =
+      numCol > 0 ? alloc(numCol * Float64Array.BYTES_PER_ELEMENT) : 0;
+    Highs_getColsByRange(
+      highs,
+      0,
+      numCol - 1,
+      numColOutPtr,
+      colCostPtr,
+      colLowerPtr,
+      colUpperPtr,
+      0,
+      0,
+      0,
+      0
+    );
+
+    // Get row bounds
+    const numRowOutPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
+    const rowLowerPtr =
+      numRow > 0 ? alloc(numRow * Float64Array.BYTES_PER_ELEMENT) : 0;
+    const rowUpperPtr =
+      numRow > 0 ? alloc(numRow * Float64Array.BYTES_PER_ELEMENT) : 0;
+    Highs_getRowsByRange(
+      highs,
+      0,
+      numRow - 1,
+      numRowOutPtr,
+      rowLowerPtr,
+      rowUpperPtr,
+      0,
+      0,
+      0,
+      0
+    );
+
+    // Integrality scratch buffer
+    const integPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
+
+    const hasPrimal = !NO_SOLUTION_STATUSES.has(status);
+
+    // MIP models use a different column/row shape without Status/Dual.
+    let isMip = false;
+    for (let i = 0; i < numCol && !isMip; i++) {
+      Highs_getColIntegrality(highs, i, integPtr);
+      if (HEAP32[integPtr >> 2] !== 0) isMip = true;
+    }
+
+    // Build columns
+    const columns = {};
+    for (let i = 0; i < numCol; i++) {
+      /** @type {Record<string, any>} */
+      const col = {
+        Index: i,
+        Lower: HEAPF64[(colLowerPtr >> 3) + i],
+        Upper: HEAPF64[(colUpperPtr >> 3) + i],
+      };
+
+      Highs_getColIntegrality(highs, i, integPtr);
+      col.Type = HEAP32[integPtr >> 2] === 1 ? "Integer" : "Continuous";
+
+      if (hasPrimal) {
+        col.Primal = HEAPF64[(colValuePtr >> 3) + i];
+      }
+      if (hasBasis && hasPrimal && !isMip) {
+        const basisCode = HEAP32[(colBasisPtr >> 2) + i];
+        col.Status = basisLabel(basisCode, col.Lower, col.Upper);
+        col.Dual = HEAPF64[(colDualPtr >> 3) + i];
+      }
+      col.Name = getColName(highs, i);
+      columns[col.Name] = col;
+    }
+
+    // Build rows
+    const rows = [];
+    for (let i = 0; i < numRow; i++) {
+      /** @type {Record<string, any>} */
+      const row = {
+        Index: i,
+        Name: getRowName(highs, i),
+        Lower: HEAPF64[(rowLowerPtr >> 3) + i],
+        Upper: HEAPF64[(rowUpperPtr >> 3) + i],
+      };
+      if (hasPrimal) {
+        row.Primal = HEAPF64[(rowValuePtr >> 3) + i];
+      }
+      if (hasBasis && hasPrimal && !isMip) {
+        const basisCode = HEAP32[(rowBasisPtr >> 2) + i];
+        row.Status = basisLabel(basisCode, row.Lower, row.Upper);
+        row.Dual = HEAPF64[(rowDualPtr >> 3) + i];
+      }
+      rows.push(row);
+    }
+
+    return {
+      Status: status,
+      ObjectiveValue: objValue,
+      Columns: columns,
+      Rows: rows,
+    };
   } finally {
     if (highs) _Highs_destroy(highs);
-    for (const filename of [modelFilename, solutionFilename]) {
+    try {
+      FS.unlink(modelFilename);
+    } catch (_) {}
+    for (let i = allocations.length - 1; i >= 0; i--) {
       try {
-        FS.unlink(filename);
+        _free(allocations[i]);
       } catch (_) {}
     }
   }
-  return parseResult(solution.split(/\r?\n/), status);
 };
 
 function setNumericOption(highs, option_name, option_value) {
@@ -140,110 +435,6 @@ function setNumericOption(highs, option_name, option_value) {
   } finally {
     _free(typePointer);
   }
-}
-
-function parseNum(s) {
-  if (s === "inf") return 1 / 0;
-  else if (s === "-inf") return -1 / 0;
-  else return +s;
-}
-
-const known_columns = {
-  "Index": (s) => parseInt(s),
-  "Lower": parseNum,
-  "Upper": parseNum,
-  "Primal": parseNum,
-  "Dual": parseNum,
-};
-
-/**
- * @param {string} s
- * @returns {string[]} The values (words) of a line
- */
-function lineValues(s) {
-  return s.match(/[^\s]+/g) || [];
-}
-
-/**
- *
- * @param {string[]} headers
- * @param {string} line
- * @returns {Record<string, string | number>}
- */
-function lineToObj(headers, line) {
-  const values = lineValues(line);
-  /** @type {Record<string, string | number>} */
-  const result = {};
-  for (let idx = 0; idx < values.length; idx++) {
-    if (idx >= headers.length)
-      throw new Error("Unable to parse solution line: " + line);
-    const value = values[idx];
-    const header = headers[idx];
-    const parser = known_columns[header];
-    const parsed = parser ? parser(value) : value;
-    result[header] = parsed;
-  }
-  return result;
-}
-
-/**
- * Parse HiGHS output lines
- * @param {string[]} lines stdout from highs
- * @param {import("../types").HighsModelStatus} status status
- * @returns {import("../types").HighsSolution} The solution
- */
-function parseResult(lines, status) {
-  lines = lines.filter((line) => !line.startsWith("WARNING:"));
-
-  if (lines.length < 3)
-    throw new Error("Unable to parse solution. Too few lines.");
-
-  let headers = headersForNonEmptyColumns(lines[1], lines[2]);
-
-  var result = {
-    "Status": /** @type {"Infeasible"} */ (status),
-    "Columns": {},
-    "Rows": [],
-    "ObjectiveValue": NaN,
-  };
-
-  // Parse columns
-  for (var i = 2; lines[i] != "Rows"; i++) {
-    const obj = lineToObj(headers, lines[i]);
-    if (!obj["Type"]) obj["Type"] = "Continuous";
-    result["Columns"][obj["Name"]] = obj;
-  }
-
-  // Parse rows
-  headers = headersForNonEmptyColumns(lines[i + 1], lines[i + 2]);
-  for (var j = i + 2; lines[j] != ""; j++) {
-    result["Rows"].push(lineToObj(headers, lines[j]));
-  }
-
-  // Parse objective value
-  result["ObjectiveValue"] = parseNum(
-    lines[j + 3].match(/Objective value: (.+)/)[1]
-  );
-  return result;
-}
-
-/**
- * Finds the non headers for non-empty columns in a HiGHS output
- * @param {string} headerLine The line containing the header names
- * @param {string} firstDataLine The line immediately below the header line
- * @returns {string[]} The headers for which there is data available
- */
-function headersForNonEmptyColumns(headerLine, firstDataLine) {
-  // Headers can correspond to empty columns. The contents of a column can be left or right
-  // aligned, so we determine if a given header should be included by looking at whether
-  // the row immediately below the header has any contents.
-  return [...headerLine.matchAll(/[^\s]+/g)]
-    .filter(
-      (match) =>
-        firstDataLine[match.index] !== " " ||
-        firstDataLine[match.index + match[0].length - 1] !== " "
-    )
-    .map((match) => match[0]);
 }
 
 function assert_ok(fn, action) {
