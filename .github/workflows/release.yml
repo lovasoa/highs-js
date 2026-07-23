@@ -44,7 +44,7 @@ jobs:
           package-manager-cache: false
       - run: npm ci
       - name: verify tag matches package version
-        run: test "$GITHUB_REF_NAME" = "v$(node -p 'require(\"./package.json\").version')"
+        run: test "$GITHUB_REF_NAME" = "v$(node -p 'require("./package.json").version')"
       - name: verify generated C API inventory
         run: npm run check:api
       - name: build
