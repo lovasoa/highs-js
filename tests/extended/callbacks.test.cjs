@@ -115,3 +115,25 @@ test("callback exceptions preserve even an undefined thrown value", async (t) =>
   }
   assert.equal(didThrow, true);
 });
+
+test("MIP solution callbacks copy the native vector's declared size", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const source = makeModel();
+  source.integrality = new Int32Array([1, 1, 1, 1]);
+  const model = highs.createModel(source);
+  t.after(() => model.dispose());
+  model.options.set("output_flag", false);
+
+  const lengths = [];
+  model.run({
+    [highs.constants.callbackType.mipSolution](event) {
+      assert.ok(event.data.mip_solution instanceof Float64Array);
+      lengths.push(event.data.mip_solution.length);
+    },
+  });
+
+  assert.ok(lengths.length > 0, "the MIP solution callback should run");
+  assert.deepStrictEqual(new Set(lengths), new Set([source.numCols]));
+});

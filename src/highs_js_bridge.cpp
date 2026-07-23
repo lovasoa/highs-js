@@ -170,4 +170,9 @@ HighsInt Highs_js_setCallback(void* highs, HighsCCallbackType callback,
       instance->setCallback(safe_callback, user_data));
 }
 
+HighsInt Highs_js_getCallbackMipSolutionSize(
+    const HighsCallbackDataOut* data_out) {
+  return data_out ? data_out->mip_solution_size : -1;
+}
+
 }  // extern "C"

@@ -1,8 +1,8 @@
 {
   "$schema": "./highs-dts-audit.schema.json",
   "schemaVersion": 1,
-  "proposal": "highs.d.ts",
-  "decision": "replace-with-generated-modern-fragment-plus-legacy-types",
+  "proposal": "types.d.ts",
+  "decision": "hand-reviewed-canonical-declaration-importing-legacy-types",
   "principles": [
     "Keep the existing asynchronous factory and legacy solve(problem, options) contract.",
     "Expose stable non-deprecated C API capability through raw status-returning methods and a persistent throwing Model.",
@@ -25,25 +25,25 @@
     },
     {
       "proposal": "Model.fromFile, writeModel, writeSolution, writeOptions and other path methods",
-      "with": ["readModel({ data, format })", "exportModel", "exportPresolvedModel", "exportSolution", "exportSolutionPretty", "readOptions(text)", "exportOptions", "exportOptionDeviations"],
+      "with": ["readModel({ data, format })", "exportModel", "exportPresolvedModel", "exportSolution(pretty)", "options.read(text)", "options.export(deviationsOnly)"],
       "backing": "corresponding Highs_read* / Highs_write* calls through hidden temporary MEMFS files",
       "reason": "Public filesystem paths are environment-dependent and unsafe in browser workers."
     },
     {
       "proposal": "Model.getCoefficient(row, column)",
-      "with": ["getRow({ kind: 'set', indices: [row] })", "getColumn({ kind: 'set', indices: [column] })"],
+      "with": ["getRows({ kind: 'set', indices: [row] })", "getCols({ kind: 'set', indices: [column] })"],
       "backing": "Highs_getRowsBySet / Highs_getColsBySet",
       "reason": "There is no Highs_getCoeff C function; sparse extraction is faster when callers need more than one coefficient."
     },
     {
       "proposal": "Model.clone()",
-      "with": ["const snapshot = model.getModel(); const copy = highs.createModel(); copy.passModel(snapshot)"],
+      "with": ["const snapshot = model.getModel(); const copy = highs.createModel(snapshot)"],
       "backing": "Highs_getModel / Highs_passModel",
       "reason": "The C API has no clone and an explicit copy makes its O(model size) cost and memory peak visible."
     },
     {
       "proposal": "string status enums",
-      "with": ["numeric C constants", "RawStatusResult<T>"],
+      "with": ["numeric C constants", "RawStatus", "RawResult<T>"],
       "backing": "kHighsStatus, kHighsModelStatus and related constants",
       "reason": "Raw parity must preserve exact status values; high-level errors can add readable messages."
     },

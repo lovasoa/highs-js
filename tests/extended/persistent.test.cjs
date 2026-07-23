@@ -122,3 +122,25 @@ test("model metadata validates before replacing the native model", async (t) => 
   );
   assert.deepStrictEqual([...model.getModel().colCost], [10, 20, 30, 40]);
 });
+
+test("signed objective priorities and objective metadata match the C API", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const model = highs.createModel(makeModel());
+  t.after(() => model.dispose());
+
+  assert.equal(model.getObjectiveSense(), -1);
+  assert.equal(model.getObjectiveOffset(), 0);
+  assert.deepStrictEqual(
+    model.addLinearObjective({
+      weight: 1,
+      offset: 0,
+      coefficients: new Float64Array([1, 0, 0, 0]),
+      absoluteTolerance: 0,
+      relativeTolerance: 0,
+      priority: -1,
+    }),
+    { status: 0, warnings: [] },
+  );
+});

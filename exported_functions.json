@@ -106,6 +106,7 @@
   "_Highs_getStringOptionValue",
   "_Highs_getStringOptionValues",
   "_Highs_githash",
+  "_Highs_js_getCallbackMipSolutionSize",
   "_Highs_js_getColName",
   "_Highs_js_getPresolvedColName",
   "_Highs_js_getPresolvedRowName",

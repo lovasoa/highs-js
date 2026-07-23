@@ -180,6 +180,16 @@
     return value;
   }
 
+  function requireSignedInteger(value: any, label: string) {
+    if (
+      !Number.isSafeInteger(value) ||
+      value < -2147483648 ||
+      value > 2147483647
+    )
+      throw validationError(label + " must be a signed 32-bit integer");
+    return value;
+  }
+
   function asArray(value: any, label: string): ArrayLike<any> {
     if (value == null || typeof value.length !== "number")
       throw validationError(label + " must be an array or typed array");
@@ -326,7 +336,7 @@
       objective.relativeTolerance,
       label + ".relativeTolerance"
     );
-    requireInteger(objective.priority, label + ".priority", 0);
+    requireSignedInteger(objective.priority, label + ".priority");
   }
 
   class Arena {
@@ -346,13 +356,13 @@
 
     ints(values) {
       const pointer = this.bytes(values.length * 4);
-      heap32().set(Int32Array.from(values), pointer >> 2);
+      heap32().set(values, pointer >> 2);
       return pointer;
     }
 
     doubles(values) {
       const pointer = this.bytes(values.length * 8);
-      heapF64().set(Float64Array.from(values), pointer >> 3);
+      heapF64().set(values, pointer >> 3);
       return pointer;
     }
 
@@ -370,8 +380,8 @@
       entries.forEach((entry, index) => {
         const pointer = base + offsets[index];
         if (entry.type === "f64")
-          heapF64().set(Float64Array.from(entry.values), pointer >> 3);
-        else heap32().set(Int32Array.from(entry.values), pointer >> 2);
+          heapF64().set(entry.values, pointer >> 3);
+        else heap32().set(entry.values, pointer >> 2);
       });
       return offsets.map((offset) => base + offset);
     }
@@ -405,13 +415,11 @@
   }
 
   function copyInts(pointer, length) {
-    return new Int32Array(heap32().slice(pointer >> 2, (pointer >> 2) + length));
+    return heap32().slice(pointer >> 2, (pointer >> 2) + length);
   }
 
   function copyDoubles(pointer, length) {
-    return new Float64Array(
-      heapF64().slice(pointer >> 3, (pointer >> 3) + length)
-    );
+    return heapF64().slice(pointer >> 3, (pointer >> 3) + length);
   }
 
   function readInt64(pointer) {
@@ -708,7 +716,7 @@
             arena.doubles(objective.coefficients),
             objective.absoluteTolerance,
             objective.relativeTolerance,
-            requireInteger(objective.priority, "priority", 0)
+            requireSignedInteger(objective.priority, "priority")
           );
         })
       );
@@ -1331,10 +1339,9 @@
             coefficients.set(objective.coefficients, index * numCols);
             absoluteTolerance[index] = objective.absoluteTolerance;
             relativeTolerance[index] = objective.relativeTolerance;
-            priority[index] = requireInteger(
+            priority[index] = requireSignedInteger(
               objective.priority,
-              "objectives[" + index + "].priority",
-              0
+              "objectives[" + index + "].priority"
             );
           }
           return numericFunction("Highs_passLinearObjectives", 8)(
@@ -2028,6 +2035,19 @@
     const matrixFormat = format == null ? "csc" : format;
     if (!(matrixFormat in FORMAT))
       throw validationError("format must be 'csc' or 'csr'");
+    const knownShape: {
+      numCols: number;
+      numRows: number;
+      numNonzeros: number;
+      hessianNonzeros?: number;
+    } | undefined =
+      cName === "Highs_getModel" || cName === "Highs_getLp"
+        ? dimensions(pointer)
+        : cName === "Highs_getPresolvedLp"
+          ? presolvedDimensions(pointer)
+          : cName === "Highs_getFixedLp"
+            ? dimensions(pointer)
+            : undefined;
     return withArena(function (arena) {
       const numCol = arena.outInts(1);
       const numRow = arena.outInts(1);
@@ -2035,23 +2055,49 @@
       const qNumNz = includeHessian ? arena.outInts(1) : 0;
       const sense = arena.outInts(1);
       const offset = arena.outDoubles(1);
-      const firstArguments = includeHessian
-        ? [pointer, FORMAT[matrixFormat], 1, numCol, numRow, numNz, qNumNz, sense, offset]
-        : [pointer, FORMAT[matrixFormat], numCol, numRow, numNz, sense, offset];
-      const nullOutputs = includeHessian
-        ? new Array(12).fill(0)
-        : new Array(hasIntegrality ? 9 : 8).fill(0);
       const argumentCount = includeHessian ? 21 : hasIntegrality ? 16 : 15;
-      let status = numericFunction(cName, argumentCount).apply(
-        null,
-        firstArguments.concat(nullOutputs)
-      );
-      if (status === STATUS_ERROR) return rawResult(status);
-
-      const cols = heap32()[numCol >> 2];
-      const rows = heap32()[numRow >> 2];
-      const nonzeros = heap32()[numNz >> 2];
-      const qNonzeros = includeHessian ? heap32()[qNumNz >> 2] : 0;
+      let status = STATUS_OK;
+      let cols = knownShape?.numCols ?? 0;
+      let rows = knownShape?.numRows ?? 0;
+      let nonzeros = knownShape?.numNonzeros ?? 0;
+      let qNonzeros = includeHessian
+        ? knownShape?.hessianNonzeros ?? 0
+        : 0;
+      if (!knownShape) {
+        const firstArguments = includeHessian
+          ? [
+              pointer,
+              FORMAT[matrixFormat],
+              1,
+              numCol,
+              numRow,
+              numNz,
+              qNumNz,
+              sense,
+              offset,
+            ]
+          : [
+              pointer,
+              FORMAT[matrixFormat],
+              numCol,
+              numRow,
+              numNz,
+              sense,
+              offset,
+            ];
+        const nullOutputs = includeHessian
+          ? new Array(12).fill(0)
+          : new Array(hasIntegrality ? 9 : 8).fill(0);
+        status = numericFunction(cName, argumentCount).apply(
+          null,
+          firstArguments.concat(nullOutputs)
+        );
+        if (status === STATUS_ERROR) return rawResult(status);
+        cols = heap32()[numCol >> 2];
+        rows = heap32()[numRow >> 2];
+        nonzeros = heap32()[numNz >> 2];
+        qNonzeros = includeHessian ? heap32()[qNumNz >> 2] : 0;
+      }
       const major = matrixFormat === "csc" ? cols : rows;
       const colCost = arena.outDoubles(cols);
       const colLower = arena.outDoubles(cols);
@@ -2412,8 +2458,16 @@
       });
       if (type === 3 || type === 4) {
         const solutionPointer = callbackDataItem(dataOut, "mip_solution");
+        const solutionSize = numericFunction(
+          "Highs_js_getCallbackMipSolutionSize",
+          1
+        )(dataOut);
+        if (solutionSize < 0)
+          throw new RangeError("HiGHS returned an invalid MIP solution size");
         if (solutionPointer)
-          data.mip_solution = copyDoubles(solutionPointer, shape.numCols);
+          data.mip_solution = copyDoubles(solutionPointer, solutionSize);
+        else if (solutionSize)
+          throw new RangeError("HiGHS returned a null MIP solution");
       }
       if (type === 7) {
         const cutCount = readCallbackNumber(dataOut, "cutpool_num_cut", "int");
@@ -2613,6 +2667,14 @@
 
     getObjectiveValue() {
       return this.raw.getObjectiveValue();
+    }
+
+    getObjectiveSense() {
+      return this._value("getObjectiveSense");
+    }
+
+    getObjectiveOffset() {
+      return this._value("getObjectiveOffset");
     }
 
     setBasis(basis) {
@@ -3236,6 +3298,12 @@
   Module["infinity"] = infinity;
   Module["intBytes"] = intBytes;
   Module["intBits"] = intBytes * 8;
+  Object.defineProperty(Module, "memoryBytes", {
+    enumerable: true,
+    get: function () {
+      return heapU8().buffer.byteLength;
+    },
+  });
   Module["constants"] = constants;
   Module["errors"] = Object.freeze({
     HighsError,

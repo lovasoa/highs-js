@@ -366,5 +366,5 @@
   },
   "compatibilityExports": ["_Highs_call"],
   "generatedExports": ["_malloc", "_free"],
-  "bridgeExports": ["_Highs_js_getColName", "_Highs_js_getRowName", "_Highs_js_getPresolvedColName", "_Highs_js_getPresolvedRowName", "_Highs_js_setCallback"]
+  "bridgeExports": ["_Highs_js_getColName", "_Highs_js_getRowName", "_Highs_js_getPresolvedColName", "_Highs_js_getPresolvedRowName", "_Highs_js_setCallback", "_Highs_js_getCallbackMipSolutionSize"]
 }

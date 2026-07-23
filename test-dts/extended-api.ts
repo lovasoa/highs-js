@@ -3,7 +3,9 @@ import loadHighs, {
   type IndexSelection,
   type LegacyHighsOptions,
   type ModelData,
-} from "../highs";
+  type ModelStatusCode,
+  type SparseEntriesInput,
+} from "../types";
 
 const modelData = {
   numCols: 2,
@@ -38,16 +40,32 @@ const selections: IndexSelection[] = [
 
 async function exerciseContract() {
   const highs = await loadHighs();
+  const memoryBytes: number = highs.memoryBytes;
   highs.solve("Minimize\nEnd", legacyThreadOptions);
   const model = highs.createModel(modelData);
   const raw = highs.raw.createModel();
 
   for (const selection of selections) model.getCols(selection);
   const detached: Float64Array = model.getModel().colCost;
+  // Bulk C extraction does not include model names.
+  // @ts-expect-error
+  model.getModel().colNames;
   const status: HighsStatus = raw.passModel(modelData).status;
+  const modelStatus: ModelStatusCode = raw.getModelStatus();
+  const entries: SparseEntriesInput = {
+    indices: new Int32Array(),
+    values: new Float64Array(),
+  };
+  model.addCol(0, 0, 1, entries);
+  const sense: 1 | -1 = model.getObjectiveSense();
+  const offset: number = model.getObjectiveOffset();
   const int64AwareInfo: number | bigint = model.info.get("mip_node_count");
   void detached;
+  void memoryBytes;
   void status;
+  void modelStatus;
+  void sense;
+  void offset;
   void int64AwareInfo;
 
   model.readModel({ format: "lp", data: "Minimize\nEnd" });

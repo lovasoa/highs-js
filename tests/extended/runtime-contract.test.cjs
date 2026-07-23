@@ -16,7 +16,7 @@ const constantContract = require(path.join(
 function interfaceMethods(source, name) {
   const marker = `export interface ${name}`;
   const start = source.indexOf(marker);
-  assert.notEqual(start, -1, `${name} must exist in highs.d.ts`);
+  assert.notEqual(start, -1, `${name} must exist in types.d.ts`);
   const open = source.indexOf("{", start);
   let depth = 0;
   let end = open;
@@ -37,7 +37,7 @@ test("generated C policy matches runtime methods, declarations, and constants", 
   const highs = await loadRuntime();
   if (!requireExtended(t, highs)) return;
 
-  const declarations = fs.readFileSync(path.join(ROOT, "highs.d.ts"), "utf8");
+  const declarations = fs.readFileSync(path.join(ROOT, "types.d.ts"), "utf8");
   const rawRuntimeDeclaration = interfaceMethods(declarations, "RawRuntimeApi");
   const rawModelDeclaration = interfaceMethods(declarations, "RawModelApi");
   const rawModel = highs.raw.createModel();
