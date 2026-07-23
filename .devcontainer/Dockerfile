@@ -1,8 +1,7 @@
-# check=skip=InvalidDefaultArgInFrom
-# NODE_VARIANT deliberately has no Dockerfile default: compose.yaml requires
-# the single canonical value from ../.env.
-
-ARG NODE_VARIANT
+# The non-version sentinel keeps Docker's parser happy; compose.yaml always
+# replaces it with the single canonical value from ../.env. A direct build
+# intentionally fails instead of silently choosing an unpinned Node release.
+ARG NODE_VARIANT=use-compose
 FROM mcr.microsoft.com/devcontainers/javascript-node:${NODE_VARIANT}
 ARG EMSDK_VERSION
 
@@ -18,9 +17,10 @@ RUN git clone --branch "${EMSDK_VERSION}" --depth 1 https://github.com/emscripte
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten"
 
-# Seed named dependency and build volumes with ownership matching the non-root
-# user. Docker copies these directory owners into newly created volumes.
-RUN mkdir -p /work/node_modules /work/build && chown -R node:node /work
+# Seed named dependency, build, and Emscripten cache volumes with ownership
+# matching the non-root user. Docker copies these owners into new volumes.
+RUN mkdir -p /work/node_modules /work/build /emcache && \
+    chown -R node:node /work /emcache
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
