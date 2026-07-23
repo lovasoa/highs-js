@@ -21,6 +21,12 @@
 			]
 		}
 	},
+	// Use Docker's supported long mount syntax without the CLI-injected SELinux
+	// relabel suffix, which Docker rejects on hosts where SELinux is disabled.
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind",
+	"runArgs": [
+		"--security-opt=label=disable"
+	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
