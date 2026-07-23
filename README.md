@@ -1,5 +1,8 @@
 # highs-js
 
+> 🚀 **Prerelease available:** [`highs@1.15.3-pre.0`](https://www.npmjs.com/package/highs/v/1.15.3-pre.0) adds a persistent model API, MIP, QP, IIS, ranging, and more.
+> [Try it and share feedback →](https://github.com/lovasoa/highs-js/issues/new)
+
 [![npm version](https://badge.fury.io/js/highs.svg)](https://www.npmjs.com/package/highs)
 [![CI status](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml/badge.svg)](https://github.com/lovasoa/highs-js/actions/workflows/CI.yml)
 [![package size](https://badgen.net/bundlephobia/minzip/highs)](https://bundlephobia.com/result?p=highs)

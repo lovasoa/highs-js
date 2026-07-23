@@ -664,6 +664,33 @@
     font-weight: 500;
   }
 
+  .prerelease-banner {
+    margin: 1.5rem auto 0;
+    max-width: 720px;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #eef2ff, #f0f9ff);
+    border: 1px solid #93c5fd;
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    color: #1e3a5f;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .prerelease-banner code {
+    background: #dbeafe;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .prerelease-banner a {
+    font-weight: 600;
+    color: #1d4ed8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+  }
+
   @media (max-width: 640px) {
     .top-nav {
       flex-direction: column;
@@ -698,6 +725,11 @@
   <h1><u>HiGHS</u> online linear programming solver</h1>
   <p>A linear, mixed-integer, and quadratic optimization solver you can use directly from your <mark class="browser-mark">browser</mark></p>
 </header>
+
+<aside class="prerelease-banner">
+  <strong>🚀 Prerelease available:</strong> <code>highs@1.15.3-pre.0</code> adds a persistent model API, MIP, QP, IIS, ranging, and more.
+  <a href="https://github.com/lovasoa/highs-js/issues/new" target="_blank" rel="noopener">Try it and share feedback →</a>
+</aside>
 
 <hr class="section-divider">
 
