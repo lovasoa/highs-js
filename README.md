@@ -131,6 +131,35 @@ clone.dispose();
 model.dispose();
 ```
 
+## Options and solver info
+
+Inspect and modify solver options, and read solver statistics after a run:
+
+```js
+const model = highs.createModel(/* ... */);
+
+// Set options individually or in bulk
+model.options.set("time_limit", 30);
+model.options.set({ presolve: "on", mip_rel_gap: 0.01 });
+
+// Query current values and metadata
+console.log(model.options.get("time_limit"));          // 30
+console.log(model.options.describe("mip_rel_gap"));     // { type, current, default, min, max }
+console.log(model.options.names());                     // all option names
+
+// Round-trip options as text
+const saved = model.options.export(true);               // only non-default values
+model.options.reset();                                  // restore defaults
+model.options.read(saved);                              // re-apply
+
+model.run();
+
+// Solver statistics after the run
+console.log(model.info.get("simplex_iteration_count")); // number
+console.log(model.info.get("mip_node_count"));          // bigint
+console.log(model.info.type("objective_function_value")); // "integer" | "double" | "int64"
+```
+
 ## WebAssembly loading
 
 The package ships `build/highs.wasm`. Node.js normally finds it next to the
