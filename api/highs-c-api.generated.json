@@ -2151,7 +2151,9 @@
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
-      "arrayPolicy": "copy-detached"
+      "arrayPolicy": "copy-detached",
+      "bridge": "callback-type-safe native shim",
+      "reason": "The upstream C adapter copies uninitialized fields for logging callbacks and supplies an invalid data-in pointer when none exists."
     },
     {
       "cName": "Highs_startCallback",

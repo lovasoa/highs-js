@@ -355,7 +355,7 @@
     "Highs_deleteRowsByRange": {"rawName": "deleteRows", "js": ["RawModel.deleteRows", "Model.deleteRows"]},
     "Highs_deleteRowsBySet": {"rawName": "deleteRows", "js": ["RawModel.deleteRows", "Model.deleteRows"]},
     "Highs_deleteRowsByMask": {"rawName": "deleteRows", "js": ["RawModel.deleteRows", "Model.deleteRows"]},
-    "Highs_setCallback": {"rawName": "setCallback", "js": ["RawModel.setCallback", "Model.run callback setup"]},
+    "Highs_setCallback": {"rawName": "setCallback", "js": ["RawModel.setCallback", "Model.run callback setup"], "bridge": "callback-type-safe native shim", "reason": "The upstream C adapter copies uninitialized fields for logging callbacks and supplies an invalid data-in pointer when none exists."},
     "Highs_startCallback": {"rawName": "startCallback", "js": ["RawModel.startCallback", "Model.run callback setup"]},
     "Highs_stopCallback": {"js": ["RawModel.stopCallback", "Model.run callback cleanup"]},
     "Highs_getCallbackDataOutItem": {"rawName": null, "returnPolicy": "copied-by-callback-adapter", "reason": "Callback payloads are copied by the trampoline; raw callback-data pointers never escape."},
@@ -366,5 +366,5 @@
   },
   "compatibilityExports": ["_Highs_call"],
   "generatedExports": ["_malloc", "_free"],
-  "bridgeExports": ["_Highs_js_getColName", "_Highs_js_getRowName", "_Highs_js_getPresolvedColName", "_Highs_js_getPresolvedRowName"]
+  "bridgeExports": ["_Highs_js_getColName", "_Highs_js_getRowName", "_Highs_js_getPresolvedColName", "_Highs_js_getPresolvedRowName", "_Highs_js_setCallback"]
 }

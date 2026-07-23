@@ -164,16 +164,18 @@ semantics.
 
 | JavaScript | C API backing |
 | --- | --- |
-| `rawModel.setCallback()` | `Highs_setCallback` plus the native-to-JavaScript trampoline |
+| `rawModel.setCallback()` | `Highs::setCallback` through `Highs_js_setCallback`, a type-aware C++ bridge |
 | `rawModel.startCallback()` | `Highs_startCallback` |
 | `rawModel.stopCallback()` | `Highs_stopCallback` |
-| `event.setSolution(dense)` | `Highs_setCallbackSolution` |
-| `event.setSolution(sparse)` | `Highs_setCallbackSparseSolution` |
-| `event.repairSolution()` | `Highs_repairCallbackSolution` |
-| `event.interrupt()` | sets the C callback data `user_interrupt` field |
+| type-9 `event.setSolution(dense)` | `Highs_setCallbackSolution` |
+| type-9 `event.setSolution(sparse)` | `Highs_setCallbackSparseSolution` |
+| type-9 `event.repairSolution()` | `Highs_repairCallbackSolution` |
+| type-1/2/6 `event.interrupt()` | sets the C callback data `user_interrupt` field |
 
 Callback data is copied before delivery to JavaScript. The bridge is
-synchronous and prevents recursive entry into the same `Highs` instance.
+synchronous, exposes only fields initialized for the active callback type,
+passes no input-control pointer when HiGHS supplies none, and prevents
+recursive entry into the same `Highs` instance.
 
 ## Deliberate exclusions and alternatives
 
@@ -183,7 +185,7 @@ The following are not exposed merely to make a declaration appear complete:
 | --- | --- |
 | Raw pointers, arbitrary `ccall`/`cwrap`, and live heap views | They cannot remain safe across memory growth and allow use-after-free. Use the structured raw API and detached arrays. |
 | `getCoefficient(row, col)` | There is no stable C API entry point. Fetch the sparse row with `getRows({kind: "range", from: row, to: row})`, which is also faster for reading multiple coefficients. |
-| Native `clone()` | The stable C API does not clone a `Highs` instance. Use `getModel()` followed by `createModel(snapshot)` and make the copy cost explicit. |
+| Native `clone()` | The stable C API does not clone a `Highs` instance. Use `getModel()` followed by `createModel(snapshot)` and make the numerical copy cost explicit; copy names separately if needed. |
 | Scheduler reset and thread-pool controls | The WebAssembly build is single-threaded. No public wrapper for `Highs_resetGlobalScheduler` is provided. |
 | External asynchronous interrupt | The stable C API does not provide a safe general external-interrupt operation for this synchronous build. Interrupt from a registered callback or terminate a dedicated Worker. |
 | Gzip model I/O | zlib is disabled. Decompress before `readModel()` or compress exported bytes in JavaScript. |

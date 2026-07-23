@@ -7,6 +7,7 @@
   const FORMAT = { csc: 1, csr: 2 };
   const HESSIAN_FORMAT = { triangular: 1, square: 2 };
   const callbacks = new Map();
+  const liveModels = new Map();
   const native = new Map();
   let nextCallbackId = 1;
   let nextTempId = 1;
@@ -77,7 +78,13 @@
     const key = name + ":" + returnType + ":" + argumentTypes.join(",");
     let wrapped = native.get(key);
     if (!wrapped) {
-      wrapped = Module["cwrap"](name, returnType, argumentTypes);
+      const callable = Module["cwrap"](name, returnType, argumentTypes);
+      wrapped = function (...args: any[]) {
+        const result = callable.apply(null, args);
+        const owner = liveModels.get(args[0]);
+        if (owner) owner._throwCallbackError();
+        return result;
+      };
       native.set(key, wrapped);
     }
     return wrapped;
@@ -550,17 +557,20 @@
   class RawModel {
     #pointer: number;
     #disposed: boolean;
-    _inCallback: boolean;
+    _callbackDepth: number;
     _callbackId: number;
     _callbackError: unknown;
+    _callbackErrorPending: boolean;
     _callbackNumCols = 0;
 
     constructor(pointer) {
       this.#pointer = pointer;
       this.#disposed = false;
-      this._inCallback = false;
+      this._callbackDepth = 0;
       this._callbackId = 0;
       this._callbackError = undefined;
+      this._callbackErrorPending = false;
+      liveModels.set(pointer, this);
     }
 
     get disposed() {
@@ -569,8 +579,23 @@
 
     _require(callbackSafe = false) {
       if (this.#disposed) throw disposedError();
-      if (this._inCallback && !callbackSafe) throw reentrancyError();
+      if (this._callbackDepth && !callbackSafe) throw reentrancyError();
       return this.#pointer;
+    }
+
+    _rememberCallbackError(error) {
+      if (!this._callbackErrorPending) {
+        this._callbackError = error;
+        this._callbackErrorPending = true;
+      }
+    }
+
+    _throwCallbackError() {
+      if (!this._callbackErrorPending) return;
+      const error = this._callbackError;
+      this._callbackError = undefined;
+      this._callbackErrorPending = false;
+      throw error;
     }
 
     clear() {
@@ -1173,7 +1198,7 @@
         throw validationError("callback must be a function or undefined");
       const previousId = this._callbackId;
       if (!callback) {
-        const status = numericFunction("Highs_setCallback", 3)(pointer, 0, 0);
+        const status = numericFunction("Highs_js_setCallback", 3)(pointer, 0, 0);
         if (status !== STATUS_ERROR) {
           if (previousId) callbacks.delete(previousId);
           this._callbackId = 0;
@@ -1183,7 +1208,7 @@
 
       const callbackId = nextCallbackId++;
       callbacks.set(callbackId, { raw: this, callback: callback });
-      const status = numericFunction("Highs_setCallback", 3)(
+      const status = numericFunction("Highs_js_setCallback", 3)(
         pointer,
         ensureCallbackFunction(),
         callbackId
@@ -1208,6 +1233,7 @@
       if (this.#disposed) return;
       const pointer = this._require(false);
       if (this._callbackId) callbacks.delete(this._callbackId);
+      liveModels.delete(pointer);
       numericFunction("Highs_destroy", 1, null)(pointer);
       this.#pointer = 0;
       this.#disposed = true;
@@ -1232,13 +1258,7 @@
     run() {
       const pointer = this._require(false);
       this._callbackNumCols = dimensions(pointer).numCols;
-      this._callbackError = undefined;
       const status = numericFunction("Highs_run", 1)(pointer);
-      if (this._callbackError) {
-        const error = this._callbackError;
-        this._callbackError = undefined;
-        throw error;
-      }
       return rawStatus(status);
     }
 
@@ -2352,6 +2372,16 @@
     return heap32()[pointer >> 2];
   }
 
+  const MIP_CALLBACK_FIELDS = [
+    ["running_time", "double"],
+    ["objective_function_value", "double"],
+    ["mip_node_count", "int64"],
+    ["mip_total_lp_iterations", "int64"],
+    ["mip_primal_bound", "double"],
+    ["mip_dual_bound", "double"],
+    ["mip_gap", "double"],
+  ];
+
   function callbackTrampoline(type, messagePointer, dataOut, dataIn, userData) {
     const entry = callbacks.get(userData);
     if (!entry) return;
@@ -2362,62 +2392,66 @@
       if (!eventActive)
         throw validationError("callback controls expire when the callback returns");
     }
-    raw._inCallback = true;
+    raw._callbackDepth += 1;
     try {
       const shape = { numCols: raw._callbackNumCols };
       const data: any = {};
-      [
-        ["log_type", "int"],
-        ["running_time", "double"],
-        ["simplex_iteration_count", "int"],
-        ["ipm_iteration_count", "int"],
-        ["pdlp_iteration_count", "int"],
-        ["objective_function_value", "double"],
-        ["mip_node_count", "int64"],
-        ["mip_total_lp_iterations", "int64"],
-        ["mip_primal_bound", "double"],
-        ["mip_dual_bound", "double"],
-        ["mip_gap", "double"],
-      ].forEach(function (item) {
+      const fields =
+        type === 0
+          ? [["log_type", "int"]]
+          : type === 1
+            ? [["simplex_iteration_count", "int"]]
+            : type === 2
+              ? [["ipm_iteration_count", "int"]]
+              : type >= 3 && type <= 9
+                ? MIP_CALLBACK_FIELDS
+                : [];
+      fields.forEach(function (item) {
         const value = readCallbackNumber(dataOut, item[0], item[1]);
         if (value !== undefined) data[item[0]] = value;
       });
-      const solutionPointer = callbackDataItem(dataOut, "mip_solution");
-      if (solutionPointer)
-        data.mip_solution = copyDoubles(solutionPointer, shape.numCols);
-      const cutCount = readCallbackNumber(dataOut, "cutpool_num_cut", "int");
-      const cutNonzeros = readCallbackNumber(dataOut, "cutpool_num_nz", "int");
-      const cutColumns = readCallbackNumber(dataOut, "cutpool_num_col", "int");
-      if (
-        typeof cutCount === "number" &&
-        typeof cutNonzeros === "number" &&
-        typeof cutColumns === "number" &&
-        cutCount >= 0 &&
-        cutNonzeros >= 0
-      ) {
-        const starts = callbackDataItem(dataOut, "cutpool_start");
-        const indices = callbackDataItem(dataOut, "cutpool_index");
-        const values = callbackDataItem(dataOut, "cutpool_value");
-        const lower = callbackDataItem(dataOut, "cutpool_lower");
-        const upper = callbackDataItem(dataOut, "cutpool_upper");
-        if (starts && indices && values && lower && upper) {
-          data.cut_pool = {
-            numCols: cutColumns,
-            numCuts: cutCount,
-            starts: copyInts(starts, cutCount + 1),
-            indices: copyInts(indices, cutNonzeros),
-            values: copyDoubles(values, cutNonzeros),
-            lower: copyDoubles(lower, cutCount),
-            upper: copyDoubles(upper, cutCount),
-          };
+      if (type === 3 || type === 4) {
+        const solutionPointer = callbackDataItem(dataOut, "mip_solution");
+        if (solutionPointer)
+          data.mip_solution = copyDoubles(solutionPointer, shape.numCols);
+      }
+      if (type === 7) {
+        const cutCount = readCallbackNumber(dataOut, "cutpool_num_cut", "int");
+        const cutNonzeros = readCallbackNumber(dataOut, "cutpool_num_nz", "int");
+        const cutColumns = readCallbackNumber(dataOut, "cutpool_num_col", "int");
+        if (
+          typeof cutCount === "number" &&
+          typeof cutNonzeros === "number" &&
+          typeof cutColumns === "number" &&
+          cutCount >= 0 &&
+          cutNonzeros >= 0
+        ) {
+          const starts = callbackDataItem(dataOut, "cutpool_start");
+          const indices = callbackDataItem(dataOut, "cutpool_index");
+          const values = callbackDataItem(dataOut, "cutpool_value");
+          const lower = callbackDataItem(dataOut, "cutpool_lower");
+          const upper = callbackDataItem(dataOut, "cutpool_upper");
+          if (starts && indices && values && lower && upper) {
+            data.cut_pool = {
+              numCols: cutColumns,
+              numCuts: cutCount,
+              starts: copyInts(starts, cutCount + 1),
+              indices: copyInts(indices, cutNonzeros),
+              values: copyDoubles(values, cutNonzeros),
+              lower: copyDoubles(lower, cutCount),
+              upper: copyDoubles(upper, cutCount),
+            };
+          }
         }
       }
 
-      const callbackResult = callback({
+      const event: any = {
         type: type,
         message: utf8(messagePointer),
         data: data,
-        setSolution: function (solution) {
+      };
+      if (type === 9) {
+        event.setSolution = function (solution) {
           requireActiveEvent();
           try {
             if (solution && solution.indices) {
@@ -2445,35 +2479,39 @@
               })
             );
           } catch (error) {
-            raw._callbackError = error;
-            heap32()[dataIn >> 2] = 1;
+            raw._rememberCallbackError(error);
             return rawStatus(STATUS_ERROR);
           }
-        },
-        repairSolution: function () {
+        };
+        event.repairSolution = function () {
           requireActiveEvent();
           return rawStatus(
             numericFunction("Highs_repairCallbackSolution", 1)(dataIn)
           );
-        },
-        interrupt: function () {
+        };
+      } else if (type === 1 || type === 2 || type === 6) {
+        event.interrupt = function () {
           requireActiveEvent();
           heap32()[dataIn >> 2] = 1;
-        },
-      });
+        };
+      }
+      const callbackResult = callback(event);
       if (
         callbackResult &&
         (typeof callbackResult === "object" ||
           typeof callbackResult === "function") &&
         typeof callbackResult.then === "function"
-      )
+      ) {
+        void Promise.resolve(callbackResult).catch(function () {});
         throw validationError("callbacks must be synchronous and return undefined");
+      }
     } catch (error) {
-      raw._callbackError = error;
-      heap32()[dataIn >> 2] = 1;
+      raw._rememberCallbackError(error);
+      if ((type === 1 || type === 2 || type === 6) && dataIn)
+        heap32()[dataIn >> 2] = 1;
     } finally {
       eventActive = false;
-      raw._inCallback = false;
+      raw._callbackDepth -= 1;
     }
   }
 
@@ -2586,8 +2624,13 @@
     run(callbackMap) {
       const raw = this.raw;
       const activeTypes = [];
+      let didRegister = false;
       try {
         if (callbackMap && Object.keys(callbackMap).length) {
+          if (raw._callbackId)
+            throw validationError(
+              "run callbacks cannot replace a callback registered through model.raw"
+            );
           const registration = raw.setCallback(function (event) {
             const callback = callbackMap[event.type];
             if (callback) return callback(event);
@@ -2595,6 +2638,7 @@
           });
           if (registration.status === STATUS_ERROR)
             throw nativeError("setCallback");
+          didRegister = true;
           Object.keys(callbackMap).forEach(function (key) {
             const type = Number(key);
             validateCallbackType(type);
@@ -2611,9 +2655,12 @@
           modelStatus: raw.getModelStatus(),
         };
       } finally {
-        for (let index = 0; index < activeTypes.length; index++)
-          raw.stopCallback(activeTypes[index]);
-        if (callbackMap) raw.setCallback(undefined);
+        try {
+          for (let index = 0; index < activeTypes.length; index++)
+            raw.stopCallback(activeTypes[index]);
+        } finally {
+          if (didRegister) raw.setCallback(undefined);
+        }
       }
     }
 

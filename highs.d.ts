@@ -470,32 +470,58 @@ export interface NumericVector {
 
 export type CallbackType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9;
 
-export interface CallbackEvent {
-  readonly type: CallbackType;
+export interface CallbackEventBase<T extends CallbackType = CallbackType> {
+  readonly type: T;
   readonly message: string;
   readonly data: CallbackData;
-  /** Backed by Highs_setCallbackSolution / Highs_setCallbackSparseSolution. */
-  setSolution(solution: NumberInput | SparseSolutionInput): RawStatus;
-  /** Backed by Highs_repairCallbackSolution. */
-  repairSolution(): RawStatus;
-  /** Interrupt the current run by writing user_interrupt in callback data. */
+}
+
+export interface InterruptCallbackEvent
+  extends CallbackEventBase<1 | 2 | 6> {
+  /** Valid only for simplex, IPM, and MIP interrupt callback types. */
   interrupt(): void;
 }
 
+export interface UserSolutionCallbackEvent extends CallbackEventBase<9> {
+  /** Valid only while a MIP user-solution callback is active. */
+  setSolution(solution: NumberInput | SparseSolutionInput): RawStatus;
+  repairSolution(): RawStatus;
+}
+
+export interface PassiveCallbackEvent
+  extends CallbackEventBase<0 | 3 | 4 | 5 | 7> {}
+
+export type CallbackEvent =
+  | InterruptCallbackEvent
+  | UserSolutionCallbackEvent
+  | PassiveCallbackEvent;
+
+export type CallbackEventFor<T extends CallbackType> =
+  T extends 1 | 2 | 6
+    ? InterruptCallbackEvent & { readonly type: T }
+    : T extends 9
+      ? UserSolutionCallbackEvent
+      : PassiveCallbackEvent & { readonly type: T };
+
 export interface CallbackData
   extends Readonly<Record<string, unknown>> {
+  /** Present only for callback type 0. */
   readonly log_type?: number;
+  /** MIP scalar fields are present only for callback types 3 through 7 and 9. */
   readonly running_time?: number;
+  /** Present only for callback type 1. */
   readonly simplex_iteration_count?: number;
+  /** Present only for callback type 2. */
   readonly ipm_iteration_count?: number;
-  readonly pdlp_iteration_count?: number;
   readonly objective_function_value?: number;
   readonly mip_node_count?: bigint;
   readonly mip_total_lp_iterations?: bigint;
   readonly mip_primal_bound?: number;
   readonly mip_dual_bound?: number;
   readonly mip_gap?: number;
+  /** Present only for callback types 3 and 4. */
   readonly mip_solution?: Float64Array;
+  /** Present only for callback type 7. */
   readonly cut_pool?: {
     readonly numCols: number;
     readonly numCuts: number;
@@ -509,6 +535,12 @@ export interface CallbackData
 
 /** Callback execution is synchronous; returning a Promise is unsupported. */
 export type HighsCallback = (event: CallbackEvent) => undefined;
+
+export type HighsCallbackMap = {
+  readonly [T in CallbackType]?: (
+    event: CallbackEventFor<T>,
+  ) => undefined;
+};
 
 export interface Model {
   readonly raw: RawModelApi;
@@ -548,7 +580,7 @@ export interface Model {
 
   /** Highs_presolve / Highs_run / Highs_postsolve. */
   presolve(): CallMetadata;
-  run(callbacks?: Partial<Record<CallbackType, HighsCallback>>): RunResult;
+  run(callbacks?: HighsCallbackMap): RunResult;
   postsolve(input: PostsolveInput): CallMetadata;
   /** Highs_getRunTime / Highs_zeroAllClocks. */
   getRunTime(): number;

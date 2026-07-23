@@ -2,18 +2,23 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { loadRuntime, makeModel, requireExtended } = require("./helpers.cjs");
 
-test("callback controls cannot outlive their native callback frame", async (t) => {
+test("logging callbacks expose only initialized data and no invalid controls", async (t) => {
   const highs = await loadRuntime();
   if (!requireExtended(t, highs)) return;
 
   const model = highs.createModel(makeModel());
   t.after(() => model.dispose());
   const logging = highs.constants.callbackType.logging;
-  let savedEvent;
+  let callbackCount = 0;
 
   model.run({
     [logging](event) {
-      savedEvent ||= event;
+      callbackCount += 1;
+      assert.deepStrictEqual(Object.keys(event.data), ["log_type"]);
+      assert.equal(typeof event.data.log_type, "number");
+      assert.equal("interrupt" in event, false);
+      assert.equal("setSolution" in event, false);
+      assert.equal("repairSolution" in event, false);
       assert.throws(
         () => model.dispose(),
         (error) => error?.name === "HighsReentrancyError",
@@ -21,12 +26,7 @@ test("callback controls cannot outlive their native callback frame", async (t) =
     },
   });
 
-  assert.ok(savedEvent, "the logging callback should run");
-  assert.throws(
-    () => savedEvent.interrupt(),
-    (error) =>
-      error?.name === "HighsValidationError" && /expire/.test(error.message),
-  );
+  assert.ok(callbackCount > 0, "the logging callback should run");
   assert.equal(model.disposed, false);
 });
 
@@ -50,4 +50,68 @@ test("async callbacks and invalid callback types unwind registration", async (t)
 
   model.options.set("output_flag", false);
   assert.notEqual(model.run().status, -1);
+});
+
+test("clearing callbacks cannot leave a native null function active", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const raw = highs.raw.createModel();
+  t.after(() => raw.dispose());
+  assert.equal(raw.setCallback(() => undefined).status, 0);
+  assert.equal(raw.setCallback(undefined).status, 0);
+  assert.equal(
+    raw.startCallback(highs.constants.callbackType.logging).status,
+    -1,
+  );
+});
+
+test("an empty high-level callback map preserves a raw callback", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const model = highs.createModel(makeModel());
+  t.after(() => model.dispose());
+  const logging = highs.constants.callbackType.logging;
+  let callbackCount = 0;
+  assert.equal(
+    model.raw.setCallback(() => {
+      callbackCount += 1;
+    }).status,
+    0,
+  );
+  assert.equal(model.raw.startCallback(logging).status, 0);
+
+  model.run({});
+  assert.ok(callbackCount > 0);
+  assert.throws(
+    () => model.run({ [logging]: () => undefined }),
+    (error) =>
+      error?.name === "HighsValidationError" &&
+      /registered through model\.raw/.test(error.message),
+  );
+
+  assert.equal(model.raw.stopCallback(logging).status, 0);
+  assert.equal(model.raw.setCallback(undefined).status, 0);
+});
+
+test("callback exceptions preserve even an undefined thrown value", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  const model = highs.createModel(makeModel());
+  t.after(() => model.dispose());
+  const logging = highs.constants.callbackType.logging;
+  let didThrow = false;
+  try {
+    model.run({
+      [logging]() {
+        throw undefined;
+      },
+    });
+  } catch (error) {
+    didThrow = true;
+    assert.equal(error, undefined);
+  }
+  assert.equal(didThrow, true);
 });

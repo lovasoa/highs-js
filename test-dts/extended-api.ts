@@ -54,6 +54,10 @@ async function exerciseContract() {
   model.options.set("output_flag", false);
   model.run({
     [highs.constants.callbackType.logging](event) {
+      // @ts-expect-error logging callbacks cannot interrupt the solver
+      event.interrupt();
+    },
+    [highs.constants.callbackType.simplexInterrupt](event) {
       event.interrupt();
     },
   });

@@ -110,6 +110,7 @@
   "_Highs_js_getPresolvedColName",
   "_Highs_js_getPresolvedRowName",
   "_Highs_js_getRowName",
+  "_Highs_js_setCallback",
   "_Highs_lpCall",
   "_Highs_mipCall",
   "_Highs_passColName",

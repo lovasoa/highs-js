@@ -251,21 +251,34 @@ arrays are detached snapshots. The only solver-affecting operations allowed
 from a callback are the methods on the event itself:
 
 ```js
-const logging = highs.constants.callbackType.logging;
+const simplexInterrupt = highs.constants.callbackType.simplexInterrupt;
 
 model.run({
-  [logging](event) {
-    console.log(event.message);
+  [simplexInterrupt](event) {
     if (shouldStop()) event.interrupt();
   },
 });
 ```
 
 Do not call model methods recursively from a callback. Such calls throw
-`HighsReentrancyError`. `event.setSolution()`, `event.repairSolution()`, and
-`event.interrupt()` are the supported in-callback controls. If a callback
-throws, the wrapper requests interruption and rethrows the original JavaScript
-exception after native `Highs_run()` unwinds.
+`HighsReentrancyError`. Controls are capability-specific:
+
+| Callback types | Data | Controls |
+| --- | --- | --- |
+| logging (`0`) | `log_type`, message | none |
+| simplex/IPM interrupt (`1`, `2`) | the matching iteration count | `interrupt()` |
+| MIP solution/improving solution (`3`, `4`) | MIP scalar data and `mip_solution` | none |
+| MIP logging (`5`) | MIP scalar data | none |
+| MIP interrupt (`6`) | MIP scalar data | `interrupt()` |
+| MIP cut pool (`7`) | MIP scalar data and `cut_pool` | none |
+| MIP user solution (`9`) | MIP scalar data | `setSolution()`, `repairSolution()` |
+
+The event union in `highs.d.ts` exposes only controls that the native callback
+type can honor. If a callback throws, the wrapper requests interruption when
+that callback is interruptible and rethrows the original JavaScript exception
+after the active native call unwinds. Logging payloads are intentionally
+limited to `log_type`; HiGHS does not initialize solver metrics for a logging
+event.
 
 The high-level API supports callback types that are active in the stable C API.
 The inert lazy-constraint callback type and the PDLP-specific callback type are
@@ -278,9 +291,10 @@ expensive and the stable C API provides no clone operation. Make the cost
 explicit:
 
 ```js
-const snapshot = model.getModel("csc");
+const snapshot = model.getModel("csc"); // numerical data; names are not included
 const copy = highs.createModel(snapshot);
 ```
 
 The snapshot consists entirely of detached data, so it is safe to store or
-send to another Worker.
+send to another Worker. Model, row, and column names are not part of the stable
+bulk-extraction C calls; copy names explicitly when they matter.
