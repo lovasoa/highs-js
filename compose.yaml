@@ -11,12 +11,13 @@ services:
         # Keep this in sync with .devcontainer/devcontainer.json.
         VARIANT: 24-trixie
     working_dir: /work
+    user: node
     volumes:
       # Mount the checkout so the container tests the current working tree.
-      - .:/work
+      - .:/work:Z
       # Persist Emscripten's generated system libraries across `run --rm`.
       - emscripten-cache:/emsdk/upstream/emscripten/cache
-    command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && npm test"
+    command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && HIGHS_REQUIRE_EXTENDED=1 npm test"
 
 volumes:
   emscripten-cache:

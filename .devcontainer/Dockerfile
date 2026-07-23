@@ -11,7 +11,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 RUN git clone https://github.com/emscripten-core/emsdk.git /emsdk && \
     sudo /emsdk/emsdk install 6.0.3 && \
     sudo /emsdk/emsdk activate 6.0.3 && \
-    sudo ln -s /emsdk/upstream/emscripten /usr/share/emscripten
+    sudo ln -s /emsdk/upstream/emscripten /usr/share/emscripten && \
+    chown -R node:node /emsdk
 
 ENV PATH="$PATH:/emsdk:/emsdk/upstream/emscripten"
 
