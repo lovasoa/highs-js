@@ -9,6 +9,13 @@ ARG EMSDK_VERSION
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install cmake
 
+# Entrypoint that sources the Emscripten environment before every command.
+# This lets callers run e.g. "docker compose run --rm tests npm run build"
+# without manually sourcing emsdk_env.sh.
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 RUN git clone --branch "${EMSDK_VERSION}" --depth 1 https://github.com/emscripten-core/emsdk.git /emsdk && \
     sudo /emsdk/emsdk install "${EMSDK_VERSION}" && \
     sudo /emsdk/emsdk activate "${EMSDK_VERSION}" && \

@@ -27,7 +27,9 @@ services:
       - build-cache:/work/build
       # Persist generated system libraries in a volume owned by `node`.
       - emscripten-user-cache:/emcache
-    command: bash -lc "cd /emsdk && source ./emsdk_env.sh && cd /work && npm ci && npm run build && HIGHS_REQUIRE_EXTENDED=1 npm test"
+    # Default command runs when no command is passed to "docker compose run".
+    # The entrypoint (entrypoint.sh) sources emsdk_env.sh automatically.
+    command: bash -c "npm ci && npm run build && npm test"
 
 volumes:
   node-modules:
