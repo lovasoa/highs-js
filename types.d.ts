@@ -1,15 +1,46 @@
-/** Legacy one-shot solver returned by the loader. Calls are synchronous and blocking. */
+/**
+ * Compatibility API for solving one model at a time.
+ *
+ * The asynchronous loader creates this object, but `solve()` itself is
+ * synchronous: JavaScript execution is blocked until HiGHS finishes or reaches
+ * a configured limit. Each call creates a fresh native solver, so models,
+ * options, solutions, clocks, and basis state are never shared between calls.
+ */
 export type LegacyHighs = {
   /**
-   * Parses a CPLEX LP model, solves it, and returns a newly allocated result.
-   * Option values are applied to a fresh native instance for this call. Native
-   * read, option-setting, and run errors throw; terminal model states are
-   * represented by `Status`. Malformed option values may also throw.
+   * Parses `problem` as a CPLEX LP-format model, solves it, and returns detached
+   * JavaScript objects containing the available result.
+   *
+   * `problem` is model text, not a path. `options` are applied to a fresh native
+   * instance before solving; omitted options use the defaults compiled into
+   * HiGHS. The call blocks the current JavaScript thread. A native read,
+   * option-setting, run, or solution-extraction error throws. Unknown options,
+   * wrong value types, and integer option values that are non-integral or do
+   * not fit a signed 32-bit integer also throw. In contrast, an optimization
+   * outcome such as infeasible, unbounded, or time-limited is returned in
+   * `HighsSolution.Status` and is not a JavaScript exception.
+   *
+   * All returned objects and arrays are copies. Mutating them cannot affect
+   * HiGHS, and the native instance is destroyed before this method returns.
    */
   solve(problem: string, options?: HighsOptions): HighsSolution;
 };
 
-/** Read-only legacy solver options; omitted properties retain HiGHS defaults. */
+/**
+ * Options accepted by the legacy one-shot solver.
+ *
+ * The `Readonly` modifier is a TypeScript constraint; the runtime does not
+ * freeze the object, but it does not intentionally mutate it. Properties are
+ * applied in JavaScript enumeration order to a fresh solver. Unknown names,
+ * wrong value types, and values outside the native option's range fail the
+ * solve. File names refer to Emscripten's private in-memory filesystem, not the
+ * host filesystem, and generated files are not returned by this API.
+ *
+ * This compatibility type reflects the historically published option subset,
+ * not every option in every upstream HiGHS release. The persistent API's
+ * `model.options` facade accepts current native option names dynamically and
+ * can inspect them with `describe()`.
+ */
 type HighsOptions = Readonly<
   Partial<{
     /**
@@ -26,26 +57,32 @@ type HighsOptions = Readonly<
     solver: 'choose' | 'simplex' | 'ipm' | 'ipx' | 'hipo' | 'pdlp' | 'qpasm' | 'hipdlp';
 
     /**
-     * Parallel option: "off", "choose" or "on"
+     * Enables, disables, or lets HiGHS choose parallel algorithms. This Wasm
+     * package is built without native worker threads, so enabling the option
+     * does not create host threads.
      * @default "choose"
      */
     parallel: 'off' | 'choose' | 'on';
 
     /**
-     * Run IPM crossover: "off", "choose" or "on"
+     * Controls crossover after an interior-point solve. Crossover converts the
+     * interior solution into a basic solution needed for basis queries and
+     * simplex sensitivity analysis.
      * @default "on"
      */
     run_crossover: 'off' | 'choose' | 'on';
 
     /**
-     * Cumulative time budget in seconds for this native instance. Repeated
-     * operations consume the remaining budget until clocks are reset.
+     * Maximum solver runtime in seconds. In this one-shot API the fresh native
+     * instance performs one run, so no time is carried over from an earlier
+     * `solve()` call.
      * @default Number.POSITIVE_INFINITY
      */
     time_limit: number;
 
     /**
-     * Compute cost, bound, RHS and basic solution ranging: "off" or "on"
+     * Whether to compute LP cost, column-bound, row-bound, and basic-solution
+     * sensitivity ranges after an eligible optimal simplex solve.
      * @default "off"
      */
     ranging: 'off' | 'on';
@@ -67,9 +104,8 @@ type HighsOptions = Readonly<
     infinite_bound: number;
 
     /**
-     * Lower limit on |matrix entries|: values less than or equal to this
-     * will be
-     * treated as zero
+     * Absolute matrix-coefficient threshold at or below which entries are
+     * treated as zero and may be removed.
      * @min 1e-12
      * @default 1e-09
      */
@@ -84,79 +120,89 @@ type HighsOptions = Readonly<
     large_matrix_value: number;
 
     /**
-     * Primal feasibility tolerance
+     * Maximum accepted primal bound/row violation for LP feasibility tests.
      * @min 1e-10
      * @default 1e-07
      */
     primal_feasibility_tolerance: number;
 
     /**
-     * Dual feasibility tolerance
+     * Maximum accepted dual-feasibility violation, including reduced costs.
      * @min 1e-10
      * @default 1e-07
      */
     dual_feasibility_tolerance: number;
 
     /**
-     * IPM optimality tolerance
+     * Optimality tolerance used by the interior-point solver.
      * @min 1e-12
      * @default 1e-08
      */
     ipm_optimality_tolerance: number;
 
     /**
-     * Objective bound for termination of the dual simplex solver
+     * Objective cutoff used to stop dual simplex. Reaching it is a stopping
+     * condition, not by itself proof of optimality.
      * @default Number.POSITIVE_INFINITY
      */
     objective_bound: number;
 
     /**
-     * Objective target for termination of the MIP solver
+     * Incumbent objective target used to stop a MIP solve early. Reaching the
+     * target does not prove that no better feasible solution exists.
      * @default Number.NEGATIVE_INFINITY
      */
     objective_target: number;
 
     /**
-     * random seed used in HiGHS
+     * Seed for randomized choices in HiGHS. Equal seeds improve reproducibility
+     * but do not override differences in solver version or execution order.
      * @min 0
      * @default 0
      */
     random_seed: number;
 
     /**
-     * number of threads used by HiGHS (0: automatic)
+     * Requested native thread count; `0` means automatic. This package's Wasm
+     * build is single-threaded, so this legacy option cannot add worker threads.
      * @min 0
      * @default 0
      */
     threads: number;
 
     /**
-     * Exponent of power-of-two bound scaling for model
+     * Exponent `k` for user bound scaling by the exact factor `2^k`.
      * @default 0
      */
     user_bound_scale: number;
 
     /**
-     * Exponent of power-of-two cost scaling for model
+     * Historical name for the exponent of power-of-two objective scaling.
+     * Current HiGHS versions call this option `user_objective_scale`; this
+     * compatibility property may be rejected by a build that no longer exposes
+     * the old native name.
      * @default 0
      */
     user_cost_scale: number;
 
     /**
-     * Debugging level in HiGHS
+     * Internal consistency-check level. Higher values add expensive diagnostic
+     * checks and are not normal solve-verbosity levels.
      * @default 0
      */
     highs_debug_level: HighsDebugLevel;
 
     /**
-     * Analysis level in HiGHS
+     * Bit mask selecting internal analysis data; combine `HighsAnalysisLevel`
+     * flags with bitwise OR.
      * @default 0
      */
     highs_analysis_level: HighsAnalysisLevel;
 
     /**
-     * Strategy for simplex solver 0 => Choose; 1 => Dual (serial); 2 =>
-     * Dual (PAMI); 3 => Dual (SIP); 4 => Primal
+     * Simplex algorithm strategy. Prefer the named `SimplexStrategy` members;
+     * `0` lets HiGHS choose, `1` is serial dual simplex, `2` and `3` are the
+     * parallel dual variants, and `4` is primal simplex.
      * @default 1
      */
     simplex_strategy: SimplexStrategy;
@@ -169,7 +215,9 @@ type HighsOptions = Readonly<
     simplex_scale_strategy: SimplexScaleStrategy;
 
     /**
-     * Strategy for simplex crash: off / LTSSF / Bixby (0/1/2)
+     * Initial-basis crash strategy. `0` disables crashing; values `1..9` select
+     * the LTSSF/LTSF, Bixby, basic, or diagnostic variants named by
+     * `SimplexCrashStrategy`.
      * @default 0
      */
     simplex_crash_strategy: SimplexCrashStrategy;
@@ -195,15 +243,16 @@ type HighsOptions = Readonly<
     simplex_iteration_limit: number;
 
     /**
-     * Limit on the number of simplex UPDATE operations
-     * @min 1
+     * Maximum simplex basis-update operations before refactorization. `0`
+     * requests refactorization without retaining updates.
+     * @min 0
      * @default 5000
      */
     simplex_update_limit: number;
 
     /**
-     * Minimum level of concurrency in parallel simplex
-     * @min 0
+     * Minimum concurrency requested from a parallel simplex variant.
+     * @min 1
      * @default 1
      * @max 8
      */
@@ -218,31 +267,36 @@ type HighsOptions = Readonly<
     simplex_max_concurrency: number;
 
     /**
-     * Enables or disables solver output
+     * Master switch for HiGHS output. When false, logging destinations such as
+     * the console and log file receive no solver output.
      * @default true
      */
     output_flag: boolean;
 
     /**
-     * Enables or disables console logging
+     * Routes enabled solver output to the console sink. `output_flag` remains
+     * the master switch and must also be enabled.
      * @default true
      */
     log_to_console: boolean;
 
     /**
-     * Solution file
+     * Path in Emscripten's private in-memory filesystem used by native solution
+     * writing. It is not a host path and this one-shot API does not return it.
      * @default ""
      */
     solution_file: string;
 
     /**
-     * Log file
+     * Path in Emscripten's private in-memory filesystem for solver logs. It is
+     * not written directly to the host filesystem.
      * @default ""
      */
     log_file: string;
 
     /**
-     * Write the primal and dual solution to a file
+     * Whether to write available primal/dual solution data to `solution_file`.
+     * The file remains private to the one-shot Wasm filesystem.
      * @default false
      */
     write_solution_to_file: boolean;
@@ -266,7 +320,8 @@ type HighsOptions = Readonly<
     glpsol_cost_row_location: GlpsolCostRowLocation | number;
 
     /**
-     * Run iCrash
+     * Whether to run iCrash, an interior-point crash procedure that seeks a
+     * useful starting basis before simplex.
      * @default false
      */
     icrash: boolean;
@@ -308,13 +363,14 @@ type HighsOptions = Readonly<
     icrash_approx_iter: number;
 
     /**
-     * Exact subproblem solution for iCrash
+     * Whether iCrash solves its minimization subproblems exactly.
      * @default false
      */
     icrash_exact: boolean;
 
     /**
-     * Exact subproblem solution for iCrash
+     * Whether iCrash uses breakpoint minimization when exact subproblem solving
+     * is disabled. The native implementation may not support this mode.
      * @default false
      */
     icrash_breakpoints: boolean;
@@ -344,32 +400,37 @@ type HighsOptions = Readonly<
     write_presolved_model_to_file: boolean;
 
     /**
-     * Whether MIP symmetry should be detected
+     * Whether to detect variable/constraint symmetries that can reduce MIP
+     * branch-and-bound search.
      * @default true
      */
     mip_detect_symmetry: boolean;
 
     /**
-     * Whether MIP restart is permitted
+     * Whether the MIP solver may restart its search using information learned
+     * from the current branch-and-bound tree.
      * @default true
      */
     mip_allow_restart: boolean;
 
     /**
-     * MIP solver max number of nodes
+     * Maximum number of processed MIP branch-and-bound nodes.
+     * @min 0
      * @default 2147483647
      */
     mip_max_nodes: number;
 
     /**
-     * MIP solver max number of nodes where estimate is above cutoff bound
+     * Maximum consecutive/stalled branch-and-bound nodes whose estimate does
+     * not improve on the incumbent cutoff before stopping.
      * @min 0
      * @default 2147483647
      */
     mip_max_stall_nodes: number;
 
     /**
-     * MIP solver max number of nodes when completing a partial MIP start
+     * Node budget used while completing a partial MIP start into a feasible
+     * assignment.
      * @min 0
      * @default 500
      */
@@ -384,13 +445,14 @@ type HighsOptions = Readonly<
     // #endif
 
     /**
-     * Whether improving MIP solutions should be saved
+     * Whether every new MIP incumbent is written to
+     * `mip_improving_solution_file`.
      * @default false
      */
     mip_improving_solution_save: boolean;
 
     /**
-     * Whether improving MIP solutions should be reported in sparse format
+     * Whether saved improving MIP incumbents omit zero-valued variables.
      * @default false
      */
     mip_improving_solution_report_sparse: boolean;
@@ -403,7 +465,7 @@ type HighsOptions = Readonly<
     mip_improving_solution_file: string;
 
     /**
-     * MIP solver max number of leave nodes
+     * Maximum number of MIP leaf nodes processed.
      * @min 0
      * @default 2147483647
      */
@@ -465,14 +527,16 @@ type HighsOptions = Readonly<
     mip_report_level: number;
 
     /**
-     * MIP feasibility tolerance
+     * Integrality tolerance used to decide whether a MIP variable is close
+     * enough to an allowed integer value.
      * @min 1e-10
      * @default 1e-06
      */
     mip_feasibility_tolerance: number;
 
     /**
-     * Effort spent for MIP heuristics
+     * Fractional effort assigned to MIP primal heuristics. `0` disables this
+     * effort and `1` requests the maximum configured effort.
      * @min 0
      * @default 0.05
      * @max 1
@@ -480,30 +544,32 @@ type HighsOptions = Readonly<
     mip_heuristic_effort: number;
 
     /**
-     * Tolerance on relative gap, |ub-lb|/|ub|, to determine whether
-     * optimality has been reached for a MIP instance
+     * Relative difference between the incumbent (primal bound) and best bound
+     * at which a MIP may terminate as optimal. Use `0` to require no relative
+     * gap beyond numerical tolerances.
      * @min 0
      * @default 1e-04
      */
     mip_rel_gap: number;
 
     /**
-     * Tolerance on absolute gap of MIP, |ub-lb|, to determine whether
-     * optimality has been reached for a MIP instance
+     * Absolute difference between the MIP incumbent and best bound at which the
+     * solver may terminate as optimal.
      * @min 0
      * @default 1e-06
      */
     mip_abs_gap: number;
 
     /**
-     * MIP minimum logging interval
+     * Minimum wall-clock interval in seconds between routine MIP progress logs.
      * @min 0
      * @default 5
      */
     mip_min_logging_interval: number;
 
     /**
-     * Iteration limit for IPM solver
+     * Maximum iterations for the interior-point solver.
+     * @min 0
      * @default 2147483647
      */
     ipm_iteration_limit: number;
@@ -516,7 +582,9 @@ type HighsOptions = Readonly<
     pdlp_iteration_limit: number;
 
     /**
-     * PDLP scaling bit mask: 1 => Ruiz, 2 => L2, and 4 => Pock-Chambolle.
+     * PDLP scaling bit mask: combine `1` (Ruiz), `2` (L2), and `4`
+     * (Pock-Chambolle). For example, the default `5` enables Ruiz and
+     * Pock-Chambolle scaling.
      * @min 0
      * @default 5
      * @max 7
@@ -547,14 +615,14 @@ type HighsOptions = Readonly<
     pdlp_optimality_tolerance: number;
 
     /**
-     * Iteration limit for QP solver
+     * Iteration limit for the active-set QP solver.
      * @min 0
      * @default 2147483647
      */
     qp_iteration_limit: number;
 
     /**
-     * Nullspace limit for QP solver
+     * Maximum nullspace dimension handled by the active-set QP solver.
      * @min 0
      * @default 4000
      */
@@ -571,7 +639,8 @@ type HighsOptions = Readonly<
 >;
 /**
  * Legacy solve result. `Rows` use zero-based model order and `Columns` are
- * keyed by column name. The union fully models only `Infeasible`: at runtime
+ * keyed by column name. Always inspect `Status` before reading numerical data.
+ * The union fully models only `Infeasible`: at runtime
  * `Not Set`, load/model/presolve/solve/postsolve errors, `Empty`, and `Unknown`
  * also omit primal, dual, and basis fields. Limit and unbounded statuses can
  * carry the best solution available, but do not imply one exists.
@@ -581,11 +650,15 @@ type HighsSolution =
   | GenericHighsSolution<false, HighsMixedIntegerLinearSolutionColumn, HighsMixedIntegerLinearSolutionRow>
   | GenericHighsSolution<boolean, HighsInfeasibleSolutionColumn, HighsInfeasibleSolutionRow, 'Infeasible'>;
 
-/** Common shape of a detached legacy solution. `IsLinear` selects LP or MIP fields. */
+/**
+ * Common detached legacy result shape. `IsLinear` selects continuous-model
+ * fields (including a continuous QP) versus MIP fields; it is a type parameter
+ * only and is not present in the runtime object.
+ */
 type GenericHighsSolution<IsLinear extends boolean, ColType, RowType, Status extends HighsModelStatus = HighsModelStatus> = {
   /** Human-readable HiGHS model status. */
   Status: Status;
-  /** Objective value including the model offset; may be non-finite without a solution. */
+  /** Objective including the constant offset; do not use it unless `Status` establishes a solution. */
   ObjectiveValue: number;
   /** Detached column results keyed by unique model column name. */
   Columns: Record<string, ColType>;
@@ -642,7 +715,11 @@ interface HighsInfeasibleSolutionBase {
 interface HighsInfeasibleSolutionRow extends HighsInfeasibleSolutionBase {}
 /** Infeasible legacy column metadata. */
 interface HighsInfeasibleSolutionColumn extends HighsInfeasibleSolutionBase {
-  /** Legacy integrality classification; semi-variable kinds are not distinguished. */
+  /**
+   * Lossy legacy classification: only native type code `1` is reported as
+   * `Integer`; semi-continuous, semi-integer, and implicit-integer codes are not
+   * distinguished by this compatibility result.
+   */
   Type: 'Integer' | 'Continuous';
 }
 
@@ -664,7 +741,7 @@ interface HighsLinearSolutionColumn extends HighsSolutionBase {
 
 /** MIP column result; dual and basis values are not defined for MIP solutions. */
 interface HighsMixedIntegerLinearSolutionColumn extends HighsSolutionBase {
-  /** Legacy integrality classification. */
+  /** Lossy compatibility classification; see `HighsInfeasibleSolutionColumn.Type`. */
   Type: 'Integer' | 'Continuous';
   /** Column name copied from the parsed model. */
   Name: string;
@@ -683,19 +760,22 @@ interface HighsLinearSolutionRow extends HighsSolutionBase {
 /** MIP row result; only bounds, index, and primal activity are available. */
 interface HighsMixedIntegerLinearSolutionRow extends HighsSolutionBase {}
 
-/** Compact legacy basis labels used by the one-shot result. */
+/**
+ * Compact one-shot basis labels: fixed (`FX`), at lower bound (`LB`), basic
+ * (`BS`), at upper bound (`UB`), free (`FR`), or generic nonbasic (`NB`).
+ */
 type HighsBasisStatus =
-  /** Fixed */
+  /** Fixed variable/row whose lower and upper bounds coincide. */
   | 'FX'
-  /** Lower Bound */
+  /** Nonbasic at the lower bound. */
   | 'LB'
-  /** Basis */
+  /** Basic variable or row slack. */
   | 'BS'
-  /** Upper Bound */
+  /** Nonbasic at the upper bound. */
   | 'UB'
-  /** Free */
+  /** Free item with no finite active bound. */
   | 'FR'
-  /** Non-Bounded */
+  /** Generic nonbasic item not represented by a bound-specific label. */
   | 'NB';
 
 /** Legacy Emscripten loader customization. */
@@ -901,7 +981,8 @@ declare enum IisStrategy {
  * instead of restating it. The legacy `solve(problem, options)` API therefore
  * remains structurally identical. New APIs are synchronous after the loader
  * resolves, own a persistent `Highs_create()` instance, copy all input into
- * WebAssembly, and return detached JavaScript-owned arrays.
+ * WebAssembly, and return detached JavaScript-owned snapshots. No returned
+ * typed array aliases WebAssembly memory.
  *
  * Public methods never accept virtual-filesystem paths. Operations backed by a
  * file-oriented C function use a private temporary file and accept/return the
@@ -928,9 +1009,9 @@ export interface InitOptions extends LegacyLoaderOptions {
   wasmBinary?: ArrayBuffer | ArrayBufferView;
   /** Precompiled module, avoiding compilation of `wasmBinary` or the located file. */
   wasmModule?: WebAssembly.Module;
-  /** Receives normal native output synchronously instead of the default console sink. */
+  /** Receives normal native output synchronously; output is suppressed when omitted. */
   print?: (message: string) => void;
-  /** Receives native diagnostics synchronously instead of the default error sink. */
+  /** Receives native diagnostics synchronously; diagnostics are suppressed when omitted. */
   printErr?: (message: string) => void;
 }
 
@@ -965,7 +1046,11 @@ export type Highs = LegacyHighs & {
   /** Error classes used by throwing persistent wrappers. */
   readonly errors: HighsErrorConstructors;
 
-  /** Creates an owned persistent instance and optionally copies/decodes its initial model. */
+  /**
+   * Creates a persistent native instance and optionally loads copied structured
+   * data or parses in-memory LP/MPS content. The caller must eventually call
+   * `dispose()`; garbage collection does not release the native instance.
+   */
   createModel(source?: ModelData | EncodedModel): Model;
 
   /** Status-preserving APIs corresponding closely to the stable C API. */
@@ -980,13 +1065,21 @@ export type HighsStatus = -1 | 0 | 1;
 /** Non-error native status retained by throwing wrapper metadata. */
 export type SuccessfulHighsStatus = 0 | 1;
 
-/** Status-only result from a raw operation; raw errors do not throw. */
+/**
+ * Status-only raw result. Native status errors are returned as `status: -1`
+ * rather than converted to exceptions. JavaScript validation, disposed use,
+ * callback reentrancy, allocation failure, and callback-thrown errors can still
+ * throw before or around the native call.
+ */
 export interface RawStatus {
   /** Native status code. */
   readonly status: HighsStatus;
 }
 
-/** Raw value result. A value exists only when status is success or warning. */
+/**
+ * Raw value result. A value exists only for native success or warning. As with
+ * `RawStatus`, wrapper-level validation/lifecycle errors can still throw.
+ */
 export type RawResult<T> =
   | {
       /** Native error; no value was produced. */
@@ -1071,7 +1164,7 @@ export interface HighsConstants {
   }>;
   /** Column-domain encodings for continuous, integer, semi, and implicit integer variables. */
   readonly variableType: Readonly<{
-    /** Unrestricted continuous variable. */
+    /** Real-valued variable subject to its configured lower and upper bounds. */
     continuous: 0;
     /** Integer variable. */
     integer: 1;
@@ -1089,14 +1182,14 @@ export interface HighsConstants {
     /** Maximize the objective (`-1` natively). */
     maximize: ObjectiveSense;
   }>;
-  /** Native compressed sparse matrix orientation codes. */
+  /** Native numeric matrix codes; high-level matrix inputs instead use `"csc"`/`"csr"`. */
   readonly matrixFormat: Readonly<{
     /** Compressed columns. */
     columnWise: 1;
     /** Compressed rows. */
     rowWise: 2;
   }>;
-  /** Native Hessian storage format codes. */
+  /** Native numeric Hessian codes; high-level inputs use `"triangular"`/`"square"`. */
   readonly hessianFormat: Readonly<{
     /** Store one triangle of the symmetric Hessian. */
     triangular: 1;
@@ -1263,13 +1356,31 @@ export interface HighsConstants {
   }>;
 }
 
-/** Dense floating-point input copied into temporary Wasm memory before return. */
+/**
+ * Numeric vector copied synchronously into temporary Wasm memory.
+ *
+ * The input never aliases native storage and may be reused or mutated as soon
+ * as the call returns. `NaN` is rejected. Infinity is meaningful only for
+ * properties that explicitly permit an unbounded value; matrix, objective, and
+ * Hessian coefficients should be finite.
+ */
 export type NumberInput = readonly number[] | Float64Array;
-/** Zero-based index input copied into native `HighsInt` storage. */
+/**
+ * Non-negative integer vector copied into 32-bit native `HighsInt` storage.
+ * Values used as model indices are zero-based; values used in sparse `starts`
+ * arrays are offsets. Every value must be a safe integer in signed 32-bit range.
+ */
 export type IndexInput = readonly number[] | Int32Array;
-/** Selection mask containing exactly one boolean or 0/1 value per axis item. */
+/**
+ * Full-axis selection mask. It contains exactly one entry per current row or
+ * column, and every entry must be exactly `true`, `false`, `1`, or `0`.
+ */
 export type MaskInput = readonly boolean[] | Uint8Array | Int32Array;
-/** Native variable-domain code; use `highs.constants.variableType` for readability. */
+/**
+ * Variable domain: `0` continuous, `1` integer, `2` semi-continuous, `3`
+ * semi-integer, or `4` implicit integer. Prefer the named values in
+ * `highs.constants.variableType` to unexplained numeric literals.
+ */
 export type VariableType = 0 | 1 | 2 | 3 | 4;
 /** Private brand preventing accidental reversal of native objective-sense literals. */
 declare const __objectiveSenseBrand: unique symbol;
@@ -1285,13 +1396,28 @@ export type ObjectiveSense = (1 | -1) & {
   /** Compile-time-only objective-sense brand; absent at runtime. */
   readonly [__objectiveSenseBrand]: true;
 };
-/** Compressed sparse matrix orientation: column-compressed or row-compressed. */
+/**
+ * Sparse orientation: `"csc"` is compressed sparse column and `"csr"` is
+ * compressed sparse row. The wrapper translates these strings to native matrix
+ * format codes; do not pass the numeric native codes here.
+ */
 export type MatrixFormat = "csc" | "csr";
-/** Hessian storage: one triangle of a symmetric matrix or the full square matrix. */
+/**
+ * Hessian storage: lower-triangular compressed columns, or a complete symmetric
+ * square matrix in compressed-column form.
+ */
 export type HessianFormat = "triangular" | "square";
-/** Native basis status code: lower, basic, upper, zero, or nonbasic. */
+/**
+ * Native basis status: `0` lower, `1` basic, `2` upper, `3` nonbasic at zero,
+ * or `4` generically nonbasic. Prefer `highs.constants.basisStatus`.
+ */
 export type BasisStatus = 0 | 1 | 2 | 3 | 4;
-/** Numeric model status; compare with `highs.constants.modelStatus`. */
+/**
+ * Stable C API model-state code. This describes the optimization outcome, not
+ * whether the JavaScript/native call itself succeeded. Compare it with
+ * `highs.constants.modelStatus`; it is distinct from the legacy string-valued
+ * `HighsSolution.Status`.
+ */
 export type ModelStatusCode =
   /** Not set. */
   | 0
@@ -1330,101 +1456,392 @@ export type ModelStatusCode =
   /** Interrupted. */
   | 17;
 
-/** Compressed sparse matrix input. Indices are zero-based and values are copied. */
+/**
+ * Constraint matrix in compressed sparse column (CSC) or compressed sparse row
+ * (CSR) form.
+ *
+ * `format` chooses the major axis. With `"csc"`, each packed segment is one
+ * column and `indices` contains row indices. With `"csr"`, each segment is one
+ * row and `indices` contains column indices. Define
+ * `majorDimension = format === "csc" ? numCols : numRows`. The arrays must obey:
+ *
+ * - `starts.length === majorDimension + 1`
+ * - `starts[0] === 0`
+ * - `starts` is nondecreasing
+ * - `starts[majorDimension] === indices.length === values.length`
+ * - every minor index is in the opposite matrix dimension
+ * - a packed row or column contains no duplicate minor index
+ *
+ * For example, the matrix `[[1, 0], [2, 3]]` is CSC-encoded as
+ * `starts: [0, 2, 3]`, `indices: [0, 1, 1]`, `values: [1, 2, 3]`.
+ * Explicit zeros and coefficients at or below HiGHS' small-matrix threshold may
+ * be removed. All arrays are copied before the call returns.
+ */
 export interface SparseMatrixInput {
-  /** Determines whether starts delimit columns (`csc`) or rows (`csr`). */
+  /**
+   * Chooses how the one-dimensional arrays encode the two-dimensional matrix.
+   *
+   * - `"csc"` (compressed sparse column): coefficients are grouped by column.
+   *   `starts[j]..starts[j + 1]` locates column `j`, and each corresponding
+   *   `indices[k]` is a row index.
+   * - `"csr"` (compressed sparse row): coefficients are grouped by row.
+   *   `starts[i]..starts[i + 1]` locates row `i`, and each corresponding
+   *   `indices[k]` is a column index.
+   *
+   * This changes the meanings and required length of both `starts` and
+   * `indices`; it does not transpose the mathematical matrix. Use `"csc"` when
+   * constructing columns naturally and `"csr"` when constructing rows
+   * naturally.
+   */
   readonly format: MatrixFormat;
-  /** Matrix row count. */
+  /**
+   * Number of rows in the mathematical matrix. It must be a non-negative
+   * signed 32-bit integer.
+   *
+   * In CSC format, every entry of `indices` is a row index and must satisfy
+   * `0 <= indices[k] < numRows`. In CSR format, this is the number of packed
+   * row segments, so `starts.length` must equal `numRows + 1`.
+   */
   readonly numRows: number;
-  /** Matrix column count. */
+  /**
+   * Number of columns in the mathematical matrix. It must be a non-negative
+   * signed 32-bit integer.
+   *
+   * In CSR format, every entry of `indices` is a column index and must satisfy
+   * `0 <= indices[k] < numCols`. In CSC format, this is the number of packed
+   * column segments, so `starts.length` must equal `numCols + 1`.
+   */
   readonly numCols: number;
-  /** Conventional compressed-sparse starts; length is major dimension + 1. */
+  /**
+   * Boundaries of the packed rows or columns inside `indices` and `values`.
+   * These are offsets, not model row/column indices.
+   *
+   * In CSC, column `j` occupies positions `k` from `starts[j]` inclusive to
+   * `starts[j + 1]` exclusive. In CSR, the same formula describes row `j`.
+   * Therefore an empty row/column has equal adjacent offsets.
+   *
+   * The array must have `numCols + 1` entries for CSC or `numRows + 1` entries
+   * for CSR. It must start with `0`, be nondecreasing, and end with the exact
+   * number of stored entries:
+   * `starts[starts.length - 1] === indices.length === values.length`.
+   *
+   * Example: `starts: [0, 2, 2, 3]` describes three major-axis items. The first
+   * has two entries at packed positions 0 and 1, the second is empty, and the
+   * third has one entry at position 2.
+   */
   readonly starts: IndexInput;
-  /** Minor-axis index for each nonzero; length equals `values.length`. */
+  /**
+   * Minor-axis coordinate for every packed coefficient in `values`.
+   * `indices[k]` and `values[k]` always describe the same matrix entry.
+   *
+   * In CSC, packed position `k` belongs to the column determined by `starts`,
+   * and `indices[k]` is its zero-based row. In CSR, position `k` belongs to the
+   * row determined by `starts`, and `indices[k]` is its zero-based column.
+   * Consequently CSC indices must be below `numRows`, while CSR indices must be
+   * below `numCols`.
+   *
+   * `indices.length` must equal `values.length` and the final `starts` entry.
+   * A single packed row/column must not repeat a minor index, because that would
+   * specify the same matrix coordinate twice. Indices in different packed
+   * rows/columns may naturally repeat.
+   *
+   * For CSC `starts: [0, 2, 3]`, `indices: [0, 1, 1]` means column 0 has entries
+   * in rows 0 and 1, while column 1 has one entry in row 1.
+   */
   readonly indices: IndexInput;
-  /** Nonzero coefficients; explicit zeros may be dropped by HiGHS. */
+  /**
+   * Numerical matrix coefficient at every packed position. `values[k]` is at
+   * the minor coordinate `indices[k]` within the row/column selected by
+   * `starts`; all three arrays must therefore be interpreted together.
+   *
+   * `values.length` must equal `indices.length` and the final `starts` entry.
+   * Values must be numbers other than `NaN`; matrix coefficients should be
+   * finite rather than using infinity to represent a bound. Explicit zero and
+   * coefficients whose magnitude is at or below `small_matrix_value` may be
+   * removed by HiGHS, so the later extracted matrix can contain fewer entries.
+   *
+   * For the CSC encoding `starts: [0, 2, 3]`, `indices: [0, 1, 1]`, and
+   * `values: [1, 2, 3]`, the stored coordinates are `(row 0, col 0) = 1`,
+   * `(row 1, col 0) = 2`, and `(row 1, col 1) = 3`.
+   */
   readonly values: NumberInput;
 }
 
-/** Detached compressed sparse matrix snapshot owned by JavaScript. */
+/**
+ * Detached compressed-sparse snapshot owned by JavaScript. Its arrays obey the
+ * `SparseMatrixInput` layout, and the last `starts` value is the stored nonzero
+ * count. The properties are readonly references, but typed-array elements are
+ * mutable; changing them never changes the native model.
+ */
 export interface SparseMatrix {
-  /** Snapshot orientation. */
+  /**
+   * Orientation of this snapshot. In `"csc"`, `starts` groups coefficients by
+   * column and `indices` contains row indices. In `"csr"`, `starts` groups by
+   * row and `indices` contains column indices.
+   */
   readonly format: MatrixFormat;
-  /** Number of rows in the snapshot. */
+  /**
+   * Number of matrix rows. It bounds CSC `indices` values and determines the
+   * number of packed segments (`numRows`) when `format === "csr"`.
+   */
   readonly numRows: number;
-  /** Number of columns in the snapshot. */
+  /**
+   * Number of matrix columns. It bounds CSR `indices` values and determines the
+   * number of packed segments (`numCols`) when `format === "csc"`.
+   */
   readonly numCols: number;
-  /** Major-axis starts, length `majorDimension + 1`. */
+  /**
+   * Packed-segment boundaries. Segment `j` occupies positions from `starts[j]`
+   * inclusive to `starts[j + 1]` exclusive in both `indices` and `values`.
+   * Segments are columns for CSC and rows for CSR. The array begins with zero,
+   * is nondecreasing, and its final entry equals the two data-array lengths.
+   */
   readonly starts: Int32Array;
-  /** Zero-based minor indices, one per nonzero. */
+  /**
+   * Zero-based minor coordinate at each packed position: a row number for CSC
+   * or a column number for CSR. `indices[k]` identifies the coordinate of
+   * `values[k]`; the enclosing row/column is determined from `starts`.
+   */
   readonly indices: Int32Array;
-  /** Coefficients, one per index. */
+  /**
+   * Stored coefficients parallel to `indices`. `values[k]` and `indices[k]`
+   * describe one coordinate in the packed segment containing position `k`.
+   * This typed array is detached from Wasm; mutating it changes only the
+   * snapshot and never the native model.
+   */
   readonly values: Float64Array;
 }
 
-/** Sparse Hessian input for a quadratic objective; arrays are copied. */
+/**
+ * Sparse symmetric Hessian `Q` for the quadratic objective
+ * `sense * (offset + c'x + 0.5 * x'Qx)`.
+ *
+ * Storage is compressed by column. `starts` follows the same offset invariants
+ * as a CSC matrix and must have `dimension + 1` entries; `indices` contains
+ * zero-based row indices, and `starts[dimension] === indices.length ===
+ * values.length`. Duplicate row indices within a column are invalid.
+ *
+ * For `"triangular"`, provide the lower triangle only: an entry in column `j`
+ * has row `i >= j`. For `"square"`, provide the complete symmetric matrix,
+ * including both off-diagonal `(i, j)` and `(j, i)` entries. Values are entries
+ * of `Q`; do not pre-multiply them by `0.5`.
+ *
+ * Example: `Q = [[2, 1], [1, 4]]` is triangularly encoded by
+ * `starts: [0, 2, 3]`, `indices: [0, 1, 1]`, `values: [2, 1, 4]`. It contributes
+ * `x0^2 + x0*x1 + 2*x1^2` to the objective. Inputs are copied synchronously.
+ */
 export interface HessianInput {
-  /** Triangular symmetric storage or full square storage. */
+  /**
+   * Selects which entries of symmetric matrix `Q` are supplied.
+   *
+   * `"triangular"` stores only the lower triangle in compressed-column form, so
+   * every entry in column `j` must have row index `i >= j`. HiGHS infers the
+   * mirrored upper triangle. `"square"` stores every matrix entry, so each
+   * off-diagonal value must be supplied in both symmetric coordinates and the
+   * resulting matrix must be symmetric.
+   */
   readonly format: HessianFormat;
-  /** Hessian row and column dimension, normally equal to model column count. */
+  /**
+   * Number of rows and columns in square matrix `Q`. When the Hessian is passed
+   * to a model, this must equal that model's `numCols`, because there is one
+   * Hessian coordinate per decision variable. It must be a non-negative signed
+   * 32-bit integer.
+   */
   readonly dimension: number;
-  /** Length is dimension + 1. */
+  /**
+   * Compressed-column boundaries into `indices` and `values`. Hessian column `j`
+   * occupies positions from `starts[j]` inclusive to `starts[j + 1]` exclusive.
+   * Equal adjacent values represent an empty column.
+   *
+   * The array must have exactly `dimension + 1` entries, begin with `0`, be
+   * nondecreasing, and end with
+   * `indices.length === values.length === starts[dimension]`.
+   * For example, `[0, 2, 3]` means column 0 has two stored entries and column 1
+   * has one.
+   */
   readonly starts: IndexInput;
-  /** Zero-based row index of each stored Hessian entry. */
+  /**
+   * Zero-based row coordinate of each packed Hessian value. Position `k`
+   * represents matrix coordinate `(indices[k], j)`, where column `j` is the
+   * unique column whose interval `starts[j] <= k < starts[j + 1]` contains it.
+   *
+   * Every index must satisfy `0 <= indices[k] < dimension`. In triangular mode
+   * it must additionally satisfy `indices[k] >= j`. A column must not contain a
+   * duplicate row index. The array length must equal `values.length` and the
+   * final `starts` entry.
+   */
   readonly indices: IndexInput;
-  /** Stored coefficients in `0.5 * x'Qx`; length equals `indices.length`. */
+  /**
+   * Entries of symmetric matrix `Q`, parallel to `indices`. `values[k]` is the
+   * value at the row given by `indices[k]` and the column determined by
+   * `starts`. These are entries of `Q` itself in objective
+   * `0.5 * x'Qx`; do not halve diagonal values or double off-diagonal values.
+   *
+   * Values must be finite numbers and the length must equal `indices.length`
+   * and the final `starts` entry. For triangular encoding of
+   * `Q = [[2, 1], [1, 4]]`, use `starts: [0, 2, 3]`,
+   * `indices: [0, 1, 1]`, and `values: [2, 1, 4]`.
+   */
   readonly values: NumberInput;
 }
 
-/** Detached Hessian snapshot owned by JavaScript. */
+/**
+ * Detached Hessian snapshot owned by JavaScript. Returned model snapshots are
+ * normalized to lower-triangular compressed-column storage. Mutating these
+ * typed arrays does not affect the native model.
+ */
 export interface Hessian {
-  /** Storage format used by the returned snapshot. */
+  /**
+   * Storage convention for this snapshot. Model extraction currently
+   * normalizes `Q` to `"triangular"`: lower-triangle compressed columns with
+   * the symmetric upper triangle implied.
+   */
   readonly format: HessianFormat;
-  /** Square matrix dimension. */
+  /** Number of rows and columns in `Q`, normally equal to model `numCols`. */
   readonly dimension: number;
-  /** Column starts of length `dimension + 1`. */
+  /**
+   * Compressed-column boundaries. Column `j` uses packed positions
+   * `[starts[j], starts[j + 1])`. The array starts at zero, is nondecreasing,
+   * has `dimension + 1` entries, and ends at the stored-entry count.
+   */
   readonly starts: Int32Array;
-  /** Zero-based row index for each stored entry. */
+  /**
+   * Zero-based row for each packed value. The corresponding column is found
+   * from `starts`; in a triangular snapshot each row is at least its column.
+   */
   readonly indices: Int32Array;
-  /** Stored quadratic coefficients. */
+  /**
+   * Entries of `Q` parallel to `indices`, not pre-scaled by the objective's
+   * `0.5` factor. This detached array may be mutated without changing HiGHS.
+   */
   readonly values: Float64Array;
 }
 
-/** Complete LP, MIP, or QP model input. Every supplied array/string is copied. */
+/**
+ * Complete linear, mixed-integer, quadratic, or mixed-integer quadratic model.
+ *
+ * Columns are decision variables `x[j]`. The bounds mean
+ * `colLower[j] <= x[j] <= colUpper[j]`; rows mean
+ * `rowLower[i] <= A[i]x <= rowUpper[i]`. Use `-highs.infinity` for a missing
+ * lower bound and `highs.infinity` for a missing upper bound. All axis vectors
+ * must have exactly the documented length, dimensions must be non-negative
+ * signed 32-bit integers, and matrix dimensions must equal `numRows` by
+ * `numCols`.
+ *
+ * Omitting `integrality` makes every column continuous. Supplying it selects
+ * variable domains independently of whether `hessian` supplies a quadratic
+ * objective. Every supplied array and string is validated and copied; caller
+ * mutation after the call cannot change the native model.
+ */
 export interface ModelData {
-  /** Number of columns; all column vectors must have this length. */
+  /**
+   * Number of decision variables, also called columns. It must be a
+   * non-negative signed 32-bit integer. `colCost`, `colLower`, `colUpper`, and
+   * supplied `integrality`/`colNames` vectors must have exactly this length;
+   * `matrix.numCols` and a supplied `hessian.dimension` must equal it.
+   */
   readonly numCols: number;
-  /** Number of rows; all row vectors must have this length. */
+  /**
+   * Number of linear constraints, also called rows. It must be a non-negative
+   * signed 32-bit integer. `rowLower`, `rowUpper`, and supplied `rowNames`
+   * vectors must have exactly this length, and `matrix.numRows` must equal it.
+   */
   readonly numRows: number;
-  /** Objective direction; defaults to minimize. */
+  /**
+   * Whether HiGHS minimizes or maximizes the complete objective. Omission means
+   * minimize. Use `highs.constants.objectiveSense.minimize` or `.maximize`;
+   * plain numeric `1`/`-1` literals are deliberately not accepted by the type.
+   * The sense applies to the offset, linear term, and quadratic term together.
+   */
   readonly sense?: ObjectiveSense;
-  /** Constant objective term; defaults to zero. */
+  /**
+   * Constant added to the objective independently of all variable values. It
+   * changes the reported objective and objective-based stopping criteria but
+   * not which `x` is feasible. Omission means `0`.
+   */
   readonly offset?: number;
-  /** Linear objective coefficients, length `numCols`. */
+  /**
+   * Linear objective coefficient for each variable, in column order. The
+   * linear term is `sum(colCost[j] * x[j])`, or `c'x`. The array must contain
+   * exactly `numCols` finite numbers. Use `0` when a variable has no linear
+   * objective contribution; infinity is not a substitute for a bound.
+   */
   readonly colCost: NumberInput;
-  /** Column lower bounds, length `numCols`; use `highs.infinity` for infinity. */
+  /**
+   * Lower bound for each variable: `colLower[j] <= x[j]`. The array must have
+   * exactly `numCols` entries. Use `-highs.infinity` for no lower bound. A
+   * finite lower bound equal to `colUpper[j]` fixes the variable; normally each
+   * lower bound must not exceed its corresponding upper bound.
+   */
   readonly colLower: NumberInput;
-  /** Column upper bounds, length `numCols`. */
+  /**
+   * Upper bound for each variable: `x[j] <= colUpper[j]`. The array must have
+   * exactly `numCols` entries. Use `highs.infinity` for no upper bound. A finite
+   * upper bound equal to `colLower[j]` fixes the variable; normally each upper
+   * bound must not be below its corresponding lower bound.
+   */
   readonly colUpper: NumberInput;
-  /** Row lower bounds, length `numRows`. */
+  /**
+   * Lower bound for each row activity: `rowLower[i] <= sum(A[i,j] * x[j])`.
+   * This is a bound on the computed left-hand side `Ax`, not a variable value
+   * or slack. The array must have exactly `numRows` entries. Use
+   * `-highs.infinity` when a row has no lower bound.
+   */
   readonly rowLower: NumberInput;
-  /** Row upper bounds, length `numRows`. */
+  /**
+   * Upper bound for each row activity: `sum(A[i,j] * x[j]) <= rowUpper[i]`.
+   * The array must have exactly `numRows` entries. Use `highs.infinity` when a
+   * row has no upper bound. Equal finite lower/upper values represent an
+   * equality constraint.
+   */
   readonly rowUpper: NumberInput;
-  /** Constraint matrix whose dimensions must match `numRows` and `numCols`. */
+  /**
+   * Sparse coefficient matrix `A` used by every row activity `Ax`. Its
+   * `numRows` and `numCols` must exactly match this model. See
+   * `SparseMatrixInput` for the complete CSC/CSR encoding, offset, index,
+   * duplicate, and coefficient rules.
+   */
   readonly matrix: SparseMatrixInput;
-  /** Optional variable types, length `numCols`; omission makes an LP/QP. */
+  /**
+   * Domain code for each variable in column order. It must have exactly
+   * `numCols` entries, each one of `0` continuous, `1` integer, `2`
+   * semi-continuous, `3` semi-integer, or `4` implicit integer. Prefer named
+   * `highs.constants.variableType` values. Omission makes every variable
+   * continuous; it does not remove a supplied quadratic Hessian.
+   */
   readonly integrality?: readonly VariableType[] | Int32Array;
-  /** Optional quadratic objective; its dimension must equal `numCols`. */
+  /**
+   * Optional symmetric matrix `Q` adding `0.5 * x'Qx` to the objective. Its
+   * `dimension` must equal `numCols`. Omission makes the objective linear;
+   * supplying it is independent of `integrality`, so both may be present.
+   * See `HessianInput` for triangular and square storage rules.
+   */
   readonly hessian?: HessianInput;
-  /** Optional column names, length `numCols`; duplicate/invalid names may be rejected. */
+  /**
+   * Optional variable names in exact column order, with exactly `numCols`
+   * strings. Names are copied and later used by name lookup and serialization.
+   * Empty, duplicate, or format-invalid names may be rejected by HiGHS.
+   */
   readonly colNames?: readonly string[];
-  /** Optional row names, length `numRows`. */
+  /**
+   * Optional constraint names in exact row order, with exactly `numRows`
+   * strings. Names are copied and later used by name lookup and serialization;
+   * empty, duplicate, or format-invalid names may be rejected.
+   */
   readonly rowNames?: readonly string[];
-  /** Optional model name copied into the native instance. */
+  /**
+   * Optional name for the model as a whole. It is metadata used by supported
+   * serializers and does not affect optimization. The string is copied.
+   */
   readonly modelName?: string;
 }
 
-/** Detached model snapshot; mutation never changes the native model. */
+/**
+ * Detached numerical model snapshot. It includes bounds, objective, matrix,
+ * integrality, and an optional Hessian, but not model/row/column names or
+ * auxiliary multi-objective definitions. Typed-array elements remain mutable;
+ * changing them never changes the native model.
+ */
 export interface DetachedModelData {
   /** Number of columns represented by all column arrays. */
   readonly numCols: number;
@@ -1448,44 +1865,93 @@ export interface DetachedModelData {
   readonly matrix: SparseMatrix;
   /** Variable types, length `numCols`; continuous entries are zero. */
   readonly integrality: Int32Array;
-  /** Detached Hessian when the model has a quadratic objective. */
+  /** Lower-triangular Hessian when the model has a stored quadratic objective. */
   readonly hessian?: Hessian;
 }
 
-/** In-memory LP or MPS serialization; no caller-controlled filesystem path is used. */
+/**
+ * In-memory LP or MPS file. `format`, not a filename extension, selects the
+ * parser. A string is encoded as file text; a `Uint8Array` supplies raw file
+ * bytes. Data is copied through a private temporary Emscripten file that is
+ * removed before return, so no caller-controlled filesystem path is exposed.
+ */
 export interface EncodedModel {
   /** Parser format, independent of a filename extension. */
   readonly format: "lp" | "mps";
-  /** LP text or MPS text/binary bytes copied into private temporary storage. */
+  /** LP/MPS text or raw encoded file bytes copied into private temporary storage. */
   readonly data: string | Uint8Array;
 }
 
-/** Zero-based row/column selection used by query, change, and deletion operations. */
+/**
+ * Selection of current zero-based rows or columns.
+ *
+ * A range is inclusive and requires `0 <= from <= to < axisLength`. A set must
+ * contain valid indices in strictly increasing order. A mask has exactly
+ * `axisLength` entries and selects true/`1` positions. Results are ordered by
+ * ascending current model index for every selection kind.
+ *
+ * For bulk changes, range/set value arrays are packed with one value per
+ * selected item. Mask value arrays instead span the complete axis; only values
+ * at selected positions are consumed. For example, selecting columns 1 and 2
+ * with mask `[0, 1, 1, 0]` requires a four-element value array such as
+ * `[0, 20, 30, 0]`, not `[20, 30]`.
+ */
 export type IndexSelection =
   | {
-      /** Select an inclusive contiguous range. */
+      /**
+       * Selects every current axis position from `from` through `to`, including
+       * both endpoints. Use this when the desired rows/columns are contiguous.
+       */
       readonly kind: "range";
-      /** First selected zero-based index. */
+      /**
+       * First selected current row/column index. It is zero-based and must
+       * satisfy `0 <= from <= to`; deletion or insertion can change which model
+       * item occupies this index in a later call.
+       */
       readonly from: number;
-      /** Last selected zero-based index, inclusive. */
+      /**
+       * Last selected current row/column index, included in the selection. It
+       * must satisfy `from <= to < currentAxisLength`. Empty ranges are not
+       * represented; use an empty set if the operation supports one.
+       */
       readonly to: number;
     }
   /** Indices must increase strictly, matching the stable C set operations. */
   | {
-      /** Select an explicit strictly increasing set. */
+      /**
+       * Selects explicitly listed current rows/columns. Use this for a sparse,
+       * non-contiguous selection where a full-axis mask would be inconvenient.
+       */
       readonly kind: "set";
-      /** Zero-based selected indices. */
+      /**
+       * Zero-based current model indices in strictly increasing order, with no
+       * duplicates. Every value must be below the current axis length. This
+       * order is also the packed order expected by parallel values in bulk
+       * range/set mutation methods.
+       */
       readonly indices: IndexInput;
     }
   /** Masks contain one boolean/0/1 entry per model row or column. */
   | {
-      /** Select positions whose mask value is true/nonzero. */
+      /**
+       * Selects current axis positions whose corresponding mask entry is
+       * `true`/`1`; `false`/`0` entries are not selected.
+       */
       readonly kind: "mask";
-      /** Full-axis mask copied before the native call. */
+      /**
+       * Full-axis bitmap with exactly one entry per current model row or column.
+       * Each entry must be exactly boolean or 0/1. Unlike range/set mutations,
+       * parallel mutation vectors also span the full axis rather than containing
+       * only selected values. For mask `[0, 1, 1, 0]`, costs might therefore be
+       * `[0, 20, 30, 0]`; only positions 1 and 2 are consumed.
+       */
       readonly mask: MaskInput;
     };
 
-/** Detached data for selected or newly added columns. */
+/**
+ * Detached selected-column data in ascending model-index order. The matrix is
+ * CSC with `numCols === count` and one row per current model row.
+ */
 export interface ColumnData {
   /** Number of represented columns. */
   readonly count: number;
@@ -1499,7 +1965,10 @@ export interface ColumnData {
   readonly matrix: SparseMatrix;
 }
 
-/** Detached data for selected or newly added rows. */
+/**
+ * Detached selected-row data in ascending model-index order. The matrix is CSR
+ * with `numRows === count` and one column per current model column.
+ */
 export interface RowData {
   /** Number of represented rows. */
   readonly count: number;
@@ -1511,19 +1980,56 @@ export interface RowData {
   readonly matrix: SparseMatrix;
 }
 
-/** Dense solution-start input; each present array must match its model axis. */
+/**
+ * Dense solver-start components. `colValue` and `rowValue` are primal variable
+ * values and row activities `Ax`; `colDual` and `rowDual` are reduced costs and
+ * row duals. Each supplied vector is complete for its axis and is copied.
+ * Supplying a start does not assert feasibility or optimality and does not set
+ * a basis. For entry-wise partial primal column values, use
+ * `SparseSolutionInput` instead.
+ *
+ * Native dense-start acceptance requires at least a full `colValue` or a full
+ * `rowDual`; row activities and reduced costs are supplementary components and
+ * may be recomputed by HiGHS.
+ */
 export interface SolutionInput {
-  /** Primal column values, length `numCols`. */
+  /**
+   * Candidate primal value `x[j]` for every model column. If supplied, this
+   * must be a complete `numCols`-entry vector; omitted entries cannot be
+   * represented inside this dense field. HiGHS derives row activities from
+   * these values and checks rather than assumes feasibility.
+   */
   readonly colValue?: NumberInput;
-  /** Primal row activities, length `numRows`. */
+  /**
+   * Candidate activity `sum(A[i,j] * x[j])` for every row, not the row slack.
+   * It must have `numRows` entries. It supplements a dense start and is not
+   * independently sufficient for native `setSolution`; HiGHS may recompute it
+   * from `colValue`.
+   */
   readonly rowValue?: NumberInput;
-  /** Column dual values/reduced costs, length `numCols`. */
+  /**
+   * Candidate reduced cost for every column, with exactly `numCols` entries.
+   * It is an LP/QP dual component, not a primal objective coefficient, and has
+   * no useful MIP-incumbent meaning. It supplements dual row values and may be
+   * recomputed by HiGHS.
+   */
   readonly colDual?: NumberInput;
-  /** Row dual values, length `numRows`. */
+  /**
+   * Candidate dual multiplier for every row, with exactly `numRows` entries.
+   * Supplying a complete `rowDual` can establish a dense dual start; HiGHS may
+   * derive reduced costs from it. Sign interpretation follows objective sense
+   * and row-bound activity.
+   */
   readonly rowDual?: NumberInput;
 }
 
-/** Detached dense solution snapshot; availability depends on solve status. */
+/**
+ * Detached dense solution buffers. Their presence does not prove that they are
+ * valid: primal and dual availability are independent and depend on model and
+ * solve status. Inspect `primal_solution_status` and `dual_solution_status`
+ * through `model.info`, as well as `model.getModelStatus()`, before using them.
+ * MIP dual vectors are not meaningful. The arrays are JavaScript-owned copies.
+ */
 export interface Solution {
   /** Primal column values, length `numCols`. */
   readonly colValue: Float64Array;
@@ -1535,26 +2041,64 @@ export interface Solution {
   readonly rowDual: Float64Array;
 }
 
-/** Sparse zero-based index/value pairs; lengths must match and indices must be valid. */
+/**
+ * Sparse zero-based index/value pairs. The arrays have equal length and are
+ * copied. For row/column addition, indices address the existing opposite axis;
+ * duplicate indices for one new row/column are invalid.
+ */
 export interface SparseEntriesInput {
-  /** Zero-based row/column indices. */
+  /**
+   * Existing opposite-axis coordinate for each sparse value. When adding a
+   * column, these are current row indices; when adding a row, these are current
+   * column indices. For `SparseSolutionInput`, they are current column indices.
+   * Every index must be in range and `indices.length` must equal
+   * `values.length`. A new row/column must not list the same coordinate twice.
+   */
   readonly indices: IndexInput;
-  /** Value corresponding to each index. */
+  /**
+   * Value paired position-for-position with `indices`. For a newly added row or
+   * column, `values[k]` is its matrix coefficient at `indices[k]`. For a sparse
+   * solution start, it is the proposed primal value of column `indices[k]`.
+   * The array is copied and must have exactly `indices.length` entries.
+   */
   readonly values: NumberInput;
 }
 
-/** Sparse primal column assignment, typically used as a partial MIP start. */
+/**
+ * Partial primal assignment, typically a MIP start. Each index addresses a
+ * current model column and its parallel value supplies that column's candidate
+ * value; unspecified columns remain unspecified rather than being set to zero.
+ */
 export interface SparseSolutionInput extends SparseEntriesInput {}
 
-/** Complete basis input; both arrays are copied and must match model dimensions. */
+/**
+ * Complete simplex-basis status assignment. Arrays must exactly match model
+ * dimensions and every entry must be a `BasisStatus`. Valid codes and lengths
+ * do not guarantee a mathematically valid basis; HiGHS may reject an
+ * inconsistent or singular assignment. Both arrays are copied.
+ */
 export interface BasisInput {
-  /** Column basis statuses, length `numCols`. */
+  /**
+   * Basis status for every model column, in current column order. The array must
+   * have exactly `numCols` entries and each must be one of `0` lower, `1` basic,
+   * `2` upper, `3` zero, or `4` nonbasic. Use
+   * `highs.constants.basisStatus` for named values.
+   */
   readonly colStatus: readonly BasisStatus[] | Int32Array;
-  /** Row basis statuses, length `numRows`. */
+  /**
+   * Basis status for every row slack/activity, in current row order. The array
+   * must have exactly `numRows` entries and uses the same status codes as
+   * `colStatus`. Across both arrays, a valid LP basis normally has exactly
+   * `numRows` basic entries; HiGHS performs the final consistency check.
+   */
   readonly rowStatus: readonly BasisStatus[] | Int32Array;
 }
 
-/** Detached basis snapshot. A useful basis requires a solved or explicitly based LP. */
+/**
+ * Detached basis-status snapshot. Array presence does not establish validity;
+ * inspect the `basis_validity` info item. A usable basis normally comes from a
+ * simplex solve, crossover, or explicit basis installation.
+ */
 export interface Basis {
   /** Column basis statuses, length `numCols`. */
   readonly colStatus: Int32Array;
@@ -1562,7 +2106,11 @@ export interface Basis {
   readonly rowStatus: Int32Array;
 }
 
-/** Output of stateless LP/QP calls; all arrays are JavaScript-owned copies. */
+/**
+ * Output of a successful-status stateless LP/QP call. Always inspect
+ * `modelStatus`: array presence alone does not guarantee a feasible primal,
+ * valid dual, or valid basis. All arrays are JavaScript-owned copies.
+ */
 export interface SolveOutput {
   /** Final model status, independent of the enclosing call status. */
   readonly modelStatus: ModelStatusCode;
@@ -1572,7 +2120,11 @@ export interface SolveOutput {
   readonly basis: Basis;
 }
 
-/** Output of a stateless MIP call; MIP duals and bases are intentionally absent. */
+/**
+ * Output of a successful-status stateless MIP call. Inspect `modelStatus`
+ * before using the primal arrays; a limit or infeasible result may have no
+ * incumbent. MIP duals and bases are intentionally absent.
+ */
 export interface MipSolveOutput {
   /** Final MIP model status. */
   readonly modelStatus: ModelStatusCode;
@@ -1601,9 +2153,21 @@ export interface PostsolveInput {
   readonly rowDual?: NumberInput;
 }
 
-/** One lexicographic/blended linear objective; coefficient input is copied. */
+/**
+ * One auxiliary linear objective used in multi-objective optimization.
+ *
+ * With the default lexicographic mode, larger `priority` values are optimized
+ * first and priorities must be distinct. The sign of `weight` chooses direction
+ * (positive minimizes, negative maximizes); its magnitude scales the objective.
+ * After optimizing this objective, its absolute/relative tolerances limit how
+ * much it may degrade while lower-priority objectives are optimized.
+ *
+ * If native option `blend_multi_objectives` is enabled, priorities are ignored
+ * and all objectives are combined into one minimization objective using their
+ * weights. Coefficients are copied and must have one entry per model column.
+ */
 export interface LinearObjectiveInput {
-  /** Blend weight applied to this objective. */
+  /** Signed scale; positive minimizes and negative maximizes this objective. */
   readonly weight: number;
   /** Constant term for this objective. */
   readonly offset: number;
@@ -1613,11 +2177,15 @@ export interface LinearObjectiveInput {
   readonly absoluteTolerance: number;
   /** Relative degradation tolerance used for lower-priority objectives. */
   readonly relativeTolerance: number;
-  /** Optimization priority; equal priorities are blended by weight. */
+  /** Lexicographic priority; larger values run first and equal priorities are invalid. */
   readonly priority: number;
 }
 
-/** JavaScript representation accepted for a HiGHS option value. */
+/**
+ * JavaScript representation accepted for a HiGHS option. The named option's
+ * native type determines which member is valid; integer options require signed
+ * 32-bit integral numbers and numeric option values must not be `NaN`.
+ */
 export type OptionValue = boolean | number | string;
 /** Stable option storage categories. Integer options still use JavaScript `number`. */
 export type OptionType = "boolean" | "integer" | "double" | "string";
@@ -1640,7 +2208,12 @@ export interface OptionDescriptor<T extends OptionValue = OptionValue> {
   readonly maximum?: number;
 }
 
-/** Throwing option facade bound to one persistent model. */
+/**
+ * Option facade bound to one persistent native instance. Exact snake_case names
+ * are discoverable with `names()` and `describe()`. Changes affect subsequent
+ * operations on this model only; bulk and text-based changes are not
+ * transactional, so earlier accepted settings remain if a later one fails.
+ */
 export interface OptionStore {
   /**
    * Exact snake_case HiGHS option names. Thread/concurrency and file/path
@@ -1659,13 +2232,17 @@ export interface OptionStore {
   names(): readonly string[];
   /** Restores every option to its compiled default. */
   reset(): CallMetadata;
-  /** Parses option-file text through private storage; accepted settings mutate this instance. */
+  /** Parses option-file text privately; settings processed before an error may remain applied. */
   read(text: string): CallMetadata;
   /** Serializes all options, or only deviations, to detached text without exposing a path. */
   export(deviationsOnly?: boolean): string;
 }
 
-/** Read-only facade for solve information on one model instance. */
+/**
+ * Read-only solve-information facade. Values describe current or most recent
+ * solver state; some names are unavailable before a solve or for a particular
+ * algorithm/model. Native int64 counters are always returned as `bigint`.
+ */
 export interface InfoStore {
   /** Gets an exact info item; 64-bit counters use `bigint`, and unavailable names throw. */
   get(name: string): number | bigint;
@@ -1695,7 +2272,13 @@ export interface PresolvedDimensions {
   readonly numNonzeros: number;
 }
 
-/** Detached sensitivity-ranging arrays for one perturbation direction. */
+/**
+ * Sensitivity endpoint data for one perturbation direction. `value` contains
+ * the limiting coefficient/bound itself, not a delta. For example, `5` means
+ * the item may move to `5`, not increase by `5`. `objective` gives the objective
+ * at that endpoint; infinities are legitimate. All four arrays have one entry
+ * per ranged row or column and are detached copies.
+ */
 export interface RangingRecord {
   /** Limiting cost or bound value for each ranged item. */
   readonly value: Float64Array;
@@ -1712,21 +2295,28 @@ export interface RangingRecord {
 
 /** LP ranging result. Requires a valid optimal simplex basis. */
 export interface RangingResult {
-  /** Allowable upward perturbation of each column cost. */
+  /** Upper endpoint for each column's objective coefficient. */
   readonly colCostUp: RangingRecord;
-  /** Allowable downward perturbation of each column cost. */
+  /** Lower endpoint for each column's objective coefficient. */
   readonly colCostDown: RangingRecord;
-  /** Allowable upward perturbation of each column bound. */
+  /** Upper endpoint for each column's active/relevant bound. */
   readonly colBoundUp: RangingRecord;
-  /** Allowable downward perturbation of each column bound. */
+  /** Lower endpoint for each column's active/relevant bound. */
   readonly colBoundDown: RangingRecord;
-  /** Allowable upward perturbation of each row bound. */
+  /** Upper endpoint for each row's active/relevant bound. */
   readonly rowBoundUp: RangingRecord;
-  /** Allowable downward perturbation of each row bound. */
+  /** Lower endpoint for each row's active/relevant bound. */
   readonly rowBoundDown: RangingRecord;
 }
 
-/** Irreducible-infeasible-subsystem membership and bound classifications. */
+/**
+ * Infeasible-subsystem candidate and conflict classifications. Compact index
+ * arrays identify retained rows/columns and have matching parallel bound-code
+ * arrays. Full status arrays have `numCols`/`numRows` entries. Empty compact
+ * arrays mean no subsystem was found, not necessarily that feasibility was
+ * proved. A limited computation can mark entries `maybeInConflict` and need not
+ * have proved irreducibility; compare codes with `highs.constants.iis`.
+ */
 export interface IisResult {
   /** Zero-based columns retained in the compact IIS result. */
   readonly colIndex: Int32Array;
@@ -1743,8 +2333,11 @@ export interface IisResult {
 }
 
 /**
- * Feasibility-relaxation penalties. Negative global or local penalties prohibit
- * violation of the corresponding bound or row rather than rewarding it.
+ * Feasibility-relaxation penalties, used as objective costs for bound/row
+ * violations. A positive value charges per unit of violation, zero allows a
+ * free violation, and a negative value prohibits that violation. Each supplied
+ * local vector spans its complete axis and replaces, rather than adds to, the
+ * corresponding global penalty entry by entry.
  */
 export interface FeasibilityRelaxationInput {
   /** Default penalty for violating column lower bounds. */
@@ -1761,7 +2354,11 @@ export interface FeasibilityRelaxationInput {
   readonly localRowPenalty?: NumberInput;
 }
 
-/** Detached dense vector, optionally accompanied by its nonzero positions. */
+/**
+ * Detached full-length dense vector. When sparse output is requested, `values`
+ * is still dense and model-ordered; `nonzeroIndices` merely lists positions that
+ * HiGHS reports as nonzero.
+ */
 export interface NumericVector {
   /** Full dense vector in model order. */
   readonly values: Float64Array;
@@ -1796,7 +2393,10 @@ export interface InterruptCallbackEvent
 export interface UserSolutionCallbackEvent extends CallbackEventBase<9> {
   /** Valid only while a MIP user-solution callback is active. */
   setSolution(solution: NumberInput | SparseSolutionInput): RawStatus;
-  /** Asks HiGHS to repair the candidate currently exposed to this callback. */
+  /**
+   * Asks HiGHS to repair the current type-9 candidate, normally after
+   * `setSolution()`. The repaired vector is retained natively, not returned.
+   */
   repairSolution(): RawStatus;
 }
 
@@ -1880,7 +2480,7 @@ export type HighsCallback = (event: CallbackEvent) => undefined;
 
 /** Per-channel callback registry; omitted channels are not activated. */
 export type HighsCallbackMap = {
-  /** Synchronous handler for callback channel `T`; returning a value or Promise is invalid. */
+  /** Synchronous handler; ordinary return values are ignored, but thenables are rejected. */
   readonly [T in CallbackType]?: (
     event: CallbackEventFor<T>,
   ) => undefined;
@@ -1889,6 +2489,10 @@ export type HighsCallbackMap = {
 /**
  * Persistent model owning one native HiGHS instance. Methods are synchronous,
  * copy inputs, and throw on validation/native errors unless explicitly noted.
+ * The caller must eventually call `dispose()`; garbage collection does not free
+ * the native instance. Returned strings and typed arrays are detached and remain
+ * usable after disposal. Value-returning methods record a native warning in
+ * `lastCall` when they do not return metadata directly.
  */
 export interface Model {
   /** Status-preserving view of the same native instance; disposing either view disposes both. */
@@ -1909,8 +2513,8 @@ export interface Model {
   /** Clears solution, basis, and solver state while retaining the model. */
   clearSolver(): CallMetadata;
   /**
-   * Clears model and solver state, then releases retained vector capacity. The
-   * native instance and its options remain reusable.
+   * Clears model and solver state, releases retained vector capacity, and resets
+   * native clocks. The native instance and its options remain reusable.
    */
   releaseMemory(): CallMetadata;
 
@@ -1932,7 +2536,7 @@ export interface Model {
    */
   exportSolution(pretty: true): string;
 
-  /** Replaces current state with a copied LP/MIP/QP selected from optional fields. */
+  /** Replaces current numerical state; integrality and Hessian independently select MIP/QP features. */
   passModel(model: ModelData): CallMetadata;
   /** Replaces the quadratic objective Hessian; dimension must match model columns. */
   passHessian(hessian: HessianInput): CallMetadata;
@@ -1948,19 +2552,32 @@ export interface Model {
   /**
    * Runs synchronously to termination or a configured limit. Supplied handlers
    * are registered only for this call and removed in `finally`. During a
-   * handler, only callback controls are reentrant; other model/raw calls throw.
+    * handler, only control methods on that event are reentrant; every model/raw
+    * method, including callback registration/channel methods, throws.
    */
   run(callbacks?: HighsCallbackMap): RunResult;
-  /** Maps a presolved primal/optional dual solution back to original model space. */
+  /**
+   * Maps values in the current presolved model's ordering back to original model
+   * space. Vector lengths must match `getPresolvedDimensions()` and model
+   * mutation may invalidate presolve state. Read the recovered values with
+   * `getSolution()`.
+   */
   postsolve(input: PostsolveInput): CallMetadata;
-  /** Returns cumulative native elapsed time since creation or `zeroAllClocks()`. */
+  /** Returns cumulative wall-clock seconds spent in solver runs since the last clock reset. */
   getRunTime(): number;
   /** Resets timing accumulators, restoring the full cumulative `time_limit` budget. */
   zeroAllClocks(): CallMetadata;
 
-  /** Returns a detached dense solution; throws if the model has not been solved. */
+  /**
+   * Copies current solution buffers when model state permits the native query.
+   * This is not an availability guarantee: inspect model status plus the
+   * `primal_solution_status` and `dual_solution_status` info values.
+   */
   getSolution(): Solution;
-  /** Returns a detached basis; throws if the model has not established basis state. */
+  /**
+   * Copies current basis-status buffers. Inspect `basis_validity`; a solved MIP
+   * or an interior-point solve without crossover need not have a valid basis.
+   */
   getBasis(): Basis;
   /** Returns current model status without running the solver. */
   getModelStatus(): ModelStatusCode;
@@ -1972,7 +2589,7 @@ export interface Model {
   getObjectiveOffset(): number;
   /** Supplies copied dense or sparse values as a solver start; it does not set a basis. */
   setSolution(solution: SolutionInput | SparseSolutionInput): CallMetadata;
-  /** Installs a complete basis, or resets to HiGHS' default basis when omitted. */
+  /** Installs a complete basis; omission is exactly equivalent to `setLogicalBasis()`. */
   setBasis(basis?: BasisInput): CallMetadata;
   /** Constructs the logical basis with columns nonbasic and row slacks basic. */
   setLogicalBasis(): CallMetadata;
@@ -1989,11 +2606,11 @@ export interface Model {
    * Names and auxiliary multi-objective linear objectives are not included.
    */
   getModel(format?: MatrixFormat): DetachedModelData;
-  /** Returns the current LP portion without names as a detached snapshot. */
+  /** Returns current linear-model data without Hessian, names, or auxiliary objectives. */
   getLp(format?: MatrixFormat): DetachedModelData;
   /** Returns the last presolved LP; call `presolve()` first. */
   getPresolvedLp(format?: MatrixFormat): DetachedModelData;
-  /** Returns the LP associated with the most recent IIS computation. */
+  /** Returns IIS working-model data; meaningful after a non-error `getIis()` found a subsystem. */
   getIisLp(format?: MatrixFormat): DetachedModelData;
   /** Returns an LP with discrete variables fixed; requires a MIP and valid primal solution. */
   getFixedLp(format?: MatrixFormat): DetachedModelData;
@@ -2002,9 +2619,9 @@ export interface Model {
   getDimensions(): ModelDimensions;
   /** Returns dimensions of the most recently generated presolved LP. */
   getPresolvedDimensions(): PresolvedDimensions;
-  /** Copies selected columns and their coefficients; output order follows selection order. */
+  /** Copies selected columns in ascending current index order with a CSC matrix. */
   getCols(selection: IndexSelection): ColumnData;
-  /** Copies selected rows and their coefficients; output order follows selection order. */
+  /** Copies selected rows in ascending current index order with a CSR matrix. */
   getRows(selection: IndexSelection): RowData;
   /** Returns the name of a zero-based column; throws for invalid index/status. */
   getColName(index: number): string;
@@ -2027,11 +2644,17 @@ export interface Model {
   addVars(lower: NumberInput, upper: NumberInput): CallMetadata;
   /** Appends one column; entry indices are zero-based existing rows. */
   addCol(cost: number, lower: number, upper: number, entries: SparseEntriesInput): CallMetadata;
-  /** Appends columns from CSC-oriented data; arrays and sparse matrix are copied. */
+  /**
+   * Appends copied CSC columns. Cost/lower/upper lengths are equal, matrix
+   * `numCols` equals that length, and matrix `numRows` equals current model rows.
+   */
   addCols(data: Omit<ColumnData, "count">): CallMetadata;
   /** Appends one row; entry indices are zero-based existing columns. */
   addRow(lower: number, upper: number, entries: SparseEntriesInput): CallMetadata;
-  /** Appends rows from CSR-oriented data; arrays and sparse matrix are copied. */
+  /**
+   * Appends copied CSR rows. Lower/upper lengths are equal, matrix `numRows`
+   * equals that length, and matrix `numCols` equals current model columns.
+   */
   addRows(data: Omit<RowData, "count">): CallMetadata;
   /** Converts internal matrix storage to column-wise form; coefficients are unchanged. */
   ensureColwise(): CallMetadata;
@@ -2066,9 +2689,13 @@ export interface Model {
   deleteCols(selection: IndexSelection): CallMetadata;
   /** Deletes selected rows and renumbers all later rows. */
   deleteRows(selection: IndexSelection): CallMetadata;
-  /** Multiplies one column's coefficients, cost, and bounds consistently by a nonzero factor. */
+  /**
+   * Applies variable substitution `x[index] = factor * xNew[index]`: matrix
+   * coefficients and cost are multiplied by `factor`, while variable bounds are
+   * divided by it and reordered when it is negative. `factor` must be nonzero.
+   */
   scaleCol(index: number, factor: number): CallMetadata;
-  /** Multiplies one row's coefficients and bounds consistently by a nonzero factor. */
+  /** Multiplies one row's coefficients and bounds by a nonzero factor, reordering bounds if negative. */
   scaleRow(index: number, factor: number): CallMetadata;
   /** Assigns a copied name to one zero-based column. */
   passColName(index: number, name: string): CallMetadata;
@@ -2082,17 +2709,17 @@ export interface Model {
    * a row activity/slack uses exactly `-rowIndex - 1`.
    */
   getBasicVariables(): Int32Array;
-  /** Returns row `row` of the basis inverse; requires a valid invertible basis. */
+  /** Returns one of `numRows` rows of square `B^-1`; output length is `numRows`. */
   getBasisInverseRow(row: number, sparse?: boolean): NumericVector;
-  /** Returns column `col` of the basis inverse; requires a valid invertible basis. */
+  /** Returns one of `numRows` columns of square `B^-1`; `col` is a basis-matrix index. */
   getBasisInverseCol(col: number, sparse?: boolean): NumericVector;
   /** Solves `B x = rhs`; `rhs.length` must equal `numRows`. */
   getBasisSolve(rhs: NumberInput, sparse?: boolean): NumericVector;
-  /** Solves `B' x = rhs`; `rhs.length` must equal `numRows`. */
+  /** Solves `B^-T x = rhs`; input and output lengths equal `numRows`. */
   getBasisTransposeSolve(rhs: NumberInput, sparse?: boolean): NumericVector;
-  /** Returns one row of `B^-1 A`; requires a valid basis. */
+  /** Returns one row of `B^-1 A`; output length is `numCols`. */
   getReducedRow(row: number, sparse?: boolean): NumericVector;
-  /** Returns one column of `B^-1 A`; requires a valid basis. */
+  /** Returns one original model column of `B^-1 A`; output length is `numRows`. */
   getReducedColumn(col: number, sparse?: boolean): NumericVector;
 
   /**
@@ -2100,18 +2727,23 @@ export interface Model {
    * must be supplied together or both omitted. `rowValue` is ignored.
    */
   crossover(input: SolutionInput): CallMetadata;
-  /** Computes LP sensitivity ranging synchronously; requires an optimal basic solution. */
+  /** Requires an optimal LP simplex solution with initialized valid basis state; IPM alone is insufficient. */
   getRanging(): RangingResult;
   /**
    * Solves a feasibility relaxation synchronously, then restores the original
    * model and prior model status. The relaxation solution and objective value
-   * remain available; negative penalties prohibit their corresponding violation.
+   * remain available; negative penalties prohibit their corresponding violation,
+   * local vectors override globals, and the retained basis is invalidated.
    */
   feasibilityRelaxation(input: FeasibilityRelaxationInput): CallMetadata;
-  /** Computes and returns an IIS for an infeasible model; may run additional solves. */
+  /**
+   * Attempts to compute an infeasible subsystem for an LP/QP or MIP relaxation.
+   * It may run multiple blocking solves. Empty indices mean none was found;
+   * limited/warning results may be candidates rather than proved irreducible IISs.
+   */
   getIis(): IisResult;
 
-  /** Destroys native ownership; idempotent, after which other methods throw. */
+  /** Destroys shared native ownership; idempotent and invalidates `raw`, `options`, and `info`. */
   dispose(): void;
 }
 
@@ -2134,13 +2766,14 @@ export interface RawRuntimeApi {
 }
 
 /**
- * Every method is backed by the like-named stable C function. File-oriented C
- * functions are intentionally represented as data operations. Pointer
+ * Methods correspond closely to stable C operations; some combine several C
+ * calls or use a small safety bridge. File-oriented C functions are represented
+ * as data operations. Pointer
  * arguments are validated, copied into packed temporary allocations, and freed
  * before return. Returned arrays are detached copies.
  */
 export interface RawModelApi {
-  /** Whether `dispose()` has destroyed this view's native instance. */
+  /** Whether `dispose()` on either model view destroyed the shared native instance. */
   readonly disposed: boolean;
 
   /** Resets model, solver state, and options to defaults. */
@@ -2153,11 +2786,19 @@ export interface RawModelApi {
   releaseMemory(): RawStatus;
   /** Presolves the current model synchronously. */
   presolve(): RawStatus;
-  /** Solves the current model synchronously using configured callbacks/options. */
+  /**
+   * Solves synchronously with configured callbacks/options. `status` reports
+   * whether the native call completed, not the optimization outcome; call
+   * `getModelStatus()` for optimal, infeasible, limited, or interrupted state.
+   * A limit can therefore accompany `status: 0` or `1`.
+   */
   run(): RawStatus;
-  /** Maps supplied presolved-space values back to original space. */
+  /**
+   * Maps current-presolve-order values back to original space; dimensions must
+   * match `getPresolvedDimensions()` and mutation may invalidate presolve state.
+   */
   postsolve(input: PostsolveInput): RawStatus;
-  /** Returns cumulative native elapsed time since creation or `zeroAllClocks()`. */
+  /** Returns cumulative wall-clock seconds spent in solver runs since the last clock reset. */
   getRunTime(): number;
   /** Resets timing accumulators, restoring the full cumulative `time_limit` budget. */
   zeroAllClocks(): RawStatus;
@@ -2175,11 +2816,11 @@ export interface RawModelApi {
   passLp(model: ModelData): RawStatus;
   /** Replaces state with a copied MIP; requires `integrality`. */
   passMip(model: ModelData): RawStatus;
-  /** Replaces state with a copied LP, MIP, or QP selected from optional fields. */
+  /** Replaces state; optional integrality and Hessian independently select MIP/QP features. */
   passModel(model: ModelData): RawStatus;
   /** Replaces the quadratic objective Hessian with copied sparse data. */
   passHessian(hessian: HessianInput): RawStatus;
-  /** Replaces all linear objectives with copied entries. */
+  /** Replaces all auxiliary linear objectives; the primary `colCost` objective remains. */
   passLinearObjectives(objectives: readonly LinearObjectiveInput[]): RawStatus;
   /** Appends one copied linear objective. */
   addLinearObjective(objective: LinearObjectiveInput): RawStatus;
@@ -2216,9 +2857,9 @@ export interface RawModelApi {
   getInfoValue(name: string): RawResult<number | bigint>;
   /** Reads an information item's storage category. */
   getInfoType(name: string): RawResult<InfoType>;
-  /** Copies the current dense solution; throws if the model is not yet solved. */
+  /** Copies current buffers; inspect solution-status info because presence does not imply validity. */
   getSolution(): RawResult<Solution>;
-  /** Copies the current basis; throws if the model is not yet solved. */
+  /** Copies current basis statuses; inspect `basis_validity` before using basis operations. */
   getBasis(): RawResult<Basis>;
   /** Returns current model status directly; this C getter has no call-status output. */
   getModelStatus(): ModelStatusCode;
@@ -2238,7 +2879,7 @@ export interface RawModelApi {
   getBasisInverseCol(col: number, sparse?: boolean): RawResult<NumericVector>;
   /** Solves `B x = rhs`; `rhs.length === numRows`. */
   getBasisSolve(rhs: NumberInput, sparse?: boolean): RawResult<NumericVector>;
-  /** Solves `B' x = rhs`; `rhs.length === numRows`. */
+  /** Solves `B^-T x = rhs`; input and output lengths equal `numRows`. */
   getBasisTransposeSolve(rhs: NumberInput, sparse?: boolean): RawResult<NumericVector>;
   /** Copies a row of `B^-1 A`; requires a valid basis. */
   getReducedRow(row: number, sparse?: boolean): RawResult<NumericVector>;
@@ -2256,17 +2897,25 @@ export interface RawModelApi {
   /**
    * Registers a synchronous callback until replaced, unset, or disposed.
    * Registration activates no channel. Payloads are detached, and only event
-   * controls may call HiGHS while the callback is executing.
+   * controls may call HiGHS while the callback is executing. Callback/channel
+   * registration persists across runs until explicitly changed.
    */
   setCallback(callback: HighsCallback | undefined): RawStatus;
-  /** Activates a channel until stopped or disposed; native type `8` is rejected. */
+  /**
+   * Activates a channel until stopped or disposed. Register a callback first;
+   * otherwise native status is an error. Native callback type `8` is rejected
+   * by JavaScript validation and is not a `CallbackType`.
+   */
   startCallback(type: CallbackType): RawStatus;
   /** Deactivates a channel without unregistering the persistent callback function. */
   stopCallback(type: CallbackType): RawStatus;
 
   /** Appends one column using zero-based row entries. */
   addCol(cost: number, lower: number, upper: number, entries: SparseEntriesInput): RawStatus;
-  /** Appends copied CSC column data; dimensions must match existing rows. */
+  /**
+   * Appends copied CSC columns. `cost`, `lower`, and `upper` have equal length;
+   * the matrix has that many columns and one row per existing model row.
+   */
   addCols(data: Omit<ColumnData, "count">): RawStatus;
   /** Appends one zero-cost column with no coefficients. */
   addVar(lower: number, upper: number): RawStatus;
@@ -2274,7 +2923,10 @@ export interface RawModelApi {
   addVars(lower: NumberInput, upper: NumberInput): RawStatus;
   /** Appends one row using zero-based column entries. */
   addRow(lower: number, upper: number, entries: SparseEntriesInput): RawStatus;
-  /** Appends copied CSR row data; dimensions must match existing columns. */
+  /**
+   * Appends copied CSR rows. `lower` and `upper` have equal length; the matrix
+   * has that many rows and one column per existing model column.
+   */
   addRows(data: Omit<RowData, "count">): RawStatus;
   /** Converts internal matrix storage to column-wise form. */
   ensureColwise(): RawStatus;
@@ -2310,9 +2962,9 @@ export interface RawModelApi {
   getObjectiveSense(): RawResult<ObjectiveSense>;
   /** Reads the constant objective term. */
   getObjectiveOffset(): RawResult<number>;
-  /** Copies selected columns in selection order. */
+  /** Copies selected columns in ascending current index order with a CSC matrix. */
   getCols(selection: IndexSelection): RawResult<ColumnData>;
-  /** Copies selected rows in selection order. */
+  /** Copies selected rows in ascending current index order with a CSR matrix. */
   getRows(selection: IndexSelection): RawResult<RowData>;
   /** Reads a zero-based row's name. */
   getRowName(row: number): RawResult<string>;
@@ -2329,9 +2981,9 @@ export interface RawModelApi {
   deleteCols(selection: IndexSelection): RawStatus;
   /** Deletes selected rows and renumbers later rows. */
   deleteRows(selection: IndexSelection): RawStatus;
-  /** Scales one column and corresponding bounds/cost consistently. */
+  /** Multiplies column coefficients/cost by a nonzero factor and divides/reorders its bounds. */
   scaleCol(col: number, factor: number): RawStatus;
-  /** Scales one row and corresponding bounds consistently. */
+  /** Multiplies row coefficients/bounds by a nonzero factor and reorders bounds if negative. */
   scaleRow(row: number, factor: number): RawStatus;
 
   /** Returns IEEE positive infinity. */
@@ -2362,14 +3014,15 @@ export interface RawModelApi {
    * supplied together or omitted. `rowValue` is ignored.
    */
   crossover(input: SolutionInput): RawStatus;
-  /** Computes LP sensitivity ranging; an optimal basic solution is required. */
+  /** Requires an optimal LP simplex solution with initialized valid basis state. */
   getRanging(): RawResult<RangingResult>;
   /**
    * Solves a relaxation, restores the original model/status, and retains its
-   * solution/objective. Negative penalties prohibit corresponding violations.
+   * solution/objective. Negative penalties prohibit corresponding violations;
+   * local vectors override global penalties. The retained basis is invalidated.
    */
   feasibilityRelaxation(input: FeasibilityRelaxationInput): RawStatus;
-  /** Computes and copies an IIS; may perform additional blocking solves. */
+  /** Attempts an IIS computation; empty or `maybeInConflict` output may not prove irreducibility. */
   getIis(): RawResult<IisResult>;
 
   /** Destroys native ownership. Idempotent; subsequent operations throw disposed errors. */

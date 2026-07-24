@@ -5,1498 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="highs-js packages the open-source HiGHS linear, mixed-integer, and convex quadratic optimization solver for Node.js and browsers">
 <title>highs-js — HiGHS for JavaScript</title>
-<style>
-  :root {
-    --color-accent: #118bee15;
-    --color-bg: #fff;
-    --color-bg-secondary: #e9e9e9;
-    --color-link: #118bee;
-    --color-secondary: #059669;
-    --color-secondary-accent: #0596690b;
-    --color-shadow: #f4f4f4;
-    --color-table: #118bee;
-    --color-text: #000;
-    --color-text-secondary: #666;
-    --color-scrollbar: #cacae8;
-
-    --radius: 6px;
-    --radius-lg: 10px;
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Monaco, monospace;
-    color-scheme: light;
-  }
-
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.6;
-    background: var(--color-bg);
-    color: var(--color-text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* ── Header Navigation ── */
-  .top-nav {
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 2.25rem 1.5rem 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .top-nav a {
-    color: var(--color-link);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    transition: opacity 0.15s ease;
-  }
-
-  .top-nav a:hover {
-    opacity: 0.75;
-  }
-
-  .top-nav-right {
-    display: flex;
-    gap: 1.75rem;
-  }
-
-  /* ── Hero Section ── */
-  .hero {
-    text-align: center;
-    padding: 4.5rem 1.5rem 2.5rem;
-    max-width: 840px;
-    margin: 0 auto;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.1rem, 4.5vw, 2.6rem);
-    font-weight: 700;
-    color: var(--color-text);
-    letter-spacing: -0.015em;
-    line-height: 1.2;
-    margin-bottom: 1.25rem;
-  }
-
-  .hero h1 u {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 2px;
-  }
-
-  .hero p {
-    font-size: 1.05rem;
-    color: var(--color-text);
-    line-height: 1.5;
-    font-weight: 400;
-  }
-
-  .browser-mark {
-    background-color: #ffff00;
-    color: #000000;
-    padding: 0 4px;
-    font-weight: inherit;
-  }
-
-  /* ── Divider & Section Title ── */
-  .section-divider {
-    border: 0;
-    border-top: 1px solid var(--color-bg-secondary);
-    max-width: 960px;
-    margin: 4.5rem auto 3rem;
-  }
-
-  .demo-heading {
-    text-align: center;
-    font-size: 1.85rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 2.5rem;
-    letter-spacing: -0.01em;
-  }
-
-  /* ── Main Container ── */
-  .container {
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 0 1.5rem 5rem;
-  }
-
-  /* ── Navigation Tabs ── */
-  .tabs {
-    display: flex;
-    gap: 0.25rem;
-    overflow-x: auto;
-    border-bottom: 2px solid var(--color-bg-secondary);
-    margin-bottom: 2rem;
-    padding-bottom: 2px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-scrollbar) transparent;
-  }
-
-  .tabs::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .tabs::-webkit-scrollbar-thumb {
-    background: var(--color-scrollbar);
-    border-radius: 2px;
-  }
-
-  .tab-btn {
-    padding: 0.6rem 1rem;
-    border: none;
-    background: transparent;
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -4px;
-    transition: all 0.15s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    border-radius: var(--radius) var(--radius) 0 0;
-  }
-
-  .tab-btn:hover {
-    color: var(--color-text);
-    background: var(--color-accent);
-  }
-
-  .tab-btn.active {
-    color: var(--color-link);
-    border-bottom-color: var(--color-link);
-    font-weight: 600;
-    background: transparent;
-  }
-
-  /* ── Tab Panels ── */
-  .tab-panel {
-    display: none;
-  }
-
-  .tab-panel.active {
-    display: block;
-  }
-
-  /* ── Example Card Component ── */
-  .example-card {
-    background: var(--color-bg);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px var(--color-shadow);
-  }
-
-  .tech-header-line {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-link);
-    border-bottom: 1px solid var(--color-bg-secondary);
-    padding-bottom: 0.4rem;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  /* Header & Explanation Typography */
-  .problem-header {
-    margin-bottom: 1.25rem;
-  }
-
-  .problem-header h3 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 0.4rem;
-  }
-
-  .problem-header p {
-    font-size: 0.925rem;
-    color: #333;
-    line-height: 1.55;
-  }
-
-  /* Code Section */
-  .code-section {
-    margin-bottom: 1.25rem;
-  }
-
-  .code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.35rem;
-  }
-
-  .code-editor-box {
-    background: #1e1e2e;
-    color: #cdd6f4;
-    border-radius: var(--radius);
-    padding: 0.85rem 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.825rem;
-    line-height: 1.5;
-    border: 1px solid var(--color-bg-secondary);
-    overflow: hidden;
-  }
-
-  .code-editor-box textarea {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #cdd6f4;
-    font-family: var(--font-mono);
-    font-size: 0.825rem;
-    line-height: 1.5;
-    resize: none;
-    height: auto;
-    field-sizing: content;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    display: block;
-  }
-
-  /* Interactive Input Visualizations */
-  .visual-inputs {
-    background: var(--color-shadow);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .visual-inputs h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 0.85rem;
-  }
-
-  .visual-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.85rem;
-  }
-
-  .item-card {
-    background: var(--color-bg);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    padding: 0.85rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    transition: all 0.15s ease;
-  }
-
-  .item-card.selected {
-    border-color: var(--color-secondary);
-    background: var(--color-secondary-accent);
-  }
-
-  .item-card h5 {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-
-  .stat-box {
-    background: var(--color-bg);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    padding: 0.65rem 0.85rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .stat-box .stat-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-  }
-
-  .stat-box .stat-val {
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-text);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .capacity-packing {
-    background: var(--color-bg);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    padding: 0.85rem;
-    margin-bottom: 1rem;
-  }
-
-  .capacity-header-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-  }
-
-  .packing-track {
-    height: 24px;
-    background: var(--color-bg-secondary);
-    border-radius: 4px;
-    display: flex;
-    overflow: hidden;
-    gap: 2px;
-  }
-
-  .pack-block {
-    height: 100%;
-    background: var(--color-link);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: width 0.3s ease;
-  }
-
-  .pack-block.empty {
-    background: transparent;
-    color: var(--color-text-secondary);
-  }
-
-  .interval-scale {
-    margin-bottom: 0.75rem;
-  }
-
-  .interval-scale-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-  }
-
-  .interval-scale-track {
-    height: 8px;
-    background: var(--color-bg-secondary);
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .interval-scale-fill {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    background: var(--color-secondary);
-    border-radius: 4px;
-  }
-
-  /* Visual Solution Output */
-  .visual-solution {
-    background: var(--color-shadow);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .visual-solution h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 0.85rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .progress-bar-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-
-  .progress-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--color-text);
-  }
-
-  .progress-track {
-    height: 10px;
-    background: var(--color-bg-secondary);
-    border-radius: 5px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--color-link);
-    border-radius: 5px;
-    transition: width 0.3s ease;
-  }
-
-  /* Textual Solution Output */
-  .textual-solution {
-    margin-bottom: 1rem;
-  }
-
-  textarea, .output {
-    width: 100%;
-    font-family: var(--font-mono);
-    font-size: 0.825rem;
-    line-height: 1.5;
-    border: 1px solid var(--color-bg-secondary);
-    outline: none;
-    resize: vertical;
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    padding: 0.75rem 0.85rem;
-    border-radius: var(--radius);
-    tab-size: 2;
-  }
-
-  textarea:focus {
-    border-color: var(--color-link);
-    box-shadow: 0 0 0 3px var(--color-accent);
-  }
-
-  .output {
-    min-height: 140px;
-    max-height: 400px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-
-  .output.error {
-    color: #dc2626;
-    border-color: #fca5a5;
-    background: #fef2f2;
-  }
-
-  .output.placeholder {
-    color: var(--color-text-secondary);
-    font-style: italic;
-    border-style: dashed;
-  }
-
-  /* Solve Timing Bar */
-  .timing-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.825rem;
-    font-weight: 600;
-    color: var(--color-secondary);
-    background: var(--color-secondary-accent);
-    padding: 0.4rem 0.75rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--color-secondary);
-    width: fit-content;
-    margin-bottom: 0.85rem;
-  }
-
-  /* Metadata Footer */
-  .metadata-footer {
-    font-size: 0.725rem;
-    color: var(--color-text-secondary);
-    border-top: 1px solid var(--color-bg-secondary);
-    padding-top: 0.5rem;
-    letter-spacing: 0.02em;
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1.1rem;
-    border: 1px solid var(--color-link);
-    border-radius: var(--radius);
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    background: var(--color-link);
-    color: #ffffff;
-  }
-
-  .btn:hover {
-    background: #0d70c4;
-    border-color: #0d70c4;
-  }
-
-  .btn.ghost {
-    background: transparent;
-    color: var(--color-link);
-    border-color: var(--color-bg-secondary);
-  }
-
-  .btn.ghost:hover {
-    background: var(--color-accent);
-    border-color: var(--color-link);
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-top: 0.85rem;
-    margin-bottom: 1.25rem;
-    align-items: center;
-  }
-
-  /* Form Controls */
-  label {
-    font-size: 0.825rem;
-    font-weight: 500;
-    color: var(--color-text);
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-
-  select, input[type=text], input[type=number] {
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    padding: 0.4rem 0.65rem;
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--radius);
-    background: var(--color-bg);
-    color: var(--color-text);
-    outline: none;
-    transition: border-color 0.15s ease;
-  }
-
-  select:focus, input[type=text]:focus, input[type=number]:focus {
-    border-color: var(--color-link);
-    box-shadow: 0 0 0 3px var(--color-accent);
-  }
-
-  input[type=number] {
-    width: 110px;
-  }
-
-  .form-row {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    margin-bottom: 0.75rem;
-  }
-
-  /* Options Table */
-  .opts-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.825rem;
-  }
-
-  .opts-table th, .opts-table td {
-    padding: 0.45rem 0.65rem;
-    text-align: left;
-    border-bottom: 1px solid var(--color-bg-secondary);
-  }
-
-  .opts-table th {
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    position: sticky;
-    top: 0;
-    background: var(--color-shadow);
-  }
-
-  .opts-table tr:hover td {
-    background: var(--color-accent);
-  }
-
-  .doc-link {
-    font-size: 0.8rem;
-    color: var(--color-link);
-    text-decoration: underline;
-    font-weight: 500;
-  }
-
-  .prerelease-banner {
-    margin: 1.5rem auto 0;
-    max-width: 720px;
-    padding: 0.75rem 1.25rem;
-    background: linear-gradient(135deg, #eef2ff, #f0f9ff);
-    border: 1px solid #93c5fd;
-    border-radius: var(--radius-lg);
-    font-size: 0.9rem;
-    color: #1e3a5f;
-    text-align: center;
-    line-height: 1.5;
-  }
-  .prerelease-banner code {
-    background: #dbeafe;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-  .prerelease-banner a {
-    font-weight: 600;
-    color: #1d4ed8;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 640px) {
-    .top-nav {
-      flex-direction: column;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .hero {
-      padding: 2.5rem 1rem 1.5rem;
-    }
-    .container {
-      padding: 0 1rem 3rem;
-    }
-  }
-
-  /* Purpose-built browser demo */
-  :root {
-    --color-accent: #e276801c;
-    --color-bg: #f8fbfa;
-    --color-bg-secondary: #dbe9e8;
-    --color-link: #b44a55;
-    --color-secondary: #5c8987;
-    --color-secondary-accent: #9ececc26;
-    --color-shadow: #f0f6f5;
-    --color-table: #9ececc;
-    --color-text: #222629;
-    --color-text-secondary: #667174;
-    --color-scrollbar: #9ececc;
-    --radius: 7px;
-    --radius-lg: 12px;
-    --font-sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  }
-
-  body { background: var(--color-bg); }
-  button, input, select, textarea { font: inherit; }
-  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    outline: 2px solid #d90000;
-    outline-offset: 3px;
-  }
-
-  .top-nav {
-    max-width: 1120px;
-    padding: 1.5rem 2rem;
-    border-bottom: 0;
-    font-size: 0.78rem;
-  }
-  .top-nav::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 4.85rem;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #9ececc 18%, #9ececc 82%, transparent);
-    opacity: 0.55;
-  }
-  .top-nav-left a {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-  }
-  .brand-mark {
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    place-items: center;
-    border: 1px solid #9ececc;
-    border-radius: 5px;
-    background: #fff;
-    color: var(--color-text);
-    font: 700 0.75rem/1 var(--font-mono);
-  }
-  .top-nav-right { gap: 1.7rem; }
-  .top-nav-right a { color: var(--color-text-secondary); text-decoration: none; }
-  .top-nav-right a:hover { color: #d90000; opacity: 1; }
-
-  .hero {
-    max-width: 1120px;
-    padding: clamp(5.5rem, 10vw, 8.5rem) 2rem clamp(4.5rem, 8vw, 7rem);
-    text-align: left;
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(250px, 0.65fr);
-    gap: clamp(3rem, 9vw, 8rem);
-    align-items: center;
-  }
-  .hero-copy { max-width: 680px; }
-  .hero-kicker {
-    margin-bottom: 1.8rem;
-    color: #b44a55;
-    font: 600 0.7rem/1 var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .hero h1 {
-    max-width: 680px;
-    margin-bottom: 1.6rem;
-    color: var(--color-text);
-    font: 560 clamp(2.8rem, 6vw, 5rem)/1.02 var(--font-sans);
-    letter-spacing: -0.06em;
-  }
-  .hero h1 em { color: var(--color-text); font-style: normal; font-weight: 560; }
-  .hero p {
-    max-width: 590px;
-    color: var(--color-text-secondary);
-    font-size: clamp(1rem, 1.8vw, 1.15rem);
-    line-height: 1.65;
-  }
-  .hero p strong { color: var(--color-text); font-weight: 600; }
-  .install-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid #cfe1e0;
-    border-radius: 6px;
-    background: #fff;
-    color: var(--color-text);
-    font: 0.78rem/1 var(--font-mono);
-  }
-  .install-line::before { content: "$"; color: #b44a55; }
-  .install-line span { color: var(--color-text-secondary); font-size: 0.65rem; }
-  .hero-sample {
-    overflow: hidden;
-    border: 1px solid #9ececc;
-    border-radius: 9px;
-    background: #fff;
-  }
-  .hero-sample-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.8rem 1rem;
-    border-bottom: 1px solid #dcebea;
-    color: var(--color-text-secondary);
-    font: 0.61rem/1 var(--font-mono);
-    text-transform: uppercase;
-  }
-  .hero-sample-header code { color: #b44a55; }
-  .hero-sample pre {
-    margin: 0;
-    padding: 1.4rem 1.2rem;
-    overflow-x: auto;
-    color: var(--color-text);
-    font: 0.72rem/1.75 var(--font-mono);
-  }
-  .hero-sample .comment { color: #718b89; }
-  .hero-sample .result {
-    padding: 0.8rem 1rem;
-    border-top: 1px solid #dcebea;
-    background: #f1f8f7;
-    color: #4e7775;
-    font: 0.65rem/1 var(--font-mono);
-  }
-  .browser-mark { background: linear-gradient(transparent 62%, #9ececc70 62%); color: var(--color-text); padding: 0 1px; }
-
-  .capability-overview {
-    max-width: 1120px;
-    margin: 0 auto clamp(3rem, 6vw, 5rem);
-    padding: clamp(4rem, 8vw, 7rem) 2rem;
-    border: solid #cfe1e0;
-    border-width: 1px 0;
-    display: grid;
-    grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.6fr);
-    gap: clamp(3rem, 8vw, 7rem);
-  }
-  .capability-intro .section-label,
-  .runtime-contract .section-label {
-    margin-bottom: 1rem;
-    color: #b44a55;
-    font: 600 0.65rem/1 var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .capability-intro h2 {
-    margin-bottom: 1rem;
-    color: var(--color-text);
-    font-size: clamp(1.8rem, 3.5vw, 2.7rem);
-    font-weight: 560;
-    line-height: 1.12;
-    letter-spacing: -0.045em;
-  }
-  .capability-intro > p:last-child { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.7; }
-  .problem-types { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .problem-type {
-    min-width: 0;
-    padding: 0.35rem clamp(1.2rem, 3vw, 2rem);
-    border-left: 1px solid #9ececc;
-  }
-  .problem-type code { color: #d90000; font: 600 0.68rem/1 var(--font-mono); }
-  .problem-type h3 { margin: 1.1rem 0 0.65rem; font-size: 1rem; font-weight: 650; }
-  .problem-type p { color: var(--color-text-secondary); font-size: 0.8rem; line-height: 1.65; }
-  .runtime-contract {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.6fr);
-    gap: clamp(3rem, 8vw, 7rem);
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid #dcebea;
-  }
-  .runtime-contract h3 { max-width: 230px; font-size: 1rem; font-weight: 600; line-height: 1.5; }
-  .runtime-contract dl { display: grid; grid-template-columns: 130px 1fr; margin: 0; }
-  .runtime-contract dt,
-  .runtime-contract dd { padding: 0.65rem 0; border-bottom: 1px solid #e4efee; }
-  .runtime-contract dt { color: var(--color-text-secondary); font: 0.65rem/1.6 var(--font-mono); text-transform: uppercase; }
-  .runtime-contract dd { margin: 0; color: var(--color-text); font: 0.75rem/1.6 var(--font-mono); }
-  .runtime-contract .limit { color: #a6434c; }
-
-  .prerelease-banner {
-    max-width: 1056px;
-    margin: 0 auto;
-    padding: 1rem 1.25rem;
-    border: 1px solid #cfe1e0;
-    border-radius: var(--radius);
-    background: #fff;
-    color: var(--color-text-secondary);
-    text-align: left;
-    font-size: 0.78rem;
-    line-height: 1.6;
-  }
-  .prerelease-banner strong { color: var(--color-text); }
-  .prerelease-banner code { background: #edf6f5; color: var(--color-text); }
-  .prerelease-banner a { float: right; color: var(--color-link); text-decoration: none; }
-  .prerelease-banner a:hover { color: #d90000; }
-  .section-divider { display: none; }
-
-  .demo-heading {
-    max-width: 1440px;
-    margin: clamp(5rem, 9vw, 8rem) auto 1.8rem;
-    padding: 0 2rem;
-    text-align: left;
-    color: var(--color-text);
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-  .demo-heading::after {
-    content: " Each one exercises the package API directly.";
-    color: var(--color-text-secondary);
-    font-weight: 400;
-  }
-
-  .container {
-    max-width: 1440px;
-    padding: 0 2rem 9rem;
-    display: grid;
-    grid-template-columns: 250px minmax(0, 1fr);
-    gap: clamp(2rem, 4vw, 4rem);
-    align-items: start;
-  }
-  .tabs {
-    position: sticky;
-    top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    overflow: visible;
-  }
-  .tabs::before {
-    content: "";
-    position: absolute;
-    top: 1.75rem;
-    bottom: 0.75rem;
-    left: 13px;
-    width: 1px;
-    background: #c7dfdd;
-  }
-  .tree-group {
-    position: relative;
-    z-index: 1;
-    min-height: 18px;
-    margin: 0.55rem 0 0.1rem;
-    padding-left: 34px;
-    color: #879293;
-    font: 600 0.58rem/1 var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .tree-group:first-child { margin-top: 0; }
-  .tree-group::before {
-    content: "";
-    position: absolute;
-    left: 9px;
-    top: 5px;
-    width: 8px;
-    height: 8px;
-    border: 1px solid #9ececc;
-    border-radius: 2px;
-    background: var(--color-bg);
-  }
-  .tab-btn {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    align-content: center;
-    justify-content: start;
-    gap: 0.05rem 0.5rem;
-    min-width: 0;
-    min-height: 40px;
-    margin: 0;
-    padding: 0.25rem 0.45rem 0.25rem 0;
-    border: 0;
-    border-radius: 7px;
-    background: transparent;
-    color: var(--color-text);
-    font-size: 0.77rem;
-    text-align: left;
-    transition: background-color 140ms ease, box-shadow 160ms ease, color 140ms ease;
-  }
-  .tab-btn:hover { background: #edf6f5; color: var(--color-text); }
-  .tab-btn.active { background: #fff; color: var(--color-text); box-shadow: 0 0 0 1px #cfe1e0; }
-  .tab-index {
-    position: relative;
-    z-index: 2;
-    grid-row: 1 / 3;
-    align-self: center;
-    display: grid;
-    width: 26px;
-    height: 26px;
-    place-items: center;
-    border: 1px solid #9ececc;
-    border-radius: 50%;
-    background: var(--color-bg);
-    color: #5c8987;
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-  }
-  .tab-btn.active .tab-index {
-    border-color: #e27680;
-    background: #e27680;
-    color: #fff;
-    box-shadow: 0 0 0 4px #fff;
-  }
-  .tab-btn strong { font-size: 0.75rem; font-weight: 650; line-height: 1.2; }
-  .tab-btn small { color: var(--color-text-secondary); font: 0.57rem/1.3 var(--font-mono); }
-  .tree-branch { position: relative; z-index: 1; }
-  .tree-branch-header {
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    align-items: center;
-    gap: 0.05rem 0.5rem;
-    min-height: 40px;
-    color: var(--color-text);
-  }
-  .tree-branch-header .tab-index { grid-row: 1 / 3; }
-  .tree-branch-header strong { align-self: end; font-size: 0.75rem; line-height: 1.2; }
-  .tree-branch-header small { align-self: start; color: var(--color-text-secondary); font: 0.57rem/1.3 var(--font-mono); }
-  .tree-branch:has(.active) > .tree-branch-header .tab-index { border-color: #e27680; color: #b44a55; }
-  .tree-children {
-    display: grid;
-    gap: 0;
-    margin: 0 0 0.15rem 13px;
-    padding-left: 0;
-    border-left: 1px solid #c7dfdd;
-  }
-  .tree-subitem {
-    position: relative;
-    display: grid;
-    gap: 0.05rem;
-    min-height: 30px;
-    padding: 0.2rem 0.4rem 0.2rem 21px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--color-text);
-    text-align: left;
-    cursor: pointer;
-    transition: background-color 140ms ease, box-shadow 160ms ease, color 140ms ease;
-  }
-  .tree-subitem::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 13px;
-    height: 1px;
-    background: #c7dfdd;
-  }
-  .tree-subitem strong { font-size: 0.68rem; font-weight: 600; line-height: 1.2; }
-  .tree-subitem small { color: var(--color-text-secondary); font: 0.52rem/1.25 var(--font-mono); }
-  .tree-subitem:hover { background: #edf6f5; }
-  .tree-subitem.active { background: #fff3f4; box-shadow: inset 2px 0 #e27680; }
-  .tabs button:focus-visible { outline: 1px solid #b44a55; outline-offset: 2px; }
-  .tabs button.active:focus-visible { outline: 0; }
-
-  .tab-panel.active { animation: panel-in 180ms ease-out; }
-  @keyframes panel-in { from { opacity: 0; transform: translateY(3px); } }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-
-  .example-card {
-    padding: clamp(1.5rem, 3.5vw, 3.25rem);
-    border-color: #cfe1e0;
-    border-radius: 14px;
-    background: #fff;
-    box-shadow: none;
-  }
-  .example-card > * { max-width: none; margin-left: auto; margin-right: auto; }
-  .tech-header-line {
-    margin-bottom: clamp(2rem, 3vw, 2.75rem);
-    padding-bottom: 0.8rem;
-    border-bottom-color: #cfe1e0;
-    color: #b44a55;
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
-  }
-  .problem-header { max-width: none; margin-bottom: clamp(2rem, 3vw, 2.75rem); }
-  .problem-header h3 {
-    margin-bottom: 0.85rem;
-    color: var(--color-text);
-    font-size: clamp(1.7rem, 3.5vw, 2.55rem);
-    font-weight: 560;
-    line-height: 1.15;
-    letter-spacing: -0.045em;
-  }
-  .problem-header p { max-width: 920px; color: var(--color-text-secondary); font-size: 0.93rem; line-height: 1.7; }
-  .problem-header code { font-family: var(--font-mono); font-size: 0.82em; }
-
-  .sparse-explorer {
-    container-type: inline-size;
-    margin-bottom: clamp(2rem, 3vw, 3rem) !important;
-    overflow: hidden;
-    border: 1px solid #cfe1e0;
-    border-radius: 10px;
-    background: #fbfdfd;
-  }
-  .sparse-explorer-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
-    align-items: flex-start;
-    padding: 1.15rem 1.25rem;
-    border-bottom: 1px solid #dcebea;
-    background: #f1f8f7;
-  }
-  .sparse-explorer-header strong { display: block; margin-bottom: 0.25rem; font-size: 0.82rem; }
-  .sparse-explorer-header p { max-width: 650px; color: var(--color-text-secondary); font-size: 0.7rem; line-height: 1.55; }
-  .sparse-controls { display: flex; flex: 0 0 auto; gap: 0.35rem; }
-  .sparse-control {
-    min-width: 34px;
-    height: 32px;
-    padding: 0 0.65rem;
-    border: 1px solid #bad4d2;
-    border-radius: 5px;
-    background: #fff;
-    color: var(--color-text);
-    font: 0.62rem/1 var(--font-mono);
-    cursor: pointer;
-  }
-  .sparse-control:hover { border-color: #e27680; }
-  .sparse-flow {
-    display: grid;
-    grid-template-columns: minmax(220px, 0.95fr) minmax(230px, 1fr) minmax(360px, 1.5fr);
-  }
-  .sparse-stage { position: relative; min-width: 0; padding: 1.2rem; }
-  .sparse-stage + .sparse-stage { border-left: 1px solid #dcebea; }
-  .sparse-stage + .sparse-stage::before {
-    content: "→";
-    position: absolute;
-    top: 1.1rem;
-    left: -0.7rem;
-    display: grid;
-    width: 1.4rem;
-    height: 1.4rem;
-    place-items: center;
-    border: 1px solid #cfe1e0;
-    border-radius: 50%;
-    background: #fbfdfd;
-    color: #b44a55;
-    font-size: 0.7rem;
-  }
-  .sparse-stage-label {
-    margin-bottom: 1rem;
-    color: #718b89;
-    font: 600 0.58rem/1 var(--font-mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .formula-list { display: grid; gap: 0.4rem; }
-  .formula-row {
-    padding: 0.5rem 0.6rem;
-    border-left: 2px solid transparent;
-    color: var(--color-text-secondary);
-    font: 0.67rem/1.5 var(--font-mono);
-    transition: 160ms ease;
-  }
-  .formula-row.active { border-left-color: #e27680; background: #fff3f4; color: var(--color-text); }
-  .math-model-row {
-    display: grid;
-    grid-template-columns: 66px minmax(0, 1fr);
-    gap: 0.5rem;
-    align-items: baseline;
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
-  }
-  .math-role { color: #718b89; font-size: 0.56rem; text-transform: uppercase; }
-  .math-expression { color: var(--color-text); line-height: 1.8; }
-  .formula-term {
-    display: inline-block;
-    margin: -0.15rem -0.1rem;
-    padding: 0.15rem 0.1rem;
-    border-radius: 3px;
-    cursor: default;
-  }
-  .formula-term:hover { box-shadow: 0 0 0 1px #e27680; }
-  .formula-term.active { background: #e27680; color: #fff; }
-  .matrix-wrap { overflow-x: auto; }
-  .matrix-table { border-spacing: 4px; border-collapse: separate; margin: -4px; font: 0.63rem/1 var(--font-mono); }
-  .matrix-table th { min-width: 34px; height: 24px; color: #718b89; font-weight: 500; text-align: center; }
-  .matrix-axis-name { display: block; font: 0.57rem/1 var(--font-mono); }
-  .matrix-table td {
-    min-width: 34px;
-    height: 32px;
-    border: 1px solid #dcebea;
-    border-radius: 4px;
-    background: #fff;
-    color: #889395;
-    text-align: center;
-    transition: 160ms ease;
-  }
-  .matrix-table td.nonzero { color: var(--color-text); }
-  .matrix-table td.active { border-color: #e27680; background: #e27680; color: #fff; transform: scale(1.08); }
-  .matrix-table td.mirror { border-color: #9ececc; background: #e4f3f2; color: #4e7775; }
-  .matrix-table td.zero-hover { border-style: dashed; border-color: #9ececc; background: #f2f8f7; color: #718b89; }
-  .array-stack { display: grid; gap: 0.7rem; padding-top: 0.35rem; }
-  .array-row { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0.3rem; align-items: start; }
-  .array-name { padding-top: 0.38rem; color: #718b89; font: 0.58rem/1 var(--font-mono); }
-  .array-cells { display: flex; width: 100%; min-width: 0; gap: 2px; padding: 2px; }
-  .array-cell {
-    display: grid;
-    flex: 1 1 30px;
-    min-width: 16px;
-    max-width: 34px;
-    height: 30px;
-    place-items: center;
-    border: 1px solid #dcebea;
-    border-radius: 4px;
-    background: #fff;
-    color: var(--color-text-secondary);
-    font: 0.54rem/1 var(--font-mono);
-    transition: 160ms ease;
-  }
-  .array-cell.active { border-color: #e27680; background: #fff1f2; color: #a6434c; font-weight: 700; }
-  .array-cell.boundary { border-color: #9ececc; background: #edf8f7; color: #4e7775; }
-  .array-cell:hover { box-shadow: 0 0 0 1px #e27680; }
-  .sparse-narration {
-    min-height: 52px;
-    padding: 0.85rem 1.2rem;
-    border-top: 1px solid #dcebea;
-    background: #fff;
-    color: var(--color-text-secondary);
-    font: 0.65rem/1.6 var(--font-mono);
-  }
-  .sparse-narration strong { color: #a6434c; }
-  .sparse-legend { color: #718b89; font-size: 0.62rem; }
-
-  @container (max-width: 840px) {
-    .sparse-flow { grid-template-columns: 1fr; }
-    .sparse-stage + .sparse-stage { border-left: 0; border-top: 1px solid #dcebea; }
-    .sparse-stage + .sparse-stage::before { top: -0.7rem; left: 1.1rem; content: "↓"; }
-  }
-
-  .code-section, .visual-inputs, .visual-solution, .textual-solution { margin-bottom: 1.5rem; }
-  .code-header { margin-bottom: 0.55rem; font: 600 0.65rem/1.4 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
-  .code-editor-box {
-    padding: 1.3rem 1.4rem;
-    border: 0;
-    border-top: 3px solid #9ececc;
-    border-radius: 5px;
-    background: #222629;
-    color: #edf5f4;
-  }
-  .code-editor-box textarea { color: #edf5f4; }
-  .highlighted-code {
-    margin: 0;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    color: #edf5f4;
-    font: 0.825rem/1.5 var(--font-mono);
-  }
-  .syntax-editor {
-    display: grid;
-    overflow: hidden;
-    border: 1px solid #d3e4e3;
-    border-radius: 5px;
-    background: #fff;
-  }
-  .syntax-editor:focus-within { border-color: #9ececc; box-shadow: 0 0 0 3px #9ececc30; }
-  .syntax-editor pre,
-  .syntax-editor textarea {
-    grid-area: 1 / 1;
-    width: 100%;
-    min-height: inherit;
-    margin: 0;
-    padding: 0.75rem 0.85rem;
-    border: 0;
-    border-radius: 0;
-    overflow: hidden;
-    white-space: pre-wrap;
-    overflow-wrap: normal;
-    font: 0.825rem/1.5 var(--font-mono);
-    tab-size: 2;
-  }
-  .syntax-editor pre { pointer-events: none; color: var(--color-text); }
-  .syntax-editor textarea {
-    z-index: 1;
-    resize: none;
-    background: transparent;
-    color: transparent;
-    caret-color: var(--color-text);
-    -webkit-text-fill-color: transparent;
-  }
-  .syntax-editor textarea:focus { background: transparent; box-shadow: none; }
-  .syntax-editor textarea::selection { background: #9ececc70; }
-  .token.comment { color: #718b89; font-style: italic; }
-  .token.keyword { color: #b13442; font-weight: 600; }
-  .token.string { color: #397c69; }
-  .token.number, .token.boolean { color: #9c5c23; }
-  .token.operator { color: #d90000; }
-  .token.property, .token.label { color: #476f9c; }
-  .token.variable { color: #3f6f6d; }
-  .code-editor-box .token.comment { color: #8baaa7; }
-  .code-editor-box .token.keyword { color: #f08b95; }
-  .code-editor-box .token.string { color: #9ececc; }
-  .code-editor-box .token.number { color: #f1c27d; }
-  .syntax-output .token.property { color: #476f9c; }
-  .visual-inputs, .visual-solution {
-    padding: clamp(1.15rem, 3vw, 1.8rem);
-    border-color: #d6e6e5;
-    background: #f4f9f8;
-  }
-  .visual-inputs h4, .visual-solution h4 { font-size: 0.76rem; letter-spacing: 0.035em; text-transform: none; }
-  .visual-grid { grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); }
-  .item-card, .stat-box, .capacity-packing { border-color: #d3e4e3; background: #fff; }
-  .item-card { padding: 1rem; }
-  .item-card.selected { border-color: #9ececc; background: #e8f5f4; }
-  .stat-box { min-height: 76px; justify-content: space-between; padding: 0.8rem 1rem; }
-  .stat-box .stat-val { color: var(--color-text); font-size: 1.1rem; font-weight: 600; }
-  .progress-track, .interval-scale-track { background: #dcebea; }
-  .progress-fill, .interval-scale-fill { background: #e27680; }
-  .packing-track { height: 32px; background: #dcebea; }
-  .pack-block { background: #e27680; font-family: var(--font-mono); font-size: 0.65rem; }
-
-  textarea, .output {
-    border-color: #d3e4e3;
-    border-radius: 5px;
-    background: #fff;
-    color: var(--color-text);
-    word-break: normal;
-  }
-  textarea:focus { border-color: #9ececc; background: #fff; box-shadow: 0 0 0 3px #9ececc30; }
-  .output { min-height: 120px; }
-  .output.placeholder { font-style: normal; }
-  .output.error { color: #d90000; border-color: #e27680; background: #fff5f5; }
-  .timing-bar {
-    border: 0;
-    background: transparent;
-    color: #5c8987;
-    padding: 0;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-  }
-  .metadata-footer { color: #899496; font-family: var(--font-mono); font-size: 0.61rem; }
-
-  .btn {
-    min-height: 40px;
-    padding: 0.55rem 1.05rem;
-    border-color: var(--color-text);
-    border-radius: 5px;
-    background: var(--color-text);
-    color: #fff;
-    font-size: 0.78rem;
-  }
-  .btn:hover { border-color: #b44a55; background: #b44a55; }
-  .btn:disabled { cursor: wait; opacity: 0.55; }
-  .btn.ghost { color: var(--color-text); border-color: #bad4d2; background: #fff; }
-  .btn.ghost:hover { border-color: #9ececc; background: #e9f5f4; }
-  label { color: var(--color-text-secondary); font-size: 0.76rem; }
-  select, input[type=text], input[type=number] {
-    min-height: 40px;
-    border-color: #c9dddc;
-    border-radius: 5px;
-    background: #fff;
-  }
-  .opts-filter { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
-  .opts-filter input { flex: 1; }
-  .opts-table th { background: #edf6f5; }
-  .opts-table tr:hover td { background: #f1f8f7; }
-  .iis-empty-state {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 1.25rem;
-    border: 1px dashed #bad4d2;
-    border-radius: 7px;
-    background: #fff;
-  }
-  .iis-preview-lines { display: grid; gap: 0.45rem; }
-  .iis-preview-lines span { height: 7px; border-radius: 4px; background: #dcebea; }
-  .iis-preview-lines span:nth-child(2) { width: 78%; background: #e2768060; }
-  .iis-empty-state strong { display: block; margin-bottom: 0.25rem; font-size: 0.8rem; }
-  .iis-empty-state p { color: var(--color-text-secondary); font-size: 0.73rem; line-height: 1.55; }
-  .conflict-summary {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    color: var(--color-text-secondary);
-    font-size: 0.72rem;
-  }
-  .conflict-summary strong { color: #a6434c; }
-  .conflict-list { position: relative; display: grid; gap: 0.65rem; padding-left: 1rem; }
-  .conflict-list::before {
-    content: "";
-    position: absolute;
-    top: 0.75rem;
-    bottom: 0.75rem;
-    left: 3px;
-    width: 2px;
-    background: #e27680;
-  }
-  .conflict-node {
-    position: relative;
-    display: grid;
-    grid-template-columns: 52px 1fr auto;
-    gap: 0.8rem;
-    align-items: center;
-    padding: 0.8rem 0.9rem;
-    border: 1px solid #ebc5c9;
-    border-radius: 6px;
-    background: #fff;
-  }
-  .conflict-node::before {
-    content: "";
-    position: absolute;
-    left: -1px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    background: #d90000;
-  }
-  .conflict-node > span:first-child { color: #a6434c; font: 600 0.65rem/1 var(--font-mono); }
-  .conflict-node code { color: var(--color-text); font: 0.72rem/1.45 var(--font-mono); }
-  .conflict-node small { color: var(--color-text-secondary); font-size: 0.65rem; }
-  .iis-clear { padding: 1rem; border: 1px solid #9ececc; border-radius: 6px; background: #fff; color: #4e7775; font-size: 0.78rem; }
-
-  @media (max-width: 980px) {
-    .container { grid-template-columns: 1fr; }
-    .tabs { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
-    .tabs::before { display: none; }
-    .tree-group { grid-column: 1 / -1; margin-top: 1rem; padding-left: 0; }
-    .tree-group::before { display: none; }
-    .tree-branch { min-width: 0; }
-    .tree-branch-header { padding: 0 0.55rem; }
-    .tree-children { margin-left: 22px; }
-    .tab-btn { padding: 0.55rem; background: #fff; box-shadow: 0 0 0 1px #d9e8e7; }
-    .tab-btn.active { box-shadow: 0 0 0 1px #e27680; }
-    .sparse-flow { grid-template-columns: 1fr; }
-    .sparse-stage + .sparse-stage { border-left: 0; border-top: 1px solid #dcebea; }
-    .sparse-stage + .sparse-stage::before { top: -0.7rem; left: 1.1rem; content: "↓"; }
-  }
-
-  @media (max-width: 760px) {
-    .top-nav { padding: 1rem; flex-direction: row; align-items: center; }
-    .top-nav::after { top: 4.1rem; }
-    .top-nav-right a:not(:last-child) { display: none; }
-    .hero { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1rem 4.5rem; }
-    .hero h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
-    .hero-sample { max-width: 390px; }
-    .capability-overview { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1rem; }
-    .problem-types { grid-template-columns: 1fr; gap: 2rem; }
-    .problem-type { padding: 0.1rem 0 0.1rem 1.25rem; }
-    .runtime-contract { grid-template-columns: 1fr; gap: 1.5rem; }
-    .runtime-contract dl { grid-template-columns: 1fr; }
-    .runtime-contract dt { padding-bottom: 0; border-bottom: 0; }
-    .runtime-contract dd { padding-top: 0.2rem; }
-    .prerelease-banner { margin: 0 1rem; padding: 1rem; }
-    .prerelease-banner a { display: block; float: none; margin-top: 0.4rem; }
-    .demo-heading { margin-top: 5rem; padding: 0 1rem; line-height: 1.6; }
-    .demo-heading::after { display: block; }
-    .container { padding: 0 1rem 5rem; }
-    .tab-btn { min-height: 58px; }
-    .example-card { margin-bottom: 1rem; }
-    .tech-header-line { align-items: flex-start; gap: 1rem; }
-    .tech-header-line span:last-child { text-align: right; }
-    .capacity-header-row, .interval-scale-header { gap: 0.75rem; align-items: flex-start; }
-    .capacity-header-row span:last-child, .interval-scale-header span:last-child { text-align: right; }
-    .packing-track { height: 42px; }
-    .iis-empty-state { grid-template-columns: 80px 1fr; }
-    .conflict-node { grid-template-columns: 42px 1fr; }
-    .conflict-node small { grid-column: 2; }
-    .sparse-explorer-header { flex-direction: column; }
-    .sparse-stage { padding: 1rem; }
-  }
-</style>
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
 
@@ -1585,32 +94,38 @@ console.log(result.ObjectiveValue);</pre>
 
 <div class="container">
 
-<!-- ═══════════ TABS ═══════════ -->
+<!-- ═══════════ SCROLL NAVIGATION ═══════════ -->
 <nav class="tabs" id="tabs">
-  <div class="tree-group">Model lifecycle</div>
-  <button class="tab-btn active" data-tab="lp" role="tab" aria-selected="true"><span class="tab-index">01</span><strong>One-shot solve</strong><small>solve(lpText)</small></button>
-  <div class="tree-branch">
-    <div class="tree-branch-header"><span class="tab-index">02</span><strong>Persistent models</strong><small>createModel()</small></div>
-    <div class="tree-children">
-      <button class="tree-subitem" data-tab="build" data-example="production" role="tab" aria-selected="false"><strong>Production planning</strong><small>maximize revenue</small></button>
-      <button class="tree-subitem" data-tab="build" data-example="diet" role="tab" aria-selected="false"><strong>Diet problem</strong><small>minimize cost</small></button>
-      <button class="tree-subitem" data-tab="build" data-example="transport" role="tab" aria-selected="false"><strong>Transportation</strong><small>route shipments</small></button>
+  <div class="nav-group">
+    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Model lifecycle</strong></div>
+    <a class="nav-item nav-item-root" href="#panel-lp"><span class="nav-marker">01</span><span class="nav-copy"><strong>One-shot solve</strong><small>solve(lpText)</small></span></a>
+    <div class="nav-branch">
+      <a class="nav-item nav-item-root" href="#panel-build"><span class="nav-marker">02</span><span class="nav-copy"><strong>Persistent models</strong><small>createModel()</small></span></a>
+      <div class="nav-children">
+        <a class="nav-item nav-item-child" href="#example-production"><span class="nav-copy"><strong>Production planning</strong><small>maximize revenue</small></span></a>
+        <a class="nav-item nav-item-child" href="#example-diet"><span class="nav-copy"><strong>Diet problem</strong><small>minimize cost</small></span></a>
+        <a class="nav-item nav-item-child" href="#example-transport"><span class="nav-copy"><strong>Transportation</strong><small>route shipments</small></span></a>
+      </div>
     </div>
   </div>
-  <div class="tree-group">Problem structure</div>
-  <div class="tree-branch">
-    <div class="tree-branch-header"><span class="tab-index">03</span><strong>Integer decisions</strong><small>integrality · MIP</small></div>
-    <div class="tree-children">
-      <button class="tree-subitem" data-tab="mip" data-example="knapsack" role="tab" aria-selected="false"><strong>0/1 knapsack</strong><small>binary selection</small></button>
-      <button class="tree-subitem" data-tab="mip" data-example="facility" role="tab" aria-selected="false"><strong>Facility location</strong><small>fixed-charge model</small></button>
+  <div class="nav-group">
+    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Problem structure</strong></div>
+    <div class="nav-branch">
+      <a class="nav-item nav-item-root" href="#panel-mip"><span class="nav-marker">03</span><span class="nav-copy"><strong>Integer decisions</strong><small>integrality · MIP</small></span></a>
+      <div class="nav-children">
+        <a class="nav-item nav-item-child" href="#example-knapsack"><span class="nav-copy"><strong>0/1 knapsack</strong><small>binary selection</small></span></a>
+        <a class="nav-item nav-item-child" href="#example-facility"><span class="nav-copy"><strong>Facility location</strong><small>fixed-charge model</small></span></a>
+      </div>
     </div>
+    <a class="nav-item nav-item-root" href="#panel-qp"><span class="nav-marker">04</span><span class="nav-copy"><strong>Quadratic objectives</strong><small>passHessian()</small></span></a>
   </div>
-  <button class="tab-btn" data-tab="qp" role="tab" aria-selected="false"><span class="tab-index">04</span><strong>Quadratic objectives</strong><small>passHessian()</small></button>
-  <div class="tree-group">Inspect and exchange</div>
-  <button class="tab-btn" data-tab="ranging" role="tab" aria-selected="false"><span class="tab-index">05</span><strong>Sensitivity</strong><small>getRanging()</small></button>
-  <button class="tab-btn" data-tab="options" role="tab" aria-selected="false"><span class="tab-index">06</span><strong>Solver options</strong><small>options.describe()</small></button>
-  <button class="tab-btn" data-tab="iis" role="tab" aria-selected="false"><span class="tab-index">07</span><strong>Infeasibility</strong><small>getIis()</small></button>
-  <button class="tab-btn" data-tab="io" role="tab" aria-selected="false"><span class="tab-index">08</span><strong>Model exchange</strong><small>LP · MPS · export</small></button>
+  <div class="nav-group">
+    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Inspect and exchange</strong></div>
+    <a class="nav-item nav-item-root" href="#panel-ranging"><span class="nav-marker">05</span><span class="nav-copy"><strong>Sensitivity</strong><small>getRanging()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-options"><span class="nav-marker">06</span><span class="nav-copy"><strong>Solver options</strong><small>options.describe()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-iis"><span class="nav-marker">07</span><span class="nav-copy"><strong>Infeasibility</strong><small>getIis()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-io"><span class="nav-marker">08</span><span class="nav-copy"><strong>Model exchange</strong><small>LP · MPS · export</small></span></a>
+  </div>
 </nav>
 
 <!-- ═══════════ TAB 1: LP FORMAT ═══════════ -->
@@ -1624,6 +139,7 @@ console.log(result.ObjectiveValue);</pre>
     <div class="problem-header">
       <h3>Solve a model from LP text</h3>
       <p>Use this entry point when a model already exists in CPLEX LP format, or when generating readable model text is simpler than assembling sparse arrays. <code>solve()</code> parses and solves the text in one call, then returns a name-keyed result with the objective, column values, row values, duals, and basis statuses. It reparses the model on every call; use a persistent model for repeated solves or incremental changes.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/LegacyHighs.html#solve"><code>LegacyHighs.solve()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -1652,7 +168,7 @@ const x0 = result.Columns.x0.Primal;</textarea>
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <h4>Interactive CPLEX LP Text Model</h4>
-      <textarea id="lp-input" spellcheck="false" style="min-height:160px">Maximize
+      <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
  obj: x0 + 2 x1 + 3 x2 + x3
 Subject To
  r0: - x0 + x1 + x2 + 10 x3 &lt;= 20
@@ -1684,7 +200,7 @@ End</textarea>
       <div class="progress-bar-group" id="lp-visual-bars">
         <div class="progress-item">
           <div class="progress-label"><span>x0</span><span>--</span></div>
-          <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
         </div>
       </div>
     </div>
@@ -1716,9 +232,10 @@ End</textarea>
     <div class="problem-header">
       <h3 id="build-title">Production Planning Optimization</h3>
       <p id="build-explain">Use a persistent model when an application builds models from data, changes coefficients or bounds, or solves the same structure repeatedly. This production example maximizes revenue under capacity constraints and passes the constraint matrix in compressed sparse column (CSC) form.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs.createModel()</code></a><a href="docs/interfaces/Model.html#passmodel"><code>Model.passModel()</code></a><a href="docs/interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a></p>
     </div>
 
-    <div class="sparse-explorer" id="build-matrix-explorer" aria-label="Interactive constraint matrix storage explanation"></div>
+    <div class="section-intro-note">The model lifecycle and CSC representation below apply to all three examples. Each model then has its own visualization and solve result.</div>
 
     <!-- Core Solving Code -->
     <div class="code-section">
@@ -1760,15 +277,16 @@ model.dispose();</textarea>
       </div>
     </div>
 
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>Interactive Variable Inputs</h4>
-      <div id="build-vars"></div>
-      <div class="btn-row">
-        <button class="btn" id="build-solve">Solve Model</button>
-        <button class="btn ghost" id="build-add-var">+ Add Variable</button>
+    <article class="model-example" id="example-production">
+      <div class="model-example-heading"><span>01</span><div><h4>Production planning</h4><p>See how each product contributes to constrained resources and total revenue.</p></div></div>
+      <div class="model-story" data-live-example="production">
+        <p>A workshop makes chairs (<var>x</var>) and tables (<var>y</var>). A chair earns $<input class="story-input" id="production-chair-profit" type="number" value="45" min="0" step="1" aria-label="Profit per chair"> and a table earns $<input class="story-input" id="production-table-profit" type="number" value="80" min="0" step="1" aria-label="Profit per table">.</p>
+        <p>Each chair uses <input class="story-input" id="production-chair-labor" type="number" value="4" min="0" step="0.5" aria-label="Labor hours per chair"> labor hours and <input class="story-input" id="production-chair-wood" type="number" value="3" min="0" step="0.5" aria-label="Wood units per chair"> wood units. Each table uses <input class="story-input" id="production-table-labor" type="number" value="6" min="0" step="0.5" aria-label="Labor hours per table"> labor hours and <input class="story-input" id="production-table-wood" type="number" value="5" min="0" step="0.5" aria-label="Wood units per table"> wood units.</p>
+        <p>The workshop has <input class="story-input" id="production-labor-capacity" type="number" value="240" min="1" step="1" aria-label="Available labor hours"> labor hours and <input class="story-input" id="production-wood-capacity" type="number" value="180" min="1" step="1" aria-label="Available wood units"> wood units. The chart shows how the optimal mix consumes both resources and earns revenue.</p>
       </div>
-    </div>
+      <div class="model-state" id="production-state">Preparing the first solution…</div>
+      <div class="sparse-explorer" id="build-matrix-explorer" aria-label="Interactive constraint matrix storage explanation"></div>
+      <div class="model-viz" id="production-viz"><div class="viz-loading">Preparing visualization…</div></div>
 
     <!-- Visual Solution -->
     <div class="visual-solution">
@@ -1786,19 +304,36 @@ model.dispose();</textarea>
       <div class="progress-bar-group" id="build-visual-bars">
         <div class="progress-item">
           <div class="progress-label"><span>x0</span><span>--</span></div>
-          <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
         </div>
       </div>
     </div>
+      <div class="textual-solution">
+        <label>Structured production solution:</label>
+        <div class="output placeholder" id="build-output">Preparing the initial production plan…</div>
+      </div>
+      <div class="timing-bar" id="build-timing">Waiting for solver</div>
+    </article>
 
-    <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Structured Solution Output:</label>
-      <div class="output placeholder" id="build-output">Choose a model in the navigation tree, then click Solve Model.</div>
-    </div>
+    <article class="model-example" id="example-diet">
+      <div class="model-example-heading"><span>02</span><div><h4>Minimum-cost diet</h4><p>Nutrient bullet charts show requirements, excess, and each food's contribution.</p></div></div>
+      <div class="model-story" data-live-example="diet">
+        <p>I can buy portions of oats for $<input class="story-input" id="diet-oats-cost" type="number" value="3" min="0" step="0.1" aria-label="Oats cost">, tofu for $<input class="story-input" id="diet-tofu-cost" type="number" value="2.5" min="0" step="0.1" aria-label="Tofu cost">, and lentils for $<input class="story-input" id="diet-lentils-cost" type="number" value="1.5" min="0" step="0.1" aria-label="Lentils cost">.</p>
+        <p>The fixed nutrition table below maps each portion to calories, protein, and fiber. My day needs at least <input class="story-input" id="diet-calories" type="number" value="2000" min="1" step="50" aria-label="Required calories"> calories, <input class="story-input" id="diet-protein" type="number" value="50" min="1" step="1" aria-label="Required protein"> g protein, and <input class="story-input" id="diet-fiber" type="number" value="40" min="1" step="1" aria-label="Required fiber"> g fiber. The bars compare the cheapest diet with each minimum.</p>
+      </div>
+      <div class="model-state" id="diet-state">Preparing the first solution…</div>
+      <div class="model-viz" id="diet-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
 
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="build-timing">Waiting for solver</div>
+    <article class="model-example" id="example-transport">
+      <div class="model-example-heading"><span>03</span><div><h4>Transportation network</h4><p>Flow width represents shipments; route color represents unit cost.</p></div></div>
+      <div class="model-story" data-live-example="transport">
+        <p>Plant A can ship <input class="story-input" id="transport-supply-a" type="number" value="80" min="0" step="1" aria-label="Plant A supply"> units and Plant B can ship <input class="story-input" id="transport-supply-b" type="number" value="75" min="0" step="1" aria-label="Plant B supply"> units. Towns 1–4 need exactly <input class="story-input" id="transport-demand-1" type="number" value="45" min="0" step="1" aria-label="Town 1 demand">, <input class="story-input" id="transport-demand-2" type="number" value="20" min="0" step="1" aria-label="Town 2 demand">, <input class="story-input" id="transport-demand-3" type="number" value="30" min="0" step="1" aria-label="Town 3 demand">, and <input class="story-input" id="transport-demand-4" type="number" value="15" min="0" step="1" aria-label="Town 4 demand"> units.</p>
+        <p>Shipping from A costs $<input class="story-input" id="transport-a1" type="number" value="8" min="0" step="1" aria-label="A to town 1 cost">, $<input class="story-input" id="transport-a2" type="number" value="6" min="0" step="1" aria-label="A to town 2 cost">, $<input class="story-input" id="transport-a3" type="number" value="10" min="0" step="1" aria-label="A to town 3 cost">, and $<input class="story-input" id="transport-a4" type="number" value="9" min="0" step="1" aria-label="A to town 4 cost"> per unit. From B it costs $<input class="story-input" id="transport-b1" type="number" value="9" min="0" step="1" aria-label="B to town 1 cost">, $<input class="story-input" id="transport-b2" type="number" value="12" min="0" step="1" aria-label="B to town 2 cost">, $<input class="story-input" id="transport-b3" type="number" value="13" min="0" step="1" aria-label="B to town 3 cost">, and $<input class="story-input" id="transport-b4" type="number" value="7" min="0" step="1" aria-label="B to town 4 cost">. Thick routes carry more of the minimum-cost plan.</p>
+      </div>
+      <div class="model-state" id="transport-state">Preparing the first solution…</div>
+      <div class="model-viz" id="transport-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
 
     <!-- Metadata -->
     <div class="metadata-footer">
@@ -1815,9 +350,12 @@ model.dispose();</textarea>
       <span>constants.variableType.integer</span>
     </div>
 
+    <div class="section-intro-note">Both examples use the same integrality vector and branch-and-cut lifecycle. Their decision geometry is different, so each receives a purpose-built view.</div>
+
     <div class="problem-header">
       <h3 id="mip-title">0/1 Knapsack Discrete Optimization</h3>
       <p id="mip-explain">Use integer or binary variables when decisions represent indivisible quantities, selections, or on/off choices. This knapsack model chooses items without exceeding capacity; HiGHS solves it as a mixed-integer linear program using branch-and-cut, and reports a bound-based MIP gap when optimality has not yet been proven.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/ModelData.html#integrality"><code>ModelData.integrality</code></a><a href="docs/interfaces/HighsConstants.html#variabletype"><code>HighsConstants.variableType</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -1862,20 +400,20 @@ model.dispose();</textarea>
     </div>
 
     <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <div class="form-row">
-        <label id="mip-capacity-control">Capacity: <input type="number" id="mip-capacity" value="15" min="1" max="100"></label>
+    <article class="model-example" id="example-knapsack">
+      <div class="model-example-heading"><span>01</span><div><h4>Choose what to carry</h4><p>Each item is binary: it is either in the bag or left behind.</p></div></div>
+      <div class="model-story" data-live-example="knapsack">
+        <p>I can carry <input class="story-input" id="mip-capacity" type="number" value="9" min="1" max="100" aria-label="Knapsack capacity"> kg. My knapsack can contain any combination of:</p>
+        <ul>
+          <li>my water bottle, worth $<input class="story-input mip-value" type="number" value="8" min="0" data-item="0" aria-label="Water bottle value"> and weighing <input class="story-input mip-weight" type="number" value="1" min="0.1" step="0.1" data-item="0" aria-label="Water bottle weight"> kg;</li>
+          <li>my camera, worth $<input class="story-input mip-value" type="number" value="14" min="0" data-item="1" aria-label="Camera value"> and weighing <input class="story-input mip-weight" type="number" value="4" min="0.1" step="0.1" data-item="1" aria-label="Camera weight"> kg;</li>
+          <li>my jacket, worth $<input class="story-input mip-value" type="number" value="10" min="0" data-item="2" aria-label="Jacket value"> and weighing <input class="story-input mip-weight" type="number" value="3" min="0.1" step="0.1" data-item="2" aria-label="Jacket weight"> kg;</li>
+          <li>my book, worth $<input class="story-input mip-value" type="number" value="7" min="0" data-item="3" aria-label="Book value"> and weighing <input class="story-input mip-weight" type="number" value="2" min="0.1" step="0.1" data-item="3" aria-label="Book weight"> kg;</li>
+          <li>my laptop, worth $<input class="story-input mip-value" type="number" value="20" min="0" data-item="4" aria-label="Laptop value"> and weighing <input class="story-input mip-weight" type="number" value="5" min="0.1" step="0.1" data-item="4" aria-label="Laptop weight"> kg.</li>
+        </ul>
+        <p>The solver chooses the most valuable combination that fits. Selected items are packed into the capacity bar below.</p>
       </div>
-      <h4 id="mip-items-label">Knapsack items (value, weight per line)</h4>
-      <textarea id="mip-items" style="min-height:90px" spellcheck="false">4, 12
-2, 2
-10, 4
-1, 1
-2, 1</textarea>
-      <div class="btn-row">
-        <button class="btn" id="mip-solve">Solve MILP</button>
-      </div>
-    </div>
+      <div class="model-state" id="knapsack-state">Preparing the first solution…</div>
 
     <!-- Visual Solution -->
     <div class="visual-solution">
@@ -1901,21 +439,28 @@ model.dispose();</textarea>
           <span id="mip-weight-stat">-- / 15 kg</span>
         </div>
         <div class="packing-track" id="mip-packing-track">
-          <div class="pack-block" style="width:100%">Run MILP to visualize weight packing</div>
+          <div class="pack-block initial-full">Preparing the initial packing…</div>
         </div>
       </div>
 
       <div class="visual-grid" id="mip-visual-grid"></div>
     </div>
+      <div class="textual-solution">
+        <label>Structured knapsack solution:</label>
+        <div class="output placeholder" id="mip-output">Preparing the initial packing…</div>
+      </div>
+      <div class="timing-bar" id="mip-timing">Waiting for solver</div>
+    </article>
 
-    <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Structured Solution Output:</label>
-      <div class="output placeholder" id="mip-output">Click Solve MILP to run.</div>
-    </div>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="mip-timing">Waiting for solver</div>
+    <article class="model-example" id="example-facility">
+      <div class="model-example-heading"><span>02</span><div><h4>Capacitated facility location</h4><p>Opening decisions, customer assignments, capacity use, and route costs in one matrix.</p></div></div>
+      <div class="model-story" data-live-example="facility">
+        <p>Warehouse A costs $<input class="story-input" id="facility-fixed-a" type="number" value="500" min="0" step="10" aria-label="Warehouse A opening cost"> to open and can ship <input class="story-input" id="facility-capacity-a" type="number" value="200" min="0" step="10" aria-label="Warehouse A capacity"> units. Warehouse B costs $<input class="story-input" id="facility-fixed-b" type="number" value="300" min="0" step="10" aria-label="Warehouse B opening cost"> and can ship <input class="story-input" id="facility-capacity-b" type="number" value="200" min="0" step="10" aria-label="Warehouse B capacity"> units.</p>
+        <p>Customers A, B, and C need <input class="story-input" id="facility-demand-a" type="number" value="80" min="0" step="5" aria-label="Customer A demand">, <input class="story-input" id="facility-demand-b" type="number" value="60" min="0" step="5" aria-label="Customer B demand">, and <input class="story-input" id="facility-demand-c" type="number" value="40" min="0" step="5" aria-label="Customer C demand"> units. Shipping from Warehouse A costs $<input class="story-input" id="facility-a1" type="number" value="2" min="0" aria-label="Warehouse A to customer A cost"> / $<input class="story-input" id="facility-a2" type="number" value="4" min="0" aria-label="Warehouse A to customer B cost"> / $<input class="story-input" id="facility-a3" type="number" value="5" min="0" aria-label="Warehouse A to customer C cost"> per unit; from B it costs $<input class="story-input" id="facility-b1" type="number" value="3" min="0" aria-label="Warehouse B to customer A cost"> / $<input class="story-input" id="facility-b2" type="number" value="1" min="0" aria-label="Warehouse B to customer B cost"> / $<input class="story-input" id="facility-b3" type="number" value="3" min="0" aria-label="Warehouse B to customer C cost">. The solution shows which warehouses justify their fixed cost and where each shipment goes.</p>
+      </div>
+      <div class="model-state" id="facility-state">Preparing the first solution…</div>
+      <div class="model-viz" id="facility-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
 
     <!-- Metadata -->
     <div class="metadata-footer">
@@ -1935,6 +480,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Markowitz Portfolio Risk Minimization</h3>
       <p>Use a convex quadratic program when cost or risk depends on interactions between continuous decisions, such as portfolio covariance or least-squares penalties. This model minimizes portfolio variance while meeting a target return. HiGHS evaluates <code>½xᵀQx + cᵀx</code>, so <code>Q</code> is twice the covariance matrix here. The Hessian must have the correct semidefinite sign for the objective sense; HiGHS does not solve non-convex QP or mixed-integer QP.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#passhessian"><code>Model.passHessian()</code></a><a href="docs/interfaces/HessianInput.html"><code>HessianInput</code></a></p>
     </div>
 
     <div class="sparse-explorer" id="qp-matrix-explorer" aria-label="Interactive Hessian storage explanation"></div>
@@ -1980,30 +526,11 @@ model.dispose();</textarea>
       </div>
     </div>
 
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>Portfolio Asset Parameters &amp; Targets</h4>
-      <div class="form-row">
-        <label>Target Annual Return: <input type="number" id="qp-target-return" value="8.0" step="0.5" min="4" max="12">%</label>
-      </div>
-      <div class="visual-grid">
-        <div class="item-card">
-          <h5>Asset 1: Tech Growth</h5>
-          <span style="font-size:0.75rem">Exp Return: 12.0% | Variance: High</span>
-        </div>
-        <div class="item-card">
-          <h5>Asset 2: Energy</h5>
-          <span style="font-size:0.75rem">Exp Return: 8.0% | Variance: Med</span>
-        </div>
-        <div class="item-card">
-          <h5>Asset 3: Govt Bonds</h5>
-          <span style="font-size:0.75rem">Exp Return: 4.0% | Variance: Low</span>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn" id="qp-solve">Optimize Portfolio QP</button>
-      </div>
+    <div class="model-story" data-live-example="qp">
+      <p>I want the lowest-risk mix of Tech, Energy, and government bonds that returns at least <input class="story-input" id="qp-target-return" type="number" value="8" step="0.5" min="1" max="20" aria-label="Target annual return">% per year. Their expected returns are <input class="story-input" id="qp-return-tech" type="number" value="12" step="0.5" aria-label="Tech expected return">%, <input class="story-input" id="qp-return-energy" type="number" value="8" step="0.5" aria-label="Energy expected return">%, and <input class="story-input" id="qp-return-bonds" type="number" value="4" step="0.5" aria-label="Bonds expected return">%.</p>
+      <p>The covariance matrix in the code describes their risk and co-movement. The point in the triangle is the minimum-variance allocation meeting my target; moving a return changes the feasible mix immediately.</p>
     </div>
+    <div class="model-state" id="qp-state">Preparing the first solution…</div>
 
     <!-- Visual Solution -->
     <div class="visual-solution">
@@ -2025,7 +552,7 @@ model.dispose();</textarea>
           <span id="qp-allocation-text">Tech: -- | Energy: -- | Bonds: --</span>
         </div>
         <div class="packing-track" id="qp-allocation-track">
-          <div class="pack-block" style="width:100%">Run QP to compute optimal portfolio weights</div>
+          <div class="pack-block initial-full">Preparing the initial allocation…</div>
         </div>
       </div>
     </div>
@@ -2033,7 +560,7 @@ model.dispose();</textarea>
     <!-- Textual Solution -->
     <div class="textual-solution">
       <label>Optimal Asset Weights Array:</label>
-      <div class="output placeholder" id="qp-output">Click Optimize Portfolio QP to run.</div>
+      <div class="output placeholder" id="qp-output">Preparing the initial portfolio…</div>
     </div>
 
     <!-- Time to Solve -->
@@ -2057,6 +584,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Objective Cost &amp; Constraint Sensitivity</h3>
       <p>Use ranging after an LP solve to ask how far one objective coefficient or row bound can move while the current optimal simplex basis remains optimal. HiGHS reports independent up/down ranges for column costs and row or column bounds; these are local, one-at-a-time basis-stability intervals, not guarantees for simultaneous changes. Ranging requires an optimal LP basis and is not available for MIP or QP solutions.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#getranging"><code>Model.getRanging()</code></a><a href="docs/interfaces/RangingResult.html"><code>RangingResult</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -2089,20 +617,18 @@ model.dispose();</textarea>
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <h4>LP Model Definition</h4>
-      <textarea id="ranging-lp" spellcheck="false" style="min-height:140px">Maximize
- obj: 3 x0 + 2 x1
+      <textarea class="editor-medium" id="ranging-lp" spellcheck="false">Maximize
+ obj: 3 x + 2 y
 Subject To
- r0: x0 + x1 &lt;= 6
- r1: 2 x0 + x1 &lt;= 8
- r2: -x0 + x1 &lt;= 1
- r3: x1 &lt;= 2
+ r0: x + y &lt;= 6
+ r1: 2 x + y &lt;= 8
+ r2: -x + y &lt;= 1
+ r3: y &lt;= 2
 Bounds
- 0 &lt;= x0
- 0 &lt;= x1
+ 0 &lt;= x
+ 0 &lt;= y
 End</textarea>
-      <div class="btn-row">
-        <button class="btn" id="ranging-solve">Solve &amp; Range</button>
-      </div>
+      <p class="model-state" id="ranging-state">Preparing the initial sensitivity analysis…</p>
     </div>
 
     <!-- Visual Solution -->
@@ -2122,11 +648,11 @@ End</textarea>
       <div id="ranging-visual-bars">
         <div class="interval-scale">
           <div class="interval-scale-header">
-            <span>x0 Cost Stability Range</span>
+            <span>x Cost Stability Range</span>
             <span>[1.0000 ⟷ 4.0000]</span>
           </div>
           <div class="interval-scale-track">
-            <div class="interval-scale-fill" style="left:20%;width:60%"></div>
+            <div class="interval-scale-fill initial-interval"></div>
           </div>
         </div>
       </div>
@@ -2135,7 +661,7 @@ End</textarea>
     <!-- Textual Solution -->
     <div class="textual-solution">
       <label>Numerical Ranging Output:</label>
-      <div class="output placeholder" id="ranging-output">Click Solve &amp; Range to analyze.</div>
+      <div class="output placeholder" id="ranging-output">Preparing the initial sensitivity analysis…</div>
     </div>
 
     <!-- Time to Solve -->
@@ -2159,6 +685,7 @@ End</textarea>
     <div class="problem-header">
       <h3>HiGHS Parameter Introspection</h3>
       <p>Use options to control stopping criteria, feasibility tolerances, presolve, algorithm selection, logging, and MIP search behavior for a persistent model. <code>options.describe()</code> returns the native type, current value, default, and numeric range so applications do not need to hard-code metadata. The WebAssembly API rejects thread/concurrency settings and options that write to native filesystem paths.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/OptionStore.html#describe"><code>OptionStore.describe()</code></a><a href="docs/interfaces/OptionStore.html#set"><code>OptionStore.set()</code></a><a href="docs/interfaces/OptionStore.html#reset"><code>OptionStore.reset()</code></a></p>
     </div>
 
     <div class="code-section">
@@ -2188,9 +715,9 @@ model.dispose();</textarea>
     <div class="visual-inputs">
       <div class="opts-filter">
         <input type="text" id="opts-search" placeholder="Filter options…">
-        <span style="font-size:.8rem;color:var(--color-text-secondary);white-space:nowrap" id="opts-count"></span>
+        <span class="opts-count" id="opts-count"></span>
       </div>
-      <div style="max-height:280px;overflow:auto;border:1px solid var(--color-bg-secondary);border-radius:var(--radius)">
+      <div class="opts-table-wrap">
         <table class="opts-table">
           <thead><tr><th>Name</th><th>Type</th><th>Current</th><th>Default</th></tr></thead>
           <tbody id="opts-body"></tbody>
@@ -2207,8 +734,8 @@ model.dispose();</textarea>
         <label>New Value: <input type="text" id="opt-value" placeholder="e.g. off"></label>
         <button class="btn" id="opt-set">Set Option</button>
       </div>
-      <div class="output" id="opt-detail" style="min-height:90px;margin-top:0.5rem">Select an option above or type a name to inspect.</div>
-      <button class="btn ghost" id="opt-reset-all" style="margin-top:0.5rem">Reset All Options</button>
+      <div class="output opt-detail" id="opt-detail">Select an option above or type a name to inspect.</div>
+      <button class="btn ghost opt-reset" id="opt-reset-all">Reset All Options</button>
     </div>
     <div class="metadata-footer">
       Native HiGHS option metadata • Per-model settings • Thread and filesystem options rejected in Wasm
@@ -2227,6 +754,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Explain why a model is infeasible</h3>
       <p>Use an irreducible infeasible subsystem (IIS) when a model has no feasible solution and you need a smaller set of rows and variable bounds to inspect. “Irreducible” means every returned member is necessary for that particular conflict: removing any one makes the subsystem feasible. It does not mean HiGHS found the conflict with the fewest possible members, and a model can contain several different IISs.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#getiis"><code>Model.getIis()</code></a><a href="docs/interfaces/IisResult.html"><code>IisResult</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -2258,17 +786,15 @@ model.dispose();</textarea>
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <h4>Infeasible Model Inputs</h4>
-      <textarea id="iis-lp" spellcheck="false" style="min-height:120px">Minimize
- obj: x0 + x1
+      <textarea class="editor-compact" id="iis-lp" spellcheck="false">Minimize
+ obj: x + y
 Subject To
- r0: x0 + x1 &lt;= 5
+ demand_limit: x + y &lt;= 5
 Bounds
- 10 &lt;= x0
- 10 &lt;= x1
+ 10 &lt;= x
+ 10 &lt;= y
 End</textarea>
-      <div class="btn-row">
-        <button class="btn" id="iis-solve">Find IIS</button>
-      </div>
+      <p class="model-state" id="iis-state">Preparing the initial conflict analysis…</p>
     </div>
 
     <!-- Visual Solution -->
@@ -2285,7 +811,7 @@ End</textarea>
           <div class="iis-preview-lines" aria-hidden="true"><span></span><span></span><span></span></div>
           <div>
             <strong>No conflict analysis yet</strong>
-            <p>Run <code>getIis()</code> to compute one irreducible conflict among the model's rows and bounds.</p>
+            <p>Preparing one irreducible conflict among the model's rows and bounds.</p>
           </div>
         </div>
       </div>
@@ -2294,7 +820,7 @@ End</textarea>
     <!-- Textual Solution -->
     <div class="textual-solution">
       <label>IIS Diagnostic Output:</label>
-      <div class="output placeholder" id="iis-output">Click Find IIS to analyze infeasibility.</div>
+      <div class="output placeholder" id="iis-output">Preparing the initial conflict analysis…</div>
     </div>
 
     <!-- Time to Solve -->
@@ -2318,6 +844,7 @@ End</textarea>
     <div class="problem-header">
       <h3>Import, inspect, and export models</h3>
       <p>Use in-memory model I/O to accept LP or MPS data from uploads, generated files, or another service, then solve or convert it without exposing a native filesystem path. LP is readable text; MPS preserves a more rigid interchange structure and is represented as bytes where required. Exported models are normalized representations of HiGHS’ internal model, so comments and original formatting are not preserved.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/EncodedModel.html"><code>EncodedModel</code></a><a href="docs/interfaces/Model.html#exportmodel"><code>Model.exportModel()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -2347,14 +874,14 @@ model.dispose();</textarea>
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <h4>CPLEX LP Input Text</h4>
-      <textarea id="io-input" spellcheck="false" style="min-height:120px">Maximize
- obj: 2 x0 + 3 x1
+      <textarea class="editor-compact" id="io-input" spellcheck="false">Maximize
+ obj: 2 x + 3 y
 Subject To
- r0: x0 + x1 &lt;= 10
- r1: 2 x0 + x1 &lt;= 16
+ r0: x + y &lt;= 10
+ r1: 2 x + y &lt;= 16
 Bounds
- 0 &lt;= x0
- 0 &lt;= x1
+ 0 &lt;= x
+ 0 &lt;= y
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="io-load">Load LP</button>
@@ -2368,17 +895,18 @@ End</textarea>
       <div class="stat-grid">
         <div class="stat-box">
           <span class="stat-label">VARIABLES</span>
-          <span class="stat-val">2</span>
+          <span class="stat-val" id="io-variable-count">2</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">CONSTRAINTS</span>
-          <span class="stat-val">2</span>
+          <span class="stat-val" id="io-constraint-count">2</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">PARSER STATUS</span>
           <span class="stat-val" id="io-status-val">READY</span>
         </div>
       </div>
+      <div class="model-viz" id="io-viz"></div>
     </div>
 
     <!-- Textual Solution -->
@@ -2401,20 +929,7 @@ End</textarea>
 
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-<script>
-  Prism.languages.lp = {
-    comment: /\\[^\n]*/,
-    keyword: /^\s*(?:Maximize|Minimize|Subject To|Such That|Bounds|Generals?|Binar(?:y|ies)|Integers|End)\s*$/im,
-    label: { pattern: /^[ \t]*[A-Za-z_][\w.]*:/m, alias: "property" },
-    operator: /<=|>=|=/,
-    number: /[+-]?\b\d+(?:\.\d+)?\b|\b(?:inf|infinity)\b/i,
-    boolean: /\bfree\b/i,
-    variable: /\b[A-Za-z_][\w.]*\b/
-  };
-</script>
-<script src="demo.js"></script>
-<link rel="prefetch" href="highs.js">
-<link rel="prefetch" href="highs.wasm">
-<link rel="prefetch" href="worker.js">
+<script src="prism-lp.js"></script>
+<script type="module" src="demo.js"></script>
 </body>
 </html>
