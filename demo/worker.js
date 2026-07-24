@@ -38,6 +38,30 @@ function describeIisBound(highs, code) {
   return name ? name.slice("bound".length).toLowerCase() : `code ${code}`;
 }
 
+function modelSnapshot(model) {
+  const { numCols, numRows } = model.getDimensions();
+  const columns = numCols ? model.getCols({ kind: "range", from: 0, to: numCols - 1 }) : { cost: [], lower: [], upper: [] };
+  const rows = numRows ? model.getRows({ kind: "range", from: 0, to: numRows - 1 }) : { lower: [], upper: [] };
+  return {
+    colNames: Array.from({ length: numCols }, (_, index) => model.getColName(index) || `x${index}`),
+    rowNames: Array.from({ length: numRows }, (_, index) => model.getRowName(index) || `r${index}`),
+    colCost: arrayFrom(columns.cost),
+    colLower: arrayFrom(columns.lower),
+    colUpper: arrayFrom(columns.upper),
+    rowLower: arrayFrom(rows.lower),
+    rowUpper: arrayFrom(rows.upper),
+  };
+}
+
+function rangingRecord(record) {
+  return {
+    value: arrayFrom(record.value),
+    objective: arrayFrom(record.objective),
+    inVariable: arrayFrom(record.inVariable),
+    outVariable: arrayFrom(record.outVariable),
+  };
+}
+
 /* ── Legacy Solve ── */
 
 async function solveLP(data) {
@@ -241,17 +265,32 @@ async function doRanging(data) {
   }
 
   const ranging = model.getRanging();
+  const solution = model.getSolution();
+  const basis = model.getBasis();
   return {
     modelStatus: describeStatus(highs, run.modelStatus),
     elapsed,
     objective: model.getObjectiveValue(),
-    primal: arrayFrom(model.getSolution().colValue),
-    colCostDown: arrayFrom(ranging.colCostDown.value),
-    colCostUp: arrayFrom(ranging.colCostUp.value),
-    colBoundDown: arrayFrom(ranging.colBoundDown.value),
-    colBoundUp: arrayFrom(ranging.colBoundUp.value),
-    rowBoundDown: arrayFrom(ranging.rowBoundDown.value),
-    rowBoundUp: arrayFrom(ranging.rowBoundUp.value),
+    sense: model.getObjectiveSense() === highs.constants.objectiveSense.maximize ? "maximize" : "minimize",
+    model: modelSnapshot(model),
+    solution: {
+      colValue: arrayFrom(solution.colValue),
+      rowValue: arrayFrom(solution.rowValue),
+      colDual: arrayFrom(solution.colDual),
+      rowDual: arrayFrom(solution.rowDual),
+    },
+    basis: {
+      colStatus: arrayFrom(basis.colStatus),
+      rowStatus: arrayFrom(basis.rowStatus),
+    },
+    ranging: {
+      colCostDown: rangingRecord(ranging.colCostDown),
+      colCostUp: rangingRecord(ranging.colCostUp),
+      colBoundDown: rangingRecord(ranging.colBoundDown),
+      colBoundUp: rangingRecord(ranging.colBoundUp),
+      rowBoundDown: rangingRecord(ranging.rowBoundDown),
+      rowBoundUp: rangingRecord(ranging.rowBoundUp),
+    },
   };
 }
 
@@ -321,29 +360,38 @@ async function doIis(data) {
   }
   model = highs.createModel({ format: "lp", data: data.problem });
   model.options.set("output_flag", false);
+  model.options.set("iis_strategy", 8);
   const t0 = performance.now();
   const run = model.run();
 
-  if (run.modelStatus === highs.constants.modelStatus.optimal) {
+  if (run.modelStatus !== highs.constants.modelStatus.infeasible) {
     return {
-      modelStatus: "optimal",
-      objective: model.getObjectiveValue(),
-      primal: arrayFrom(model.getSolution().colValue),
-      note: "Model is feasible — no IIS needed.",
+      modelStatus: describeStatus(highs, run.modelStatus),
+      objective: run.modelStatus === highs.constants.modelStatus.optimal ? model.getObjectiveValue() : undefined,
+      primal: run.modelStatus === highs.constants.modelStatus.optimal ? arrayFrom(model.getSolution().colValue) : undefined,
+      note: run.modelStatus === highs.constants.modelStatus.optimal || run.modelStatus === highs.constants.modelStatus.unbounded
+        ? "The model is feasible, so there is no conflict to isolate."
+        : "Infeasibility was not proved, so no IIS was requested.",
       elapsed: (performance.now() - t0).toFixed(1),
     };
   }
 
   try {
     const iis = model.getIis();
+    const snapshot = modelSnapshot(model);
     return {
       modelStatus: describeStatus(highs, run.modelStatus),
       elapsed: (performance.now() - t0).toFixed(1),
       iis: {
+        ...snapshot,
         colIndices: arrayFrom(iis.colIndex),
         rowIndices: arrayFrom(iis.rowIndex),
+        colBoundCodes: arrayFrom(iis.colBound),
+        rowBoundCodes: arrayFrom(iis.rowBound),
         colBounds: arrayFrom(iis.colBound).map((code) => describeIisBound(highs, code)),
         rowBounds: arrayFrom(iis.rowBound).map((code) => describeIisBound(highs, code)),
+        colStatus: arrayFrom(iis.colStatus),
+        rowStatus: arrayFrom(iis.rowStatus),
       },
     };
   } catch (e) {

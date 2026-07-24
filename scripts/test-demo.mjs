@@ -287,6 +287,12 @@ async function main() {
     assert(await page.locator(".code-editor-box .token").count() > 5, "JavaScript examples have syntax highlighting");
     assert(await page.locator("#panel-lp .syntax-editor .token").count() > 5, "LP editor has syntax highlighting");
     assert(await page.locator("#lp-output .token").count() > 5, "JSON output has syntax highlighting");
+    assert(await page.locator("#lp-obj-val").textContent() === "16.0000", "Two-variable LP reaches the expected objective");
+    assert(await page.locator("#lp-visual-bars .optimality-map svg").count() === 1, "LP result renders a two-variable constraint pressure map");
+    assert(await page.locator("#lp-visual-bars .pressure-wall").count() === 2, "Pressure map renders both named constraint walls");
+    await page.locator('#lp-visual-bars .pressure-wall[data-row="material"]').focus();
+    assert((await page.locator("#lp-visual-bars .viz-narration").textContent()).includes("HiGHS dual"), "Constraint focus explains dual pressure in solver terms");
+    await page.locator('#lp-visual-bars .pressure-wall[data-row="material"]').evaluate((element) => element.blur());
     assert(await page.locator(".viz-loading").count() === 0, "No visualization remains in a loading state after initialization");
     assert(await page.getByText("Solver control map", { exact: true }).count() === 0, "Solver control map is absent");
     const storyInputMetrics = await page.locator(".story-input").first().evaluate((input) => {
@@ -459,7 +465,11 @@ async function main() {
     await checkOutputNotError(page, "ranging-output", "Ranging");
     await checkNoExtendedApiError(page, "Ranging");
     assert(await page.locator("#ranging-visual-bars svg").count() === 1, "Ranging renders feasible geometry and sensitivity intervals");
-    assert((await page.locator("#ranging-visual-bars svg").textContent()).includes("objective 3x + 2y"), "Ranging visualization uses x and y names");
+    assert((await page.locator("#ranging-visual-bars .sensitivity-equation").textContent()).includes("3x + 2y"), "Ranging lens uses x and y names in a readable objective");
+    assert(await page.locator("#ranging-visual-bars .sensitivity-term").count() === 6, "Every objective coefficient and row limit is an interactive sensitivity term");
+    await page.locator('#ranging-visual-bars .sensitivity-term[data-key="cost-0"]').hover();
+    assert((await page.locator("#ranging-visual-bars .viz-narration").textContent()).includes("same simplex basis"), "Sensitivity hover explains the one-at-a-time basis-stability guarantee");
+    assert(!(await page.locator(".api-response").first().getAttribute("open")), "Exact ranging payload is collapsed by default");
 
     // ── Test 6: Options ──
     console.log("\n─ Example: Options ─");
@@ -479,11 +489,13 @@ async function main() {
     await waitForOutput(page, "#iis-output");
     await checkOutputNotError(page, "iis-output", "IIS");
     await checkNoExtendedApiError(page, "IIS");
-    assert(await page.locator("#iis-visual-tags svg, #iis-visual-tags .conflict-node").count() > 0, "IIS renders the conflict returned by HiGHS");
+    assert(await page.locator("#iis-visual-tags .iis-proof").count() === 1, "IIS renders a human-readable contradiction proof");
     assert((await page.locator("#iis-visual-tags").textContent()).includes("x ≥ 10"), "IIS visualization uses parsed variable names and bounds");
+    const initialIis = await page.locator("#iis-visual-tags").textContent();
+    assert(initialIis.includes("minimum of 20") && initialIis.includes("impossible gap 15"), "IIS quantifies the default contradiction and feasibility gap");
     await editLiveInput(page, "#iis-lp", `Minimize\n obj: x + y\nSubject To\n limit: x + y <= 7\nBounds\n 12 <= x\n 12 <= y\nEnd`, "iis");
     const editedIis = await page.locator("#iis-visual-tags").textContent();
-    assert(editedIis.includes("x + y ≤ 7") && editedIis.includes("left side = 24"), "IIS geometry and explanation follow edited coefficients and bounds");
+    assert(editedIis.includes("x + y ≤ 7") && editedIis.includes("minimum of 24") && editedIis.includes("impossible gap 17"), "IIS proof follows edited coefficients and bounds");
     const iisScreenshot = join(ROOT, "build", "demo-iis.png");
     await page.screenshot({ path: iisScreenshot, fullPage: true });
     console.log(`  screenshot: ${iisScreenshot}`);

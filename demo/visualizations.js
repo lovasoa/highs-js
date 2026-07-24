@@ -198,17 +198,30 @@ function clipPolygon(polygon, a, b, rhs) {
   return result;
 }
 
-function feasiblePolygon(parsed) {
+function plotDomain(parsed, point = [0, 0]) {
   const [xName, yName] = parsed.variables;
   const bounds = [parsed.bounds[xName], parsed.bounds[yName]];
   const scaleCandidates = parsed.constraintData.flatMap((row) => {
-    const values = [row.coefficients[xName], row.coefficients[yName]].filter((value) => value > 0).map((value) => row.rhs / value);
-    return values.filter((value) => Number.isFinite(value) && value > 0);
+    const values = [row.coefficients[xName], row.coefficients[yName]].filter(Boolean).map((value) => row.rhs / value);
+    return values.filter(Number.isFinite).map(Math.abs);
   });
-  const max = Math.max(1, ...scaleCandidates, ...bounds.map((bound) => Number.isFinite(bound?.upper) ? bound.upper : 0)) * 1.15;
-  const minX = Number.isFinite(bounds[0]?.lower) ? bounds[0].lower : 0;
-  const minY = Number.isFinite(bounds[1]?.lower) ? bounds[1].lower : 0;
-  let polygon = [[minX, minY], [max, minY], [max, max], [minX, max]];
+  const extent = Math.max(1, ...scaleCandidates, ...point.map(Math.abs), ...bounds.flatMap((bound) => [bound?.lower, bound?.upper]).filter(Number.isFinite).map(Math.abs)) * 1.18;
+  const minX = Math.min(0, Number.isFinite(bounds[0]?.lower) ? bounds[0].lower : 0, point[0] || 0);
+  const minY = Math.min(0, Number.isFinite(bounds[1]?.lower) ? bounds[1].lower : 0, point[1] || 0);
+  const maxX = Math.max(extent, Number.isFinite(bounds[0]?.upper) ? bounds[0].upper : 0, point[0] || 0);
+  const maxY = Math.max(extent, Number.isFinite(bounds[1]?.upper) ? bounds[1].upper : 0, point[1] || 0);
+  return { minX, minY, maxX, maxY };
+}
+
+function feasiblePolygon(parsed, domain = plotDomain(parsed)) {
+  const [xName, yName] = parsed.variables;
+  let polygon = [[domain.minX, domain.minY], [domain.maxX, domain.minY], [domain.maxX, domain.maxY], [domain.minX, domain.maxY]];
+  const xBound = parsed.bounds[xName] || { lower: -Infinity, upper: Infinity };
+  const yBound = parsed.bounds[yName] || { lower: -Infinity, upper: Infinity };
+  if (Number.isFinite(xBound.lower)) polygon = clipPolygon(polygon, -1, 0, -xBound.lower);
+  if (Number.isFinite(xBound.upper)) polygon = clipPolygon(polygon, 1, 0, xBound.upper);
+  if (Number.isFinite(yBound.lower)) polygon = clipPolygon(polygon, 0, -1, -yBound.lower);
+  if (Number.isFinite(yBound.upper)) polygon = clipPolygon(polygon, 0, 1, yBound.upper);
   for (const row of parsed.constraintData) {
     let a = row.coefficients[xName] || 0;
     let b = row.coefficients[yName] || 0;
@@ -217,100 +230,310 @@ function feasiblePolygon(parsed) {
     polygon = clipPolygon(polygon, a, b, rhs);
     if (row.operator === "=") polygon = clipPolygon(polygon, -a, -b, -rhs);
   }
-  return { polygon, minX, minY, max };
+  return polygon;
 }
 
-export function renderRangingViz(container, data, parsed) {
+function lineSegment(a, b, rhs, domain) {
+  const candidates = [];
+  if (Math.abs(b) > 1e-12) {
+    candidates.push([domain.minX, (rhs - a * domain.minX) / b], [domain.maxX, (rhs - a * domain.maxX) / b]);
+  }
+  if (Math.abs(a) > 1e-12) {
+    candidates.push([(rhs - b * domain.minY) / a, domain.minY], [(rhs - b * domain.maxY) / a, domain.maxY]);
+  }
+  const inside = candidates.filter(([x, y]) => x >= domain.minX - 1e-8 && x <= domain.maxX + 1e-8 && y >= domain.minY - 1e-8 && y <= domain.maxY + 1e-8);
+  const unique = inside.filter((point, index) => inside.findIndex((other) => Math.abs(point[0] - other[0]) < 1e-8 && Math.abs(point[1] - other[1]) < 1e-8) === index);
+  return unique.length >= 2 ? [unique[0], unique[1]] : null;
+}
+
+function geometryScale(domain) {
+  return {
+    sx: (value) => 70 + (value - domain.minX) / Math.max(domain.maxX - domain.minX, 1e-9) * 640,
+    sy: (value) => 400 - (value - domain.minY) / Math.max(domain.maxY - domain.minY, 1e-9) * 330,
+  };
+}
+
+function objectiveSegment(parsed, point, domain, coefficientOverride = null) {
+  const [xName, yName] = parsed.variables;
+  const a = coefficientOverride?.name === xName ? coefficientOverride.value : parsed.objective[xName] || 0;
+  const b = coefficientOverride?.name === yName ? coefficientOverride.value : parsed.objective[yName] || 0;
+  return lineSegment(a, b, a * point[0] + b * point[1], domain);
+}
+
+function statusDescription(status) {
+  return ({ BS: "basic", UB: "at upper limit", LB: "at lower limit", FX: "fixed", FR: "free and nonbasic", NB: "nonbasic" })[status] || "basis status unavailable";
+}
+
+function bindExplanation(target, narration, text) {
+  const show = () => {
+    target.closest("svg, .sensitivity-lens, .iis-proof")?.querySelectorAll(".is-active").forEach((node) => node.classList.remove("is-active"));
+    target.classList.add("is-active");
+    narration.replaceChildren(...text());
+  };
+  target.addEventListener("pointerenter", show);
+  target.addEventListener("focus", show);
+}
+
+export function renderOptimalityMap(container, result, parsed) {
   if (!container) return;
-  const names = parsed.variables.length === data.primal.length ? parsed.variables : data.primal.map((_, index) => `x${index}`);
-  const intervals = data.colCostDown.map((down, index) => ({ label: `${names[index]} objective cost`, down, up: data.colCostUp[index], current: parsed.objective[names[index]] || 0 }));
-  const finite = intervals.flatMap((item) => [item.down, item.up, item.current]).filter(Number.isFinite);
-  const min = Math.min(...finite, 0);
-  const max = Math.max(...finite, 1);
-  const scale = (value) => 475 + ((Math.max(min, Math.min(max, value)) - min) / Math.max(max - min, 1e-9)) * 255;
-  const rows = intervals.map((item, index) => {
-    const y = 105 + index * 105;
-    const end = Number.isFinite(item.up) ? scale(item.up) : 730;
-    return focusableMark("g", {}, `${item.label}: ${displayNumber(item.down)} to ${displayNumber(item.up)}`,
-      svgText(item.label, { class: "viz-title", x: 455, y: y - 22 }),
-      svgElement("line", { x1: 475, x2: 730, y1: y, y2: y, stroke: "#dbe9e8", "stroke-width": 8, "stroke-linecap": "round" }),
-      svgElement("line", { x1: scale(item.down), x2: end, y1: y, y2: y, stroke: "#5c9895", "stroke-width": 9, "stroke-linecap": "round" }),
-      svgElement("path", { d: `M${scale(item.current)} ${y - 11}l9 11-9 11-9-11Z`, fill: "#d45e6a" }),
-      svgText(displayNumber(item.down), { class: "viz-label", x: scale(item.down), y: y + 28, "text-anchor": "middle" }),
-      svgText(displayNumber(item.up), { class: "viz-label", x: end, y: y + 28, "text-anchor": "middle" }));
+  const columns = Object.values(result.Columns || {}).sort((a, b) => a.Index - b.Index);
+  if (parsed.variables.length !== 2 || columns.length !== 2 || !result.Rows) {
+    renderBoundLanes(container, result.Columns || {});
+    return;
+  }
+  const point = columns.map((column) => column.Primal);
+  const domain = plotDomain(parsed, point);
+  const polygon = feasiblePolygon(parsed, domain);
+  const { sx, sy } = geometryScale(domain);
+  const narration = element("div", { class: "viz-narration", role: "status", "aria-live": "polite" },
+    element("strong", { text: `Best feasible point: ${parsed.variables[0]} = ${displayNumber(point[0])}, ${parsed.variables[1]} = ${displayNumber(point[1])}` }),
+    element("span", { text: "Both walls are full. A thicker wall means one more unit is worth more objective value; hover it for the exact dual and basis status." }));
+  const maxDual = Math.max(1e-9, ...result.Rows.map((row) => Math.abs(row.Dual || 0)));
+  const wallMarks = parsed.constraintData.flatMap((row, index) => {
+    const segment = lineSegment(row.coefficients[parsed.variables[0]] || 0, row.coefficients[parsed.variables[1]] || 0, row.rhs, domain);
+    if (!segment) return [];
+    const solved = result.Rows.find((item) => item.Index === index) || {};
+    const bound = solved.Status === "LB" ? solved.Lower : solved.Upper;
+    const slack = Number.isFinite(bound) ? Math.abs(bound - solved.Primal) : 0;
+    const binding = slack <= 1e-7;
+    const pressure = Math.abs(solved.Dual || 0) / maxDual;
+    const [[x1, y1], [x2, y2]] = segment;
+    const labelPosition = index % 2 ? 0.72 : 0.32;
+    const labelX = sx(x1) + (sx(x2) - sx(x1)) * labelPosition;
+    const labelY = sy(y1) + (sy(y2) - sy(y1)) * labelPosition;
+    const relaxedRhs = row.rhs + (solved.Status === "LB" ? -1 : 1);
+    const ghost = lineSegment(row.coefficients[parsed.variables[0]] || 0, row.coefficients[parsed.variables[1]] || 0, relaxedRhs, domain);
+    const group = focusableMark("g", { class: `pressure-wall ${binding ? "is-binding" : "is-slack"}`, "data-row": row.name }, `${row.name}: ${formatLinearConstraint(row, parsed.variables)}`,
+      ghost ? svgElement("line", { class: "pressure-ghost", x1: sx(ghost[0][0]), y1: sy(ghost[0][1]), x2: sx(ghost[1][0]), y2: sy(ghost[1][1]) }) : null,
+      svgElement("line", { class: "pressure-line", x1: sx(x1), y1: sy(y1), x2: sx(x2), y2: sy(y2), style: `--pressure:${2 + pressure * 6}px` }),
+      svgElement("g", { class: "pressure-tag", transform: `translate(${Math.min(650, Math.max(95, labelX))} ${Math.min(375, Math.max(88, labelY - 10))})` },
+        svgElement("rect", { x: -54, y: -13, width: 108, height: 24, rx: 12 }),
+        svgText(`${row.name} · ${binding ? "FULL" : `${displayNumber(slack)} SLACK`}`, { x: 0, y: 4, "text-anchor": "middle" })));
+    bindExplanation(group, narration, () => [
+      element("strong", { text: `${row.name} is ${binding ? "at its limit" : "not currently limiting the solution"}.` }),
+      element("span", { text: `Activity ${displayNumber(solved.Primal)}; ${statusDescription(solved.Status)} (${solved.Status || "no code"}); HiGHS dual ${displayNumber(solved.Dual)}.` }),
+      element("span", { text: binding && Math.abs(solved.Dual || 0) > 1e-9
+        ? `The ghost wall shows a one-unit relaxation. Locally, the objective changes by about ${displayNumber(solved.Status === "LB" ? -(solved.Dual || 0) : solved.Dual || 0)}.`
+        : "Contact and economic pressure are separate: a limiting wall can still have a zero dual." }),
+    ]);
+    return [group];
   });
-  const domain = feasiblePolygon(parsed);
-  const sx = (value) => 65 + (value - domain.minX) / Math.max(domain.max - domain.minX, 1e-9) * 325;
-  const sy = (value) => 300 - (value - domain.minY) / Math.max(domain.max - domain.minY, 1e-9) * 250;
-  const objectiveText = names.map((name) => `${displayNumber(parsed.objective[name] || 0)}${name}`).join(" + ");
-  container.replaceChildren(visualization("0 0 780 350", "Two-variable feasible domain, objective gradient, optimum, and sensitivity intervals",
-    svgText("Feasible domain and objective", { class: "viz-title", x: 20, y: 28 }),
-    svgText("Basis stability intervals", { class: "viz-title", x: 455, y: 28 }),
-    svgElement("line", { x1: sx(domain.minX), x2: sx(domain.max), y1: sy(domain.minY), y2: sy(domain.minY), stroke: "#8aa7a5" }),
-    svgElement("line", { x1: sx(domain.minX), x2: sx(domain.minX), y1: sy(domain.minY), y2: sy(domain.max), stroke: "#8aa7a5" }),
-    svgElement("polygon", {
-      points: domain.polygon.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" "),
-      fill: "#9ececc", opacity: 0.34, stroke: "#2f7774", "stroke-width": 2,
-    }),
-    svgText(`objective ${objectiveText}`, { class: "viz-label", x: 75, y: 325 }),
-    focusableMark("circle", { cx: sx(data.primal[0]), cy: sy(data.primal[1]), r: 9, fill: "#222629", stroke: "white", "stroke-width": 3 }, `Optimal point ${names[0]} ${data.primal[0]}, ${names[1]} ${data.primal[1]}`),
-    svgText(`optimum (${displayNumber(data.primal[0])}, ${displayNumber(data.primal[1])})`, { class: "viz-value", x: sx(data.primal[0]) + 12, y: sy(data.primal[1]) - 10 }),
-    svgText(names[0], { class: "viz-label", x: sx(domain.max), y: sy(domain.minY) + 22 }),
-    svgText(names[1], { class: "viz-label", x: sx(domain.minX) - 20, y: sy(domain.max) }),
-    rows));
+  const objective = objectiveSegment(parsed, point, domain);
+  const [cx, cy] = [sx(point[0]), sy(point[1])];
+  const objectiveVector = [parsed.objective[parsed.variables[0]] || 0, parsed.objective[parsed.variables[1]] || 0];
+  const vectorLength = Math.hypot(...objectiveVector) || 1;
+  const direction = parsed.sense === "minimize" ? -1 : 1;
+  const svg = visualization("0 0 780 450", "Constraint pressure map showing the feasible region, optimum, objective direction, basis contact, and dual pressure",
+    svgElement("defs", {},
+      svgElement("linearGradient", { id: "objective-field", x1: "0", y1: "1", x2: "1", y2: "0" },
+        svgElement("stop", { "stop-color": "#9ececc", "stop-opacity": ".22" }),
+        svgElement("stop", { offset: "1", "stop-color": "#e27680", "stop-opacity": ".48" })),
+      svgElement("marker", { id: "objective-arrow", markerWidth: 8, markerHeight: 8, refX: 6, refY: 3, orient: "auto" }, svgElement("path", { d: "M0 0L6 3L0 6Z", fill: "#c65360" }))),
+    svgElement("path", { class: "plot-grid", d: "M70 70V400H710M70 334H710M198 70V400M326 70V400M454 70V400M582 70V400" }),
+    polygon.length ? svgElement("polygon", { class: "feasible-region pressure-region", points: polygon.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ") }) : null,
+    wallMarks,
+    objective ? svgElement("line", { class: "objective-contour", x1: sx(objective[0][0]), y1: sy(objective[0][1]), x2: sx(objective[1][0]), y2: sy(objective[1][1]) }) : null,
+    svgElement("line", { class: "objective-direction", x1: cx, y1: cy, x2: cx + direction * objectiveVector[0] / vectorLength * 72, y2: cy - direction * objectiveVector[1] / vectorLength * 72, "marker-end": "url(#objective-arrow)" }),
+    svgText("better objective", { class: "objective-direction-label", x: cx + direction * objectiveVector[0] / vectorLength * 82, y: cy - direction * objectiveVector[1] / vectorLength * 82 }),
+    focusableMark("g", { class: "optimum-mark", transform: `translate(${cx} ${cy})` }, `Optimal point ${parsed.variables[0]} ${point[0]}, ${parsed.variables[1]} ${point[1]}, objective ${result.ObjectiveValue}`,
+      svgElement("circle", { r: 17 }), svgElement("circle", { r: 6 }), svgElement("rect", { x: 16, y: 12, width: 122, height: 43, rx: 5 }),
+      svgText(`OPTIMUM · ${displayNumber(result.ObjectiveValue)}`, { x: 22, y: 29 }),
+      svgText(`${parsed.variables[0]}=${displayNumber(point[0])}  ${parsed.variables[1]}=${displayNumber(point[1])}`, { x: 22, y: 47 })),
+    svgText(parsed.variables[0], { class: "axis-label", x: 716, y: 421 }),
+    svgText(parsed.variables[1], { class: "axis-label", x: 52, y: 69 }));
+  const optimum = svg.querySelector(".optimum-mark");
+  bindExplanation(optimum, narration, () => [
+    element("strong", { text: `This is the best feasible point, with objective ${displayNumber(result.ObjectiveValue)}.` }),
+    ...columns.map((column) => element("span", { text: `${column.Name} = ${displayNumber(column.Primal)}; ${statusDescription(column.Status)} (${column.Status}); reduced cost ${displayNumber(column.Dual)}.` })),
+  ]);
+  container.replaceChildren(element("div", { class: "optimality-map" }, svg, narration));
 }
 
-function formatLinearConstraint(constraint, names) {
-  const terms = names.map((name) => {
+function formatLinearExpression(constraint, names) {
+  return names.map((name) => {
     const coefficient = constraint.coefficients[name] || 0;
     if (!coefficient) return "";
     const magnitude = Math.abs(coefficient);
     const term = `${magnitude === 1 ? "" : displayNumber(magnitude)}${name}`;
     return coefficient < 0 ? `− ${term}` : `+ ${term}`;
   }).filter(Boolean).join(" ").replace(/^\+ /, "");
-  return `${terms} ${constraint.operator.replace("<=", "≤").replace(">=", "≥")} ${displayNumber(constraint.rhs)}`;
+}
+
+function formatLinearConstraint(constraint, names) {
+  return `${formatLinearExpression(constraint, names)} ${constraint.operator.replace("<=", "≤").replace(">=", "≥")} ${displayNumber(constraint.rhs)}`;
+}
+
+function augmentedName(data, index) {
+  if (index < 0) return "no item";
+  return index < data.model.colNames.length ? data.model.colNames[index] : `${data.model.rowNames[index - data.model.colNames.length]} activity`;
+}
+
+export function renderRangingViz(container, data, parsed) {
+  if (!container) return;
+  const lens = element("div", { class: "sensitivity-lens" });
+  const equation = element("div", { class: "sensitivity-equation" });
+  const chart = element("div", { class: "sensitivity-chart" });
+  const narration = element("div", { class: "viz-narration", role: "status", "aria-live": "polite" });
+  const options = [];
+  const makeTerm = (text, option) => {
+    options.push(option);
+    const button = element("button", { class: "sensitivity-term", type: "button", text, dataset: { key: option.key } });
+    equation.append(button);
+    return button;
+  };
+  equation.append(element("span", { class: "equation-prefix", text: `${data.sense}  ` }));
+  data.model.colNames.forEach((name, index) => {
+    if (index) equation.append(" + ");
+    makeTerm(displayNumber(data.model.colCost[index]), { key: `cost-${index}`, kind: "cost", index, name, current: data.model.colCost[index], down: data.ranging.colCostDown, up: data.ranging.colCostUp });
+    equation.append(name);
+  });
+  equation.append(element("span", { class: "equation-divider", text: "within" }));
+  parsed.constraintData.forEach((row, index) => {
+    const line = element("span", { class: "equation-row" });
+    const left = formatLinearExpression(row, parsed.variables);
+    line.append(`${row.name}: ${left} ${row.operator.replace("<=", "≤").replace(">=", "≥")} `);
+    const status = data.basis.rowStatus[index];
+    const current = status === 1 ? data.solution.rowValue[index] : status === 0 ? data.model.rowLower[index] : data.model.rowUpper[index];
+    const term = makeTerm(displayNumber(row.rhs), { key: `row-${index}`, kind: "row", index, name: row.name, current, declared: row.rhs, status, down: data.ranging.rowBoundDown, up: data.ranging.rowBoundUp });
+    line.append(term);
+    equation.append(line);
+  });
+
+  const renderSelection = (option) => {
+    equation.querySelectorAll(".sensitivity-term").forEach((button) => button.classList.toggle("is-active", button.dataset.key === option.key));
+    const down = option.down.value[option.index];
+    const up = option.up.value[option.index];
+    const finite = [down, option.current, up].filter(Number.isFinite);
+    const min = Math.min(...finite);
+    const max = Math.max(...finite);
+    const span = Math.max(max - min, 1);
+    const position = (value) => Number.isFinite(value) ? `${10 + (value - min) / span * 80}%` : value < 0 ? "2%" : "98%";
+    const interval = element("div", { class: "sensitivity-interval" },
+      element("span", { class: "interval-end", text: displayNumber(down), style: { left: position(down) } }),
+      element("div", { class: "interval-line" }),
+      element("span", { class: "interval-current", style: { left: position(option.current) }, title: `Current value ${option.current}` }),
+      element("span", { class: "interval-end", text: displayNumber(up), style: { left: position(up) } }));
+    chart.replaceChildren(interval);
+    if (parsed.variables.length === 2 && data.solution.colValue.length === 2) {
+      const point = data.solution.colValue;
+      const domain = plotDomain(parsed, point);
+      const polygon = feasiblePolygon(parsed, domain);
+      const { sx, sy } = geometryScale(domain);
+      const overlays = [];
+      if (option.kind === "cost") {
+        for (const [value, cls] of [[down, "range-down"], [up, "range-up"], [option.current, "range-current"]]) {
+          if (!Number.isFinite(value)) continue;
+          const segment = objectiveSegment(parsed, point, domain, { name: option.name, value });
+          if (segment) overlays.push(svgElement("line", { class: `sensitivity-line ${cls}`, x1: sx(segment[0][0]), y1: sy(segment[0][1]), x2: sx(segment[1][0]), y2: sy(segment[1][1]) }));
+        }
+      } else {
+        const row = parsed.constraintData[option.index];
+        for (const [value, cls] of [[down, "range-down"], [up, "range-up"], [option.current, "range-current"]]) {
+          if (!Number.isFinite(value)) continue;
+          const segment = lineSegment(row.coefficients[parsed.variables[0]] || 0, row.coefficients[parsed.variables[1]] || 0, value, domain);
+          if (segment) overlays.push(svgElement("line", { class: `sensitivity-line ${cls}`, x1: sx(segment[0][0]), y1: sy(segment[0][1]), x2: sx(segment[1][0]), y2: sy(segment[1][1]) }));
+        }
+      }
+      chart.prepend(visualization("0 0 780 450", `${option.name} stability range`,
+        svgElement("path", { class: "plot-grid", d: "M70 70V400H710M70 334H710M198 70V400M326 70V400M454 70V400M582 70V400" }),
+        polygon.length ? svgElement("polygon", { class: "feasible-region", points: polygon.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ") }) : null,
+        overlays,
+        svgElement("circle", { class: "sensitivity-optimum", cx: sx(point[0]), cy: sy(point[1]), r: 9 })));
+    }
+    const downEvent = `${augmentedName(data, option.down.inVariable[option.index])} enters; ${augmentedName(data, option.down.outVariable[option.index])} leaves`;
+    const upEvent = `${augmentedName(data, option.up.inVariable[option.index])} enters; ${augmentedName(data, option.up.outVariable[option.index])} leaves`;
+    const subject = option.kind === "cost" ? `${option.name}'s objective coefficient` : option.status === 1 ? `${option.name}'s activity` : `${option.name}'s active bound`;
+    narration.replaceChildren(
+      element("strong", { text: `${subject} can range from ${displayNumber(down)} to ${displayNumber(up)}.` }),
+      element("span", { text: `Current value: ${displayNumber(option.current)}. Change one item at a time; within this interval the same simplex basis remains optimal.` }),
+      element("span", { text: `At ${displayNumber(down)}: ${downEvent}. At ${displayNumber(up)}: ${upEvent}.` }));
+  };
+  for (const button of equation.querySelectorAll(".sensitivity-term")) {
+    const option = options.find((item) => item.key === button.dataset.key);
+    button.addEventListener("pointerenter", () => renderSelection(option));
+    button.addEventListener("focus", () => renderSelection(option));
+    button.addEventListener("click", () => renderSelection(option));
+  }
+  lens.append(equation, chart, narration);
+  container.replaceChildren(lens);
+  if (options.length) renderSelection(options[0]);
+  else narration.replaceChildren(element("strong", { text: "No rangeable rows or columns were found." }));
+}
+
+function boundExpression(iis, member) {
+  const name = iis.colNames[member.index];
+  const side = member.bound;
+  if (side === "lower") return `${name} ≥ ${displayNumber(iis.colLower[member.index])}`;
+  if (side === "upper") return `${name} ≤ ${displayNumber(iis.colUpper[member.index])}`;
+  if (side === "boxed") return `${displayNumber(iis.colLower[member.index])} ≤ ${name} ≤ ${displayNumber(iis.colUpper[member.index])}`;
+  return `${name} is free`;
 }
 
 export function renderIisPlot(container, parsed, iis) {
-  if (!container || parsed.variables.length !== 2 || !iis.rowIndices.length) return false;
-  const names = parsed.variables;
-  const constraint = parsed.constraintData[iis.rowIndices[0]];
-  if (!constraint) return false;
-  const [xName, yName] = names;
-  const xBound = parsed.bounds[xName] || { lower: 0, upper: Infinity };
-  const yBound = parsed.bounds[yName] || { lower: 0, upper: Infinity };
-  const a = constraint.coefficients[xName] || 0;
-  const b = constraint.coefficients[yName] || 0;
-  if (!a || !b) return false;
-  const candidates = [0, xBound.lower, yBound.lower, constraint.rhs / a, constraint.rhs / b].filter(Number.isFinite);
-  const domainMin = Math.min(0, ...candidates);
-  const domainMax = Math.max(1, ...candidates) * 1.25;
-  const sx = (value) => 70 + (value - domainMin) / Math.max(domainMax - domainMin, 1) * 510;
-  const sy = (value) => 335 - (value - domainMin) / Math.max(domainMax - domainMin, 1) * 285;
-  const yAtMin = (constraint.rhs - a * domainMin) / b;
-  const yAtMax = (constraint.rhs - a * domainMax) / b;
-  const implied = a * xBound.lower + b * yBound.lower;
-  const relationFails = constraint.operator === "<=" ? implied > constraint.rhs : constraint.operator === ">=" ? implied < constraint.rhs : implied !== constraint.rhs;
-  const equation = formatLinearConstraint(constraint, names);
-  const grid = svgElement("pattern", { id: "iis-grid", width: 25, height: 25, patternUnits: "userSpaceOnUse" },
-    svgElement("path", { d: "M25 0H0V25", fill: "none", stroke: "#dce8e7", "stroke-width": 1 }));
-  container.replaceChildren(visualization("0 0 640 390", `Conflict between ${equation} and the variable bounds`,
-    svgElement("defs", {}, grid),
-    svgElement("rect", { x: 70, y: 50, width: 510, height: 285, fill: "url(#iis-grid)" }),
-    svgElement("rect", { x: sx(xBound.lower), y: 50, width: Math.max(0, 580 - sx(xBound.lower)), height: 285, fill: "#e27680", opacity: 0.13 }),
-    svgElement("rect", { x: 70, y: 50, width: 510, height: Math.max(0, sy(yBound.lower) - 50), fill: "#7896bf", opacity: 0.13 }),
-    svgElement("line", { x1: sx(domainMin), y1: sy(yAtMin), x2: sx(domainMax), y2: sy(yAtMax), stroke: "#2f7774", "stroke-width": 3 }),
-    svgElement("line", { x1: sx(xBound.lower), x2: sx(xBound.lower), y1: 50, y2: 335, stroke: "#c65360", "stroke-width": 2 }),
-    svgElement("line", { x1: 70, x2: 580, y1: sy(yBound.lower), y2: sy(yBound.lower), stroke: "#5479a8", "stroke-width": 2 }),
-    svgText(xName, { class: "viz-title", x: 325, y: 370, "text-anchor": "middle" }),
-    svgText(yName, { class: "viz-title", x: 22, y: 190, transform: "rotate(-90 22 190)", "text-anchor": "middle" }),
-    svgText(equation, { class: "viz-label", x: 82, y: 70 }),
-    svgText(`${xName} ≥ ${displayNumber(xBound.lower)}`, { class: "viz-label", x: Math.min(sx(xBound.lower) + 7, 505), y: 92 }),
-    svgText(`${yName} ≥ ${displayNumber(yBound.lower)}`, { class: "viz-label", x: 430, y: Math.max(sy(yBound.lower) - 8, 112) }),
-    svgElement("g", { transform: "translate(325 205)" },
-      svgElement("rect", { width: 235, height: 72, rx: 12, fill: "#222629" }),
-      svgText(`At the bounds, left side = ${displayNumber(implied)}`, { x: 117, y: 27, "text-anchor": "middle", fill: "white", "font-size": 12 }),
-      svgText(relationFails ? `That cannot satisfy ${constraint.operator} ${displayNumber(constraint.rhs)}` : "These members do not conflict alone", { x: 117, y: 49, "text-anchor": "middle", fill: relationFails ? "#f2a4ac" : "#9ececc", "font-size": 12 }))));
+  if (!container) return false;
+  const members = [
+    ...iis.colIndices.map((index, position) => ({ kind: "column", index, bound: iis.colBounds[position] })),
+    ...iis.rowIndices.map((index, position) => ({ kind: "row", index, bound: iis.rowBounds[position] })),
+  ];
+  if (!members.length) return false;
+  const proof = element("div", { class: "iis-proof" });
+  const narration = element("div", { class: "viz-narration", role: "status", "aria-live": "polite" });
+  const rowMember = members.find((member) => member.kind === "row");
+  const row = rowMember ? parsed.constraintData[rowMember.index] : null;
+  const colMembers = new Map(members.filter((member) => member.kind === "column").map((member) => [member.index, member]));
+  let implied;
+  let allowed;
+  let relation;
+  if (row && rowMember.bound === "upper") {
+    implied = parsed.variables.reduce((sum, name, index) => {
+      const coefficient = row.coefficients[name] || 0;
+      const member = colMembers.get(index);
+      if (!member || (coefficient >= 0 && !["lower", "boxed"].includes(member.bound)) || (coefficient < 0 && !["upper", "boxed"].includes(member.bound))) return NaN;
+      const value = coefficient >= 0 ? iis.colLower[index] : iis.colUpper[index];
+      return sum + coefficient * value;
+    }, 0);
+    allowed = iis.rowUpper[rowMember.index];
+    relation = "minimum";
+  } else if (row && rowMember && rowMember.bound === "lower") {
+    implied = parsed.variables.reduce((sum, name, index) => {
+      const coefficient = row.coefficients[name] || 0;
+      const member = colMembers.get(index);
+      if (!member || (coefficient >= 0 && !["upper", "boxed"].includes(member.bound)) || (coefficient < 0 && !["lower", "boxed"].includes(member.bound))) return NaN;
+      const value = coefficient >= 0 ? iis.colUpper[index] : iis.colLower[index];
+      return sum + coefficient * value;
+    }, 0);
+    allowed = iis.rowLower[rowMember.index];
+    relation = "maximum";
+  }
+  const clauses = members.map((member) => {
+    const text = member.kind === "column" ? boundExpression(iis, member) : formatLinearConstraint(parsed.constraintData[member.index], parsed.variables);
+    const button = element("button", { class: "iis-clause", type: "button", text });
+    bindExplanation(button, narration, () => [
+      element("strong", { text: `${text} is part of this conflict.` }),
+      element("span", { text: member.kind === "column"
+        ? `HiGHS retained the ${member.bound} bound of ${iis.colNames[member.index]}. Removing any member resolves this particular true IIS.`
+        : `HiGHS retained the ${member.bound} side of row ${iis.rowNames[member.index]}. Removing any member resolves this particular true IIS.` }),
+    ]);
+    return button;
+  });
+  proof.append(element("div", { class: "iis-proof-heading" },
+    element("span", { text: "These requirements cannot all be true" }),
+    element("strong", { text: `${members.length} essential members` })),
+  element("div", { class: "iis-clauses" }, clauses));
+  if (Number.isFinite(implied) && Number.isFinite(allowed)) {
+    const gap = Math.abs(implied - allowed);
+    const rowLeft = formatLinearExpression(row, parsed.variables);
+    proof.append(element("div", { class: "contradiction-chain" },
+      element("strong", { text: `The bounds force ${rowLeft} to have a ${relation} of ${displayNumber(implied)}.` }),
+      element("span", { text: `${row.name} allows ${rowLeft} only ${rowMember.bound === "upper" ? "up to" : "down to"} ${displayNumber(allowed)}.` })),
+    element("div", { class: "conflict-gap", style: { "--gap-start": `${Math.min(implied, allowed)}`, "--gap-end": `${Math.max(implied, allowed)}` } },
+      element("div", { class: "gap-line" }, element("span", { class: "gap-left" }), element("span", { class: "gap-empty" }), element("span", { class: "gap-right" })),
+      element("div", { class: "gap-labels" }, element("span", { text: displayNumber(Math.min(implied, allowed)) }), element("strong", { text: `impossible gap ${displayNumber(gap)}` }), element("span", { text: displayNumber(Math.max(implied, allowed)) }))));
+  }
+  narration.append(element("strong", { text: "This is a true irreducible infeasible subsystem." }),
+    element("span", { text: "Every displayed member is necessary for this conflict. The full model may contain other conflicts." }));
+  proof.append(narration);
+  container.replaceChildren(proof);
   return true;
 }
 
@@ -327,6 +550,7 @@ function parseLinearExpression(text) {
 
 export function parseLpModel(text) {
   const lines = text.split("\n");
+  const sense = lines.some((line) => /^\s*minimize\b/i.test(line)) ? "minimize" : "maximize";
   const start = lines.findIndex((line) => /^\s*(Subject To|Such That)\s*$/i.test(line));
   const constraints = [];
   const constraintData = [];
@@ -335,14 +559,16 @@ export function parseLpModel(text) {
       if (/^\s*(Bounds|Generals?|Binar(?:y|ies)|Integers|End)\s*$/i.test(line)) break;
       if (!line.trim()) continue;
       const source = line.trim();
+      const name = source.includes(":") ? source.slice(0, source.indexOf(":")).trim() : `r${constraintData.length}`;
       const body = source.includes(":") ? source.slice(source.indexOf(":") + 1) : source;
       const relation = body.match(/^(.*?)(<=|>=|=)\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)\s*$/i);
       constraints.push(source);
       constraintData.push(relation ? {
+        name,
         coefficients: parseLinearExpression(relation[1]),
         operator: relation[2],
         rhs: Number(relation[3]),
-      } : { coefficients: {}, operator: "=", rhs: 0 });
+      } : { name, coefficients: {}, operator: "=", rhs: 0 });
     }
   }
   const objectiveEnd = start >= 0 ? start : lines.length;
@@ -376,7 +602,7 @@ export function parseLpModel(text) {
     }
   }
   const matrix = constraintData.map((row) => variables.map((variable) => row.coefficients[variable] || 0));
-  return { variables, constraints, constraintData, bounds, objective, matrix };
+  return { variables, constraints, constraintData, bounds, objective, matrix, sense };
 }
 
 function parseLpStructure(text) {

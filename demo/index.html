@@ -161,22 +161,21 @@ if (result.Status !== "Optimal") {
 
 // Columns is keyed by the variable names declared in the LP text.
 const objective = result.ObjectiveValue;
-const x0 = result.Columns.x0.Primal;</textarea>
+const x = result.Columns.x.Primal;</textarea>
       </div>
     </div>
 
     <!-- Interactive Visualization of Problem Inputs -->
     <div class="visual-inputs">
       <h4>Interactive CPLEX LP Text Model</h4>
-      <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
- obj: x0 + 2 x1 + 3 x2 + x3
+       <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
+ obj: 3 x + 2 y
 Subject To
- r0: - x0 + x1 + x2 + 10 x3 &lt;= 20
- r1: x0 - 3 x1 + x2 &lt;= 30
- r2: x1 - 3.5 x3 = 0
+ material: 2 x + y &lt;= 10
+ labor: x + 2 y &lt;= 8
 Bounds
- 0 &lt;= x0 &lt;= 40
- 2 &lt;= x3 &lt;= 3
+ x &gt;= 0
+ y &gt;= 0
 End</textarea>
       <div class="btn-row">
         <button class="btn" id="lp-solve">Solve LP</button>
@@ -193,11 +192,11 @@ End</textarea>
         </div>
         <div class="stat-box">
           <span class="stat-label">OPTIMAL OBJECTIVE</span>
-          <span class="stat-val" id="lp-obj-val">122.5000</span>
+          <span class="stat-val" id="lp-obj-val">16.0000</span>
         </div>
       </div>
-      <h4>Primal Solution Breakdown</h4>
-      <div class="progress-bar-group" id="lp-visual-bars">
+      <h4>Why this point is optimal</h4>
+      <div id="lp-visual-bars">
         <div class="progress-item">
           <div class="progress-label"><span>x0</span><span>--</span></div>
           <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
@@ -605,8 +604,8 @@ if (run.modelStatus !== highs.constants.modelStatus.optimal) {
 const ranging = model.getRanging();
 
 // Each record has value, objective, inVariable, and outVariable arrays.
-// This interval changes x0's cost alone and keeps the same optimal basis.
-const x0CostInterval = [
+// This interval changes x's cost alone and keeps the same optimal basis.
+const xCostInterval = [
   ranging.colCostDown.value[0],
   ranging.colCostUp.value[0]
 ];
@@ -620,10 +619,10 @@ model.dispose();</textarea>
       <textarea class="editor-medium" id="ranging-lp" spellcheck="false">Maximize
  obj: 3 x + 2 y
 Subject To
- r0: x + y &lt;= 6
- r1: 2 x + y &lt;= 8
- r2: -x + y &lt;= 1
- r3: y &lt;= 2
+ total: x + y &lt;= 6
+ material: 2 x + y &lt;= 8
+ balance: -x + y &lt;= 1
+ y_limit: y &lt;= 2
 Bounds
  0 &lt;= x
  0 &lt;= y
@@ -644,7 +643,7 @@ End</textarea>
         </div>
       </div>
 
-      <h4>Continuous Cost &amp; Bound Stability Scales</h4>
+      <h4>Hover a number to ask “what if?”</h4>
       <div id="ranging-visual-bars">
         <div class="interval-scale">
           <div class="interval-scale-header">
@@ -659,10 +658,10 @@ End</textarea>
     </div>
 
     <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Numerical Ranging Output:</label>
+    <details class="api-response textual-solution">
+      <summary>Exact API response</summary>
       <div class="output placeholder" id="ranging-output">Preparing the initial sensitivity analysis…</div>
-    </div>
+    </details>
 
     <!-- Time to Solve -->
     <div class="timing-bar" id="ranging-timing">Waiting for solver</div>
@@ -767,6 +766,7 @@ model.dispose();</textarea>
         <textarea id="iis-core-code" spellcheck="false">// Solve first and confirm infeasibility. Calling getIis() on a feasible
 // model has no useful conflict to return.
 const model = highs.createModel({ format: "lp", data: lpText });
+model.options.set("iis_strategy", 8); // Ask HiGHS to reduce to a true IIS.
 const run = model.run();
 if (run.modelStatus !== highs.constants.modelStatus.infeasible) {
   throw new Error("IIS analysis requires an infeasible model");
@@ -805,7 +805,7 @@ End</textarea>
           <span class="stat-val" id="iis-status">READY</span>
         </div>
       </div>
-      <h4>Conflicting Subsystem Isolation</h4>
+      <h4>Why these requirements cannot coexist</h4>
       <div id="iis-visual-tags">
         <div class="iis-empty-state">
           <div class="iis-preview-lines" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -818,10 +818,10 @@ End</textarea>
     </div>
 
     <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>IIS Diagnostic Output:</label>
+    <details class="api-response textual-solution">
+      <summary>Exact API response</summary>
       <div class="output placeholder" id="iis-output">Preparing the initial conflict analysis…</div>
-    </div>
+    </details>
 
     <!-- Time to Solve -->
     <div class="timing-bar" id="iis-timing">Waiting for solver</div>

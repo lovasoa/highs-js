@@ -12,7 +12,6 @@ import {
 import {
   buildFacilityPayload,
   denseToCSC,
-  displayNumber,
   getExample,
   getFacilityDefinition,
   readNumber,
@@ -22,7 +21,7 @@ import {
   createSparseExplorer,
   hessianExplorerConfig,
   parseLpModel,
-  renderBoundLanes,
+  renderOptimalityMap,
   renderDietViz,
   renderFacilityViz,
   renderIisPlot,
@@ -67,8 +66,7 @@ async function solveLPFormat() {
       lpObjVal.textContent = objVal.toFixed(4);
     }
 
-    const cols = data.result?.Columns || {};
-    renderBoundLanes(lpVisualBars, cols);
+    renderOptimalityMap(lpVisualBars, data.result, parseLpModel(lpInput.value));
   }
 }
 
@@ -454,24 +452,10 @@ async function solveRangingModel() {
     finishLiveSolve("ranging", revision, `Sensitivity ranges updated in ${data.elapsed} ms.`);
     setTiming(rangingTiming, data.elapsed);
     setStatus(rangingStatus, data.modelStatus);
-    setStatus(rangingStability, "stable");
-    const n = data.primal.length;
-    const m = data.rowBoundDown.length;
+    setStatus(rangingStability, "ranges available");
 
     renderRangingViz(rangingVisualBars, data, parsed);
-
-    let out = `Status: ${data.modelStatus}\nObjective: ${data.objective}\n\n`;
-    out += "── Column (variable) ranging ──\n";
-    for (let i = 0; i < n; i++) {
-      const name = parsed.variables[i] || `x${i}`;
-      out += `  ${name} = ${displayNumber(data.primal[i])}  cost ∈ [${displayNumber(data.colCostDown[i])}, ${displayNumber(data.colCostUp[i])}]\n`;
-      out += `        bound ∈ [${displayNumber(data.colBoundDown[i])}, ${displayNumber(data.colBoundUp[i])}]\n`;
-    }
-    out += "\n── Row (constraint) ranging ──\n";
-    for (let i = 0; i < m; i++) {
-      out += `  r${i} bound ∈ [${displayNumber(data.rowBoundDown[i])}, ${displayNumber(data.rowBoundUp[i])}]\n`;
-    }
-    setOutput(rangingOutput, out);
+    setJson(rangingOutput, data);
   }
 }
 
@@ -602,41 +586,11 @@ async function solveIisModel() {
     finishLiveSolve("iis", revision, `Conflict analysis updated in ${data.elapsed} ms.`);
     setTiming(iisTiming, data.elapsed);
     setStatus(iisStatus, data.modelStatus);
-    const constraints = parsed.constraints;
-    const columnName = (index) => parsed.variables[index] || `x${index}`;
-    const cols = data.iis.colIndices.map((index) => `  ${columnName(index)}`);
-    const rows = data.iis.rowIndices.map((index) => `  ${constraints[index] || `r${index}`}`);
-    const colBounds = data.iis.colBounds.map((value, i) => `  ${columnName(data.iis.colIndices[i])}: ${value}`);
-    const rowBounds = data.iis.rowBounds.map((value, i) => `  ${constraints[data.iis.rowIndices[i]] || `r${data.iis.rowIndices[i]}`}: ${value}`);
-
-    if (iisVisualTags) {
-      const rowNodes = data.iis.rowIndices.map((index) => ({
-        label: `r${index}`,
-        expression: constraints[index] || `r${index}`,
-        kind: "constraint",
-      }));
-      const colNodes = data.iis.colIndices.map((index) => ({
-        label: columnName(index),
-        expression: `Variable bound on ${columnName(index)}`,
-        kind: "bound",
-      }));
-      const nodes = [...rowNodes, ...colNodes];
-      if (!renderIisPlot(iisVisualTags, parsed, data.iis)) iisVisualTags.replaceChildren(
-        element("div", { class: "conflict-summary" },
-          element("span", { text: "One irreducible conflict returned by HiGHS" }),
-          element("strong", { text: `${nodes.length} member${nodes.length === 1 ? "" : "s"}` })),
-        element("div", { class: "conflict-list" }, nodes.map((node) => element("div", { class: "conflict-node" },
-          element("span", { text: node.label }), element("code", { text: node.expression }), element("small", { text: node.kind })))),
-      );
-    }
-
-    setOutput(iisOutput,
-      `Model status: ${data.modelStatus}\n\n` +
-      `IIS columns (${cols.length}):\n${cols.join("\n") || "  none"}\n\n` +
-      `IIS rows (${rows.length}):\n${rows.join("\n") || "  none"}\n\n` +
-      `IIS column bounds:\n${colBounds.join("\n") || "  none"}\n\n` +
-      `IIS row bounds:\n${rowBounds.join("\n") || "  none"}`
-    );
+    const rendered = renderIisPlot(iisVisualTags, parsed, data.iis);
+    if (!rendered && iisVisualTags) iisVisualTags.replaceChildren(element("div", { class: "iis-clear" },
+      element("strong", { text: "No definite conflict set was returned." }),
+      element("span", { text: "HiGHS proved infeasibility, but did not return enough members to construct an explanation." })));
+    setJson(iisOutput, data);
   } else {
     finishLiveSolve("iis", revision, "The edited model is feasible; there is no IIS to display.");
     setStatus(iisStatus, data.modelStatus);
@@ -644,10 +598,7 @@ async function solveIisModel() {
       class: "iis-clear",
       text: "The model is feasible, so there is no irreducible infeasible subsystem to show.",
     }));
-    setOutput(iisOutput,
-      `Model status: ${data.modelStatus}\nObjective: ${data.objective}\n\n` +
-      `Primal: ${JSON.stringify(data.primal)}\n\n${data.note || ""}`
-    );
+    setJson(iisOutput, data);
   }
 }
 
