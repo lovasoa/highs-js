@@ -23,8 +23,6 @@ services:
       # Keep container-owned dependencies away from host ownership and ABI
       # differences while still testing the exact mounted source tree.
       - node-modules:/work/node_modules
-      # Native build outputs have the same ownership and host-ABI concerns.
-      - build-cache:/work/build
       # Persist generated system libraries in a volume owned by `node`.
       - emscripten-user-cache:/emcache
     # Default command runs when no command is passed to "docker compose run".
@@ -33,5 +31,4 @@ services:
 
 volumes:
   node-modules:
-  build-cache:
   emscripten-user-cache:
