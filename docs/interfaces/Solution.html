@@ -11,11 +11,15 @@
 <li><a href="" aria-current="page">Solution</a></li></ul>
 <h1>Interface Solution</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Detached dense solution snapshot; availability depends on solve status.</p>
+<div class="tsd-comment tsd-typography"><p>Detached dense solution buffers. Their presence does not prove that they are
+valid: primal and dual availability are independent and depend on model and
+solve status. Inspect <code>primal_solution_status</code> and <code>dual_solution_status</code>
+through <code>model.info</code>, as well as <code>model.getModelStatus()</code>, before using them.
+MIP dual vectors are not meaningful. The arrays are JavaScript-owned copies.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">Solution</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#coldual">colDual</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#colvalue">colValue</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowdual">rowDual</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowvalue">rowValue</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1527">types.d.ts:1527</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2033">types.d.ts:2033</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -37,28 +41,28 @@
 <div class="tsd-comment tsd-typography"><p>Column dual values, length <code>numCols</code>; not meaningful for MIP solutions.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1533">types.d.ts:1533</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2039">types.d.ts:2039</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colvalue"><code class="tsd-tag">Readonly</code><span>col<wbr/>Value</span><a href="#colvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Primal column values, length <code>numCols</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1529">types.d.ts:1529</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2035">types.d.ts:2035</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowdual"><code class="tsd-tag">Readonly</code><span>row<wbr/>Dual</span><a href="#rowdual" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowDual</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Row dual values, length <code>numRows</code>; not meaningful for MIP solutions.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1535">types.d.ts:1535</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2041">types.d.ts:2041</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowvalue"><code class="tsd-tag">Readonly</code><span>row<wbr/>Value</span><a href="#rowvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Primal row activities, length <code>numRows</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1531">types.d.ts:1531</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2037">types.d.ts:2037</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

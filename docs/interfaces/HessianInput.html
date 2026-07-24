@@ -11,11 +11,22 @@
 <li><a href="" aria-current="page">HessianInput</a></li></ul>
 <h1>Interface HessianInput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Sparse Hessian input for a quadratic objective; arrays are copied.</p>
+<div class="tsd-comment tsd-typography"><p>Sparse symmetric Hessian <code>Q</code> for the quadratic objective
+<code>sense * (offset + c'x + 0.5 * x'Qx)</code>.</p>
+<p>Storage is compressed by column. <code>starts</code> follows the same offset invariants
+as a CSC matrix and must have <code>dimension + 1</code> entries; <code>indices</code> contains
+zero-based row indices, and <code>starts[dimension] === indices.length === values.length</code>. Duplicate row indices within a column are invalid.</p>
+<p>For <code>&quot;triangular&quot;</code>, provide the lower triangle only: an entry in column <code>j</code>
+has row <code>i &gt;= j</code>. For <code>&quot;square&quot;</code>, provide the complete symmetric matrix,
+including both off-diagonal <code>(i, j)</code> and <code>(j, i)</code> entries. Values are entries
+of <code>Q</code>; do not pre-multiply them by <code>0.5</code>.</p>
+<p>Example: <code>Q = [[2, 1], [1, 4]]</code> is triangularly encoded by
+<code>starts: [0, 2, 3]</code>, <code>indices: [0, 1, 1]</code>, <code>values: [2, 1, 4]</code>. It contributes
+<code>x0^2 + x0*x1 + 2*x1^2</code> to the objective. Inputs are copied synchronously.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">HessianInput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#dimension">dimension</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#format">format</a><span class="tsd-signature-symbol">:</span> <a href="../types/HessianFormat.html" class="tsd-signature-type tsd-kind-type-alias">HessianFormat</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#indices">indices</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#starts">starts</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#values">values</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1366">types.d.ts:1366</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1633">types.d.ts:1633</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -35,38 +46,66 @@
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="dimension"><code class="tsd-tag">Readonly</code><span>dimension</span><a href="#dimension" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">dimension</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Hessian row and column dimension, normally equal to model column count.</p>
+<div class="tsd-comment tsd-typography"><p>Number of rows and columns in square matrix <code>Q</code>. When the Hessian is passed
+to a model, this must equal that model's <code>numCols</code>, because there is one
+Hessian coordinate per decision variable. It must be a non-negative signed
+32-bit integer.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1370">types.d.ts:1370</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1650">types.d.ts:1650</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="format"><code class="tsd-tag">Readonly</code><span>format</span><a href="#format" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">format</span><span class="tsd-signature-symbol">:</span> <a href="../types/HessianFormat.html" class="tsd-signature-type tsd-kind-type-alias">HessianFormat</a></div>
-<div class="tsd-comment tsd-typography"><p>Triangular symmetric storage or full square storage.</p>
+<div class="tsd-comment tsd-typography"><p>Selects which entries of symmetric matrix <code>Q</code> are supplied.</p>
+<p><code>&quot;triangular&quot;</code> stores only the lower triangle in compressed-column form, so
+every entry in column <code>j</code> must have row index <code>i &gt;= j</code>. HiGHS infers the
+mirrored upper triangle. <code>&quot;square&quot;</code> stores every matrix entry, so each
+off-diagonal value must be supplied in both symmetric coordinates and the
+resulting matrix must be symmetric.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1368">types.d.ts:1368</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1643">types.d.ts:1643</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="indices"><code class="tsd-tag">Readonly</code><span>indices</span><a href="#indices" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Zero-based row index of each stored Hessian entry.</p>
+<div class="tsd-comment tsd-typography"><p>Zero-based row coordinate of each packed Hessian value. Position <code>k</code>
+represents matrix coordinate <code>(indices[k], j)</code>, where column <code>j</code> is the
+unique column whose interval <code>starts[j] &lt;= k &lt; starts[j + 1]</code> contains it.</p>
+<p>Every index must satisfy <code>0 &lt;= indices[k] &lt; dimension</code>. In triangular mode
+it must additionally satisfy <code>indices[k] &gt;= j</code>. A column must not contain a
+duplicate row index. The array length must equal <code>values.length</code> and the
+final <code>starts</code> entry.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1374">types.d.ts:1374</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1673">types.d.ts:1673</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="starts"><code class="tsd-tag">Readonly</code><span>starts</span><a href="#starts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">starts</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Length is dimension + 1.</p>
+<div class="tsd-comment tsd-typography"><p>Compressed-column boundaries into <code>indices</code> and <code>values</code>. Hessian column <code>j</code>
+occupies positions from <code>starts[j]</code> inclusive to <code>starts[j + 1]</code> exclusive.
+Equal adjacent values represent an empty column.</p>
+<p>The array must have exactly <code>dimension + 1</code> entries, begin with <code>0</code>, be
+nondecreasing, and end with
+<code>indices.length === values.length === starts[dimension]</code>.
+For example, <code>[0, 2, 3]</code> means column 0 has two stored entries and column 1
+has one.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1372">types.d.ts:1372</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1662">types.d.ts:1662</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="values"><code class="tsd-tag">Readonly</code><span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">values</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Stored coefficients in <code>0.5 * x'Qx</code>; length equals <code>indices.length</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Entries of symmetric matrix <code>Q</code>, parallel to <code>indices</code>. <code>values[k]</code> is the
+value at the row given by <code>indices[k]</code> and the column determined by
+<code>starts</code>. These are entries of <code>Q</code> itself in objective
+<code>0.5 * x'Qx</code>; do not halve diagonal values or double off-diagonal values.</p>
+<p>Values must be finite numbers and the length must equal <code>indices.length</code>
+and the final <code>starts</code> entry. For triangular encoding of
+<code>Q = [[2, 1], [1, 4]]</code>, use <code>starts: [0, 2, 3]</code>,
+<code>indices: [0, 1, 1]</code>, and <code>values: [2, 1, 4]</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1376">types.d.ts:1376</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1685">types.d.ts:1685</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

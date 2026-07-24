@@ -11,9 +11,13 @@
 <li><a href="" aria-current="page">HighsCallback</a></li></ul>
 <h1>Type Alias HighsCallback</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">HighsCallback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="CallbackEvent.html" class="tsd-signature-type tsd-kind-type-alias">CallbackEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">undefined</span></div>
-<div class="tsd-comment tsd-typography"><p>Callback execution is synchronous. The runtime ignores ordinary return
-values, but rejects Promises and other thenables. The <code>undefined</code> return type
-expresses the recommended callback contract.</p>
+<div class="tsd-comment tsd-typography"><p>General callback function for raw registration. Prefer <code>HighsCallbackMap</code>
+with <code>Model.run()</code> when possible because map handlers receive channel-specific
+event types.</p>
+<p>Execution is synchronous. Promises and thenables are rejected, and no model
+or raw API may be called reentrantly from the handler. Use only controls on
+the current event. For browser applications, run HiGHS in a Worker and post
+detached snapshots to the UI thread.</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type Declaration</h4>
@@ -28,7 +32,7 @@ expresses the recommended callback contract.</p>
 <li><span><span class="tsd-kind-parameter">event</span>: <a href="CallbackEvent.html" class="tsd-signature-type tsd-kind-type-alias">CallbackEvent</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1879">types.d.ts:1879</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2544">types.d.ts:2544</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -11,10 +11,13 @@
 <li><a href="" aria-current="page">CallbackEvent</a></li></ul>
 <h1>Type Alias CallbackEvent</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">CallbackEvent</span><span class="tsd-signature-symbol">:</span><br/>    <span class="tsd-signature-symbol">|</span> <a href="../interfaces/InterruptCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">InterruptCallbackEvent</a><br/>    <span class="tsd-signature-symbol">|</span> <a href="../interfaces/UserSolutionCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">UserSolutionCallbackEvent</a><br/>    <span class="tsd-signature-symbol">|</span> <a href="../interfaces/PassiveCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">PassiveCallbackEvent</a></div>
-<div class="tsd-comment tsd-typography"><p>Discriminated union of all callback event capabilities.</p>
+<div class="tsd-comment tsd-typography"><p>Discriminated union received by a handler that is not tied to one channel.
+Narrow on <code>event.type</code> before using channel-specific controls. A callback in
+<code>HighsCallbackMap</code> is usually preferable because its numeric key selects the
+narrower <code>CallbackEventFor&lt;T&gt;</code> automatically.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1808">types.d.ts:1808</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2451">types.d.ts:2451</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

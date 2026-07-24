@@ -11,14 +11,17 @@
 <li><a href="" aria-current="page">CallbackEventFor</a></li></ul>
 <h1>Type Alias CallbackEventFor&lt;T&gt;</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">CallbackEventFor</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">1</span><br/><span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">2</span><br/><span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">6</span><br/>    <span class="tsd-signature-symbol">?</span> <a href="../interfaces/InterruptCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">InterruptCallbackEvent</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a> <span class="tsd-signature-symbol">}</span><br/>    <span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">9</span><br/>        <span class="tsd-signature-symbol">?</span> <a href="../interfaces/UserSolutionCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">UserSolutionCallbackEvent</a><br/>        <span class="tsd-signature-symbol">:</span> <a href="../interfaces/PassiveCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">PassiveCallbackEvent</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a> <span class="tsd-signature-symbol">}</span></div>
-<div class="tsd-comment tsd-typography"><p>Event type corresponding to a particular callback channel code.</p>
+<div class="tsd-comment tsd-typography"><p>Event capabilities for one <code>CallbackType</code>. Interrupt channels expose only
+<code>interrupt()</code>, type <code>9</code> exposes solution submission, and passive channels
+expose no controls. This conditional type is what makes handlers in
+<code>HighsCallbackMap</code> channel-safe.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
 <li><span id="t"><span class="tsd-kind-type-parameter">T</span> <span class="tsd-signature-keyword">extends</span> <a href="CallbackType.html" class="tsd-signature-type tsd-kind-type-alias">CallbackType</a></span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1814">types.d.ts:1814</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2462">types.d.ts:2462</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

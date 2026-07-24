@@ -11,8 +11,12 @@
 <li><a href="" aria-current="page">CallbackEventBase</a></li></ul>
 <h1>Interface CallbackEventBase&lt;T&gt;</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Common synchronous callback event. <code>message</code>, <code>data</code>, and all nested arrays
-are detached copies and remain usable after return; control methods expire.</p>
+<div class="tsd-comment tsd-typography"><p>Values common to every synchronous callback event.</p>
+<p><code>message</code>, <code>data</code>, and nested typed arrays are JavaScript-owned snapshots:
+they remain valid after the handler returns and may be posted from a Web
+Worker. In contrast, control methods such as <code>interrupt()</code> and
+<code>setSolution()</code> modify the active native callback and expire immediately when
+the handler returns.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">CallbackEventBase</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a> <span class="tsd-signature-keyword">extends</span> <a href="../types/CallbackType.html" class="tsd-signature-type tsd-kind-type-alias">CallbackType</a> <span class="tsd-signature-symbol">=</span> <a href="../types/CallbackType.html" class="tsd-signature-type tsd-kind-type-alias">CallbackType</a><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#data">data</a><span class="tsd-signature-symbol">:</span> <a href="CallbackData.html" class="tsd-signature-type tsd-kind-interface">CallbackData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#message">message</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#type">type</a><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
 <section class="tsd-panel">
@@ -28,7 +32,7 @@ are detached copies and remain usable after return; control methods expire.</p>
 <li class="tsd-hierarchy-item"><a href="UserSolutionCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">UserSolutionCallbackEvent</a></li>
 <li class="tsd-hierarchy-item"><a href="PassiveCallbackEvent.html" class="tsd-signature-type tsd-kind-interface">PassiveCallbackEvent</a></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1779">types.d.ts:1779</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2399">types.d.ts:2399</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -49,21 +53,21 @@ are detached copies and remain usable after return; control methods expire.</p>
 <div class="tsd-comment tsd-typography"><p>Detached snapshot of fields available for this callback channel.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1785">types.d.ts:1785</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2405">types.d.ts:2405</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="message"><code class="tsd-tag">Readonly</code><span>message</span><a href="#message" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-<div class="tsd-comment tsd-typography"><p>Native log/progress message, possibly empty.</p>
+<div class="tsd-comment tsd-typography"><p>Native log/progress text. Do not assume it is non-empty or machine-parseable.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1783">types.d.ts:1783</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2403">types.d.ts:2403</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="type"><code class="tsd-tag">Readonly</code><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#t">T</a></div>
 <div class="tsd-comment tsd-typography"><p>Callback channel that triggered the event.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1781">types.d.ts:1781</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2401">types.d.ts:2401</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

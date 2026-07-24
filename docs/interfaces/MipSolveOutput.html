@@ -11,11 +11,13 @@
 <li><a href="" aria-current="page">MipSolveOutput</a></li></ul>
 <h1>Interface MipSolveOutput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Output of a stateless MIP call; MIP duals and bases are intentionally absent.</p>
+<div class="tsd-comment tsd-typography"><p>Output of a successful-status stateless MIP call. Inspect <code>modelStatus</code>
+before using the primal arrays; a limit or infeasible result may have no
+incumbent. MIP duals and bases are intentionally absent.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">MipSolveOutput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#modelstatus">modelStatus</a><span class="tsd-signature-symbol">:</span> <a href="../types/ModelStatusCode.html" class="tsd-signature-type tsd-kind-type-alias">ModelStatusCode</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#solution">solution</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">colValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">rowValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1576">types.d.ts:1576</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2128">types.d.ts:2128</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -35,7 +37,7 @@
 <div class="tsd-comment tsd-typography"><p>Final MIP model status.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1578">types.d.ts:1578</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2130">types.d.ts:2130</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="solution"><code class="tsd-tag">Readonly</code><span>solution</span><a href="#solution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">solution</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">colValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">rowValue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span> <span class="tsd-signature-symbol">}</span></div>
@@ -53,7 +55,7 @@
 <div class="tsd-comment tsd-typography"><p>Primal row activities, length <code>numRows</code>.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1580">types.d.ts:1580</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2132">types.d.ts:2132</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

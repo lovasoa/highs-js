@@ -11,11 +11,28 @@
 <li><a href="" aria-current="page">SparseMatrixInput</a></li></ul>
 <h1>Interface SparseMatrixInput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Compressed sparse matrix input. Indices are zero-based and values are copied.</p>
+<div class="tsd-comment tsd-typography"><p>Constraint matrix in compressed sparse column (CSC) or compressed sparse row
+(CSR) form.</p>
+<p><code>format</code> chooses the major axis. With <code>&quot;csc&quot;</code>, each packed segment is one
+column and <code>indices</code> contains row indices. With <code>&quot;csr&quot;</code>, each segment is one
+row and <code>indices</code> contains column indices. Define
+<code>majorDimension = format === &quot;csc&quot; ? numCols : numRows</code>. The arrays must obey:</p>
+<ul>
+<li><code>starts.length === majorDimension + 1</code></li>
+<li><code>starts[0] === 0</code></li>
+<li><code>starts</code> is nondecreasing</li>
+<li><code>starts[majorDimension] === indices.length === values.length</code></li>
+<li>every minor index is in the opposite matrix dimension</li>
+<li>a packed row or column contains no duplicate minor index</li>
+</ul>
+<p>For example, the matrix <code>[[1, 0], [2, 3]]</code> is CSC-encoded as
+<code>starts: [0, 2, 3]</code>, <code>indices: [0, 1, 1]</code>, <code>values: [1, 2, 3]</code>.
+Explicit zeros and coefficients at or below HiGHS' small-matrix threshold may
+be removed. All arrays are copied before the call returns.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SparseMatrixInput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#format">format</a><span class="tsd-signature-symbol">:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#indices">indices</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numcols">numCols</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numrows">numRows</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#starts">starts</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#values">values</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1334">types.d.ts:1334</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1480">types.d.ts:1480</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -36,45 +53,98 @@
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="format"><code class="tsd-tag">Readonly</code><span>format</span><a href="#format" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">format</span><span class="tsd-signature-symbol">:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></div>
-<div class="tsd-comment tsd-typography"><p>Determines whether starts delimit columns (<code>csc</code>) or rows (<code>csr</code>).</p>
+<div class="tsd-comment tsd-typography"><p>Chooses how the one-dimensional arrays encode the two-dimensional matrix.</p>
+<ul>
+<li><code>&quot;csc&quot;</code> (compressed sparse column): coefficients are grouped by column.
+<code>starts[j]..starts[j + 1]</code> locates column <code>j</code>, and each corresponding
+<code>indices[k]</code> is a row index.</li>
+<li><code>&quot;csr&quot;</code> (compressed sparse row): coefficients are grouped by row.
+<code>starts[i]..starts[i + 1]</code> locates row <code>i</code>, and each corresponding
+<code>indices[k]</code> is a column index.</li>
+</ul>
+<p>This changes the meanings and required length of both <code>starts</code> and
+<code>indices</code>; it does not transpose the mathematical matrix. Use <code>&quot;csc&quot;</code> when
+constructing columns naturally and <code>&quot;csr&quot;</code> when constructing rows
+naturally.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1336">types.d.ts:1336</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1496">types.d.ts:1496</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="indices"><code class="tsd-tag">Readonly</code><span>indices</span><a href="#indices" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Minor-axis index for each nonzero; length equals <code>values.length</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Minor-axis coordinate for every packed coefficient in <code>values</code>.
+<code>indices[k]</code> and <code>values[k]</code> always describe the same matrix entry.</p>
+<p>In CSC, packed position <code>k</code> belongs to the column determined by <code>starts</code>,
+and <code>indices[k]</code> is its zero-based row. In CSR, position <code>k</code> belongs to the
+row determined by <code>starts</code>, and <code>indices[k]</code> is its zero-based column.
+Consequently CSC indices must be below <code>numRows</code>, while CSR indices must be
+below <code>numCols</code>.</p>
+<p><code>indices.length</code> must equal <code>values.length</code> and the final <code>starts</code> entry.
+A single packed row/column must not repeat a minor index, because that would
+specify the same matrix coordinate twice. Indices in different packed
+rows/columns may naturally repeat.</p>
+<p>For CSC <code>starts: [0, 2, 3]</code>, <code>indices: [0, 1, 1]</code> means column 0 has entries
+in rows 0 and 1, while column 1 has one entry in row 1.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1344">types.d.ts:1344</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1551">types.d.ts:1551</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numcols"><code class="tsd-tag">Readonly</code><span>num<wbr/>Cols</span><a href="#numcols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numCols</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Matrix column count.</p>
+<div class="tsd-comment tsd-typography"><p>Number of columns in the mathematical matrix. It must be a non-negative
+signed 32-bit integer.</p>
+<p>In CSR format, every entry of <code>indices</code> is a column index and must satisfy
+<code>0 &lt;= indices[k] &lt; numCols</code>. In CSC format, this is the number of packed
+column segments, so <code>starts.length</code> must equal <code>numCols + 1</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1340">types.d.ts:1340</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1514">types.d.ts:1514</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numrows"><code class="tsd-tag">Readonly</code><span>num<wbr/>Rows</span><a href="#numrows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numRows</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Matrix row count.</p>
+<div class="tsd-comment tsd-typography"><p>Number of rows in the mathematical matrix. It must be a non-negative
+signed 32-bit integer.</p>
+<p>In CSC format, every entry of <code>indices</code> is a row index and must satisfy
+<code>0 &lt;= indices[k] &lt; numRows</code>. In CSR format, this is the number of packed
+row segments, so <code>starts.length</code> must equal <code>numRows + 1</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1338">types.d.ts:1338</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1505">types.d.ts:1505</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="starts"><code class="tsd-tag">Readonly</code><span>starts</span><a href="#starts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">starts</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Conventional compressed-sparse starts; length is major dimension + 1.</p>
+<div class="tsd-comment tsd-typography"><p>Boundaries of the packed rows or columns inside <code>indices</code> and <code>values</code>.
+These are offsets, not model row/column indices.</p>
+<p>In CSC, column <code>j</code> occupies positions <code>k</code> from <code>starts[j]</code> inclusive to
+<code>starts[j + 1]</code> exclusive. In CSR, the same formula describes row <code>j</code>.
+Therefore an empty row/column has equal adjacent offsets.</p>
+<p>The array must have <code>numCols + 1</code> entries for CSC or <code>numRows + 1</code> entries
+for CSR. It must start with <code>0</code>, be nondecreasing, and end with the exact
+number of stored entries:
+<code>starts[starts.length - 1] === indices.length === values.length</code>.</p>
+<p>Example: <code>starts: [0, 2, 2, 3]</code> describes three major-axis items. The first
+has two entries at packed positions 0 and 1, the second is empty, and the
+third has one entry at position 2.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1342">types.d.ts:1342</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1532">types.d.ts:1532</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="values"><code class="tsd-tag">Readonly</code><span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">values</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Nonzero coefficients; explicit zeros may be dropped by HiGHS.</p>
+<div class="tsd-comment tsd-typography"><p>Numerical matrix coefficient at every packed position. <code>values[k]</code> is at
+the minor coordinate <code>indices[k]</code> within the row/column selected by
+<code>starts</code>; all three arrays must therefore be interpreted together.</p>
+<p><code>values.length</code> must equal <code>indices.length</code> and the final <code>starts</code> entry.
+Values must be numbers other than <code>NaN</code>; matrix coefficients should be
+finite rather than using infinity to represent a bound. Explicit zero and
+coefficients whose magnitude is at or below <code>small_matrix_value</code> may be
+removed by HiGHS, so the later extracted matrix can contain fewer entries.</p>
+<p>For the CSC encoding <code>starts: [0, 2, 3]</code>, <code>indices: [0, 1, 1]</code>, and
+<code>values: [1, 2, 3]</code>, the stored coordinates are <code>(row 0, col 0) = 1</code>,
+<code>(row 1, col 0) = 2</code>, and <code>(row 1, col 1) = 3</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1346">types.d.ts:1346</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1567">types.d.ts:1567</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -11,10 +11,12 @@
 <li><a href="" aria-current="page">IndexInput</a></li></ul>
 <h1>Type Alias IndexInput</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">IndexInput</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Int32Array</span></div>
-<div class="tsd-comment tsd-typography"><p>Zero-based index input copied into native <code>HighsInt</code> storage.</p>
+<div class="tsd-comment tsd-typography"><p>Non-negative integer vector copied into 32-bit native <code>HighsInt</code> storage.
+Values used as model indices are zero-based; values used in sparse <code>starts</code>
+arrays are offsets. Every value must be a safe integer in signed 32-bit range.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1269">types.d.ts:1269</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1373">types.d.ts:1373</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

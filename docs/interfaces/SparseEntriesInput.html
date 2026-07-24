@@ -11,7 +11,9 @@
 <li><a href="" aria-current="page">SparseEntriesInput</a></li></ul>
 <h1>Interface SparseEntriesInput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Sparse zero-based index/value pairs; lengths must match and indices must be valid.</p>
+<div class="tsd-comment tsd-typography"><p>Sparse zero-based index/value pairs. The arrays have equal length and are
+copied. For row/column addition, indices address the existing opposite axis;
+duplicate indices for one new row/column are invalid.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SparseEntriesInput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#indices">indices</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#values">values</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
 <section class="tsd-panel tsd-hierarchy" data-refl="633">
@@ -21,7 +23,7 @@
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1539">types.d.ts:1539</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2049">types.d.ts:2049</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -38,17 +40,24 @@
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="indices"><code class="tsd-tag">Readonly</code><span>indices</span><a href="#indices" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Zero-based row/column indices.</p>
+<div class="tsd-comment tsd-typography"><p>Existing opposite-axis coordinate for each sparse value. When adding a
+column, these are current row indices; when adding a row, these are current
+column indices. For <code>SparseSolutionInput</code>, they are current column indices.
+Every index must be in range and <code>indices.length</code> must equal
+<code>values.length</code>. A new row/column must not list the same coordinate twice.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1541">types.d.ts:1541</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2057">types.d.ts:2057</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="values"><code class="tsd-tag">Readonly</code><span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">values</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Value corresponding to each index.</p>
+<div class="tsd-comment tsd-typography"><p>Value paired position-for-position with <code>indices</code>. For a newly added row or
+column, <code>values[k]</code> is its matrix coefficient at <code>indices[k]</code>. For a sparse
+solution start, it is the proposed primal value of column <code>indices[k]</code>.
+The array is copied and must have exactly <code>indices.length</code> entries.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1543">types.d.ts:1543</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2064">types.d.ts:2064</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

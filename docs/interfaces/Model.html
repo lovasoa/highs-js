@@ -12,11 +12,15 @@
 <h1>Interface Model</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>Persistent model owning one native HiGHS instance. Methods are synchronous,
-copy inputs, and throw on validation/native errors unless explicitly noted.</p>
+copy inputs, and throw on validation/native errors unless explicitly noted.
+The caller must eventually call <code>dispose()</code>; garbage collection does not free
+the native instance. Returned strings and typed arrays are detached and remain
+usable after disposal. Value-returning methods record a native warning in
+<code>lastCall</code> when they do not return metadata directly.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">Model</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#disposed">disposed</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#info">info</a><span class="tsd-signature-symbol">:</span> <a href="InfoStore.html" class="tsd-signature-type tsd-kind-interface">InfoStore</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#lastcall">lastCall</a><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#options">options</a><span class="tsd-signature-symbol">:</span> <a href="OptionStore.html" class="tsd-signature-type tsd-kind-interface">OptionStore</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#raw">raw</a><span class="tsd-signature-symbol">:</span> <a href="RawModelApi.html" class="tsd-signature-type tsd-kind-interface">RawModelApi</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addcol-1">addCol</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">cost</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">entries</span><span class="tsd-signature-symbol">:</span> <a href="SparseEntriesInput.html" class="tsd-signature-type tsd-kind-interface">SparseEntriesInput</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addcols-1">addCols</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addlinearobjective-1">addLinearObjective</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">objective</span><span class="tsd-signature-symbol">:</span> <a href="LinearObjectiveInput.html" class="tsd-signature-type tsd-kind-interface">LinearObjectiveInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addrow-1">addRow</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">entries</span><span class="tsd-signature-symbol">:</span> <a href="SparseEntriesInput.html" class="tsd-signature-type tsd-kind-interface">SparseEntriesInput</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addrows-1">addRows</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addvar-1">addVar</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#addvars-1">addVars</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecoefficient-1">changeCoefficient</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">row</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">col</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolbounds-1">changeColBounds</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolcost-1">changeColCost</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">cost</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolintegrality-1">changeColIntegrality</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">type</span><span class="tsd-signature-symbol">:</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolsbounds-1">changeColsBounds</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolscost-1">changeColsCost</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">costs</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changecolsintegrality-1">changeColsIntegrality</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">types</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-keyword">readonly</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changeobjectiveoffset-1">changeObjectiveOffset</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">offset</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changeobjectivesense-1">changeObjectiveSense</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">sense</span><span class="tsd-signature-symbol">:</span> <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changerowbounds-1">changeRowBounds</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#changerowsbounds-1">changeRowsBounds</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">lower</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">upper</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#clear-1">clear</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#clearintegrality-1">clearIntegrality</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#clearlinearobjectives-1">clearLinearObjectives</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#clearmodel-1">clearModel</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#clearsolver-1">clearSolver</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#crossover-1">crossover</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <a href="SolutionInput.html" class="tsd-signature-type tsd-kind-interface">SolutionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#deletecols-1">deleteCols</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#deleterows-1">deleteRows</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#dispose-1">dispose</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#ensurecolwise-1">ensureColwise</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#ensurerowwise-1">ensureRowwise</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportmodel-1">exportModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;lp&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportmodel-2">exportModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mps&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportpresolvedmodel-1">exportPresolvedModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;lp&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportpresolvedmodel-2">exportPresolvedModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mps&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportsolution-1">exportSolution</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pretty</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#exportsolution-2">exportSolution</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pretty</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#feasibilityrelaxation-1">feasibilityRelaxation</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <a href="FeasibilityRelaxationInput.html" class="tsd-signature-type tsd-kind-interface">FeasibilityRelaxationInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasicvariables-1">getBasicVariables</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasis-1">getBasis</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="Basis.html" class="tsd-signature-type tsd-kind-interface">Basis</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasisinversecol-1">getBasisInverseCol</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">col</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasisinverserow-1">getBasisInverseRow</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">row</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasissolve-1">getBasisSolve</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">rhs</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getbasistransposesolve-1">getBasisTransposeSolve</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">rhs</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getcolbyname-1">getColByName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getcolintegrality-1">getColIntegrality</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getcolname-1">getColName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getcols-1">getCols</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getdimensions-1">getDimensions</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="ModelDimensions.html" class="tsd-signature-type tsd-kind-interface">ModelDimensions</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getdualray-1">getDualRay</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getdualunboundednessdirection-1">getDualUnboundednessDirection</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getfixedlp-1">getFixedLp</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getiis-1">getIis</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="IisResult.html" class="tsd-signature-type tsd-kind-interface">IisResult</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getiislp-1">getIisLp</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getlp-1">getLp</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getmodel-1">getModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getmodelstatus-1">getModelStatus</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="../types/ModelStatusCode.html" class="tsd-signature-type tsd-kind-type-alias">ModelStatusCode</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getobjectiveoffset-1">getObjectiveOffset</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getobjectivesense-1">getObjectiveSense</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getobjectivevalue-1">getObjectiveValue</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getpresolvedcolname-1">getPresolvedColName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getpresolveddimensions-1">getPresolvedDimensions</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="PresolvedDimensions.html" class="tsd-signature-type tsd-kind-interface">PresolvedDimensions</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getpresolvedlp-1">getPresolvedLp</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getpresolvedrowname-1">getPresolvedRowName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getprimalray-1">getPrimalRay</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getranging-1">getRanging</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="RangingResult.html" class="tsd-signature-type tsd-kind-interface">RangingResult</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getreducedcolumn-1">getReducedColumn</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">col</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getreducedrow-1">getReducedRow</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">row</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getrowbyname-1">getRowByName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getrowname-1">getRowName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getrows-1">getRows</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getruntime-1">getRunTime</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#getsolution-1">getSolution</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="Solution.html" class="tsd-signature-type tsd-kind-interface">Solution</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passcolname-1">passColName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passhessian-1">passHessian</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">hessian</span><span class="tsd-signature-symbol">:</span> <a href="HessianInput.html" class="tsd-signature-type tsd-kind-interface">HessianInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passlinearobjectives-1">passLinearObjectives</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">objectives</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">readonly</span> <a href="LinearObjectiveInput.html" class="tsd-signature-type tsd-kind-interface">LinearObjectiveInput</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passmodel-1">passModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">model</span><span class="tsd-signature-symbol">:</span> <a href="ModelData.html" class="tsd-signature-type tsd-kind-interface">ModelData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passmodelname-1">passModelName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#passrowname-1">passRowName</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#postsolve-1">postsolve</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <a href="PostsolveInput.html" class="tsd-signature-type tsd-kind-interface">PostsolveInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#presolve-1">presolve</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#readmodel-1">readModel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">source</span><span class="tsd-signature-symbol">:</span> <a href="EncodedModel.html" class="tsd-signature-type tsd-kind-interface">EncodedModel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#releasememory-1">releaseMemory</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#run-1">run</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">callbacks</span><span class="tsd-signature-symbol">?:</span> <a href="../types/HighsCallbackMap.html" class="tsd-signature-type tsd-kind-type-alias">HighsCallbackMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RunResult.html" class="tsd-signature-type tsd-kind-interface">RunResult</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#scalecol-1">scaleCol</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">factor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#scalerow-1">scaleRow</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">factor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#setbasis-1">setBasis</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">basis</span><span class="tsd-signature-symbol">?:</span> <a href="BasisInput.html" class="tsd-signature-type tsd-kind-interface">BasisInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#setlogicalbasis-1">setLogicalBasis</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#setsolution-1">setSolution</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">solution</span><span class="tsd-signature-symbol">:</span> <a href="SolutionInput.html" class="tsd-signature-type tsd-kind-interface">SolutionInput</a> <span class="tsd-signature-symbol">|</span> <a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#zeroallclocks-1">zeroAllClocks</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1893">types.d.ts:1893</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2590">types.d.ts:2590</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -127,35 +131,35 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <div class="tsd-comment tsd-typography"><p>Whether <code>dispose()</code> has destroyed the owned native instance.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1901">types.d.ts:1901</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2598">types.d.ts:2598</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="info"><code class="tsd-tag">Readonly</code><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">info</span><span class="tsd-signature-symbol">:</span> <a href="InfoStore.html" class="tsd-signature-type tsd-kind-interface">InfoStore</a></div>
 <div class="tsd-comment tsd-typography"><p>Solve-information facade scoped to this instance.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1899">types.d.ts:1899</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2596">types.d.ts:2596</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="lastcall"><code class="tsd-tag">Readonly</code><span>last<wbr/>Call</span><a href="#lastcall" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">lastCall</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></div>
 <div class="tsd-comment tsd-typography"><p>Metadata from the most recent successful throwing-wrapper operation.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1903">types.d.ts:1903</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2600">types.d.ts:2600</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="options"><code class="tsd-tag">Readonly</code><span>options</span><a href="#options" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">options</span><span class="tsd-signature-symbol">:</span> <a href="OptionStore.html" class="tsd-signature-type tsd-kind-interface">OptionStore</a></div>
 <div class="tsd-comment tsd-typography"><p>Option facade scoped to this instance.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1897">types.d.ts:1897</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2594">types.d.ts:2594</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="raw"><code class="tsd-tag">Readonly</code><span>raw</span><a href="#raw" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">raw</span><span class="tsd-signature-symbol">:</span> <a href="RawModelApi.html" class="tsd-signature-type tsd-kind-interface">RawModelApi</a></div>
 <div class="tsd-comment tsd-typography"><p>Status-preserving view of the same native instance; disposing either view disposes both.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1895">types.d.ts:1895</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2592">types.d.ts:2592</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -176,14 +180,15 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">entries</span>: <a href="SparseEntriesInput.html" class="tsd-signature-type tsd-kind-interface">SparseEntriesInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2029">types.d.ts:2029</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2743">types.d.ts:2743</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addcols"><span>add<wbr/>Cols</span><a href="#addcols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addcols-1"><span class="tsd-kind-call-signature">addCols</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#addcols-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Appends columns from CSC-oriented data; arrays and sparse matrix are copied.</p>
+<div class="tsd-comment tsd-typography"><p>Appends copied CSC columns. Cost/lower/upper lengths are equal, matrix
+<code>numCols</code> equals that length, and matrix <code>numRows</code> equals current model rows.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -191,7 +196,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2031">types.d.ts:2031</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2748">types.d.ts:2748</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addlinearobjective"><span>add<wbr/>Linear<wbr/>Objective</span><a href="#addlinearobjective" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -206,7 +211,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">objective</span>: <a href="LinearObjectiveInput.html" class="tsd-signature-type tsd-kind-interface">LinearObjectiveInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1942">types.d.ts:1942</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2639">types.d.ts:2639</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addrow"><span>add<wbr/>Row</span><a href="#addrow" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -223,14 +228,15 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">entries</span>: <a href="SparseEntriesInput.html" class="tsd-signature-type tsd-kind-interface">SparseEntriesInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2033">types.d.ts:2033</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2750">types.d.ts:2750</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addrows"><span>add<wbr/>Rows</span><a href="#addrows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addrows-1"><span class="tsd-kind-call-signature">addRows</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#addrows-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Appends rows from CSR-oriented data; arrays and sparse matrix are copied.</p>
+<div class="tsd-comment tsd-typography"><p>Appends copied CSR rows. Lower/upper lengths are equal, matrix <code>numRows</code>
+equals that length, and matrix <code>numCols</code> equals current model columns.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -238,7 +244,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;count&quot;</span><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2035">types.d.ts:2035</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2755">types.d.ts:2755</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addvar"><span>add<wbr/>Var</span><a href="#addvar" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -254,7 +260,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2025">types.d.ts:2025</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2739">types.d.ts:2739</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addvars"><span>add<wbr/>Vars</span><a href="#addvars" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -270,7 +276,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2027">types.d.ts:2027</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2741">types.d.ts:2741</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecoefficient"><span>change<wbr/>Coefficient</span><a href="#changecoefficient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -287,7 +293,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2064">types.d.ts:2064</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2784">types.d.ts:2784</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolbounds"><span>change<wbr/>Col<wbr/>Bounds</span><a href="#changecolbounds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -304,7 +310,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2056">types.d.ts:2056</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2776">types.d.ts:2776</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolcost"><span>change<wbr/>Col<wbr/>Cost</span><a href="#changecolcost" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -320,7 +326,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">cost</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2052">types.d.ts:2052</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2772">types.d.ts:2772</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolintegrality"><span>change<wbr/>Col<wbr/>Integrality</span><a href="#changecolintegrality" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -336,7 +342,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">type</span>: <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2046">types.d.ts:2046</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2766">types.d.ts:2766</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolsbounds"><span>change<wbr/>Cols<wbr/>Bounds</span><a href="#changecolsbounds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -353,7 +359,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2058">types.d.ts:2058</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2778">types.d.ts:2778</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolscost"><span>change<wbr/>Cols<wbr/>Cost</span><a href="#changecolscost" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -369,7 +375,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">costs</span>: <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2054">types.d.ts:2054</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2774">types.d.ts:2774</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changecolsintegrality"><span>change<wbr/>Cols<wbr/>Integrality</span><a href="#changecolsintegrality" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -385,7 +391,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">types</span>: <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-keyword">readonly</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2048">types.d.ts:2048</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2768">types.d.ts:2768</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changeobjectiveoffset"><span>change<wbr/>Objective<wbr/>Offset</span><a href="#changeobjectiveoffset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -400,7 +406,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">offset</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2044">types.d.ts:2044</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2764">types.d.ts:2764</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changeobjectivesense"><span>change<wbr/>Objective<wbr/>Sense</span><a href="#changeobjectivesense" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -415,7 +421,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">sense</span>: <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2042">types.d.ts:2042</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2762">types.d.ts:2762</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changerowbounds"><span>change<wbr/>Row<wbr/>Bounds</span><a href="#changerowbounds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -432,7 +438,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2060">types.d.ts:2060</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2780">types.d.ts:2780</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="changerowsbounds"><span>change<wbr/>Rows<wbr/>Bounds</span><a href="#changerowsbounds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -449,7 +455,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 <li><span><span class="tsd-kind-parameter">upper</span>: <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2062">types.d.ts:2062</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2782">types.d.ts:2782</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clear"><span>clear</span><a href="#clear" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -460,7 +466,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1906">types.d.ts:1906</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2603">types.d.ts:2603</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clearintegrality"><span>clear<wbr/>Integrality</span><a href="#clearintegrality" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -471,7 +477,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2050">types.d.ts:2050</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2770">types.d.ts:2770</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clearlinearobjectives"><span>clear<wbr/>Linear<wbr/>Objectives</span><a href="#clearlinearobjectives" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -482,7 +488,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1944">types.d.ts:1944</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2641">types.d.ts:2641</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clearmodel"><span>clear<wbr/>Model</span><a href="#clearmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -493,7 +499,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1908">types.d.ts:1908</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2605">types.d.ts:2605</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clearsolver"><span>clear<wbr/>Solver</span><a href="#clearsolver" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -504,7 +510,7 @@ copy inputs, and throw on validation/native errors unless explicitly noted.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1910">types.d.ts:1910</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2607">types.d.ts:2607</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="crossover"><span>crossover</span><a href="#crossover" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -520,7 +526,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">input</span>: <a href="SolutionInput.html" class="tsd-signature-type tsd-kind-interface">SolutionInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2102">types.d.ts:2102</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2826">types.d.ts:2826</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletecols"><span>delete<wbr/>Cols</span><a href="#deletecols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -535,7 +541,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">selection</span>: <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2066">types.d.ts:2066</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2786">types.d.ts:2786</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deleterows"><span>delete<wbr/>Rows</span><a href="#deleterows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -550,18 +556,18 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">selection</span>: <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2068">types.d.ts:2068</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2788">types.d.ts:2788</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="dispose"><span>dispose</span><a href="#dispose" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="dispose-1"><span class="tsd-kind-call-signature">dispose</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#dispose-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Destroys native ownership; idempotent, after which other methods throw.</p>
+<div class="tsd-comment tsd-typography"><p>Destroys shared native ownership; idempotent and invalidates <code>raw</code>, <code>options</code>, and <code>info</code>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2115">types.d.ts:2115</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2844">types.d.ts:2844</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="ensurecolwise"><span>ensure<wbr/>Colwise</span><a href="#ensurecolwise" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -572,7 +578,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2037">types.d.ts:2037</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2757">types.d.ts:2757</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="ensurerowwise"><span>ensure<wbr/>Rowwise</span><a href="#ensurerowwise" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -583,7 +589,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2039">types.d.ts:2039</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2759">types.d.ts:2759</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="exportmodel"><span>export<wbr/>Model</span><a href="#exportmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -598,7 +604,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">format</span>: <span class="tsd-signature-type">&quot;lp&quot;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1920">types.d.ts:1920</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2617">types.d.ts:2617</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="exportmodel-2"><span class="tsd-kind-call-signature">exportModel</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mps&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><a href="#exportmodel-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -610,7 +616,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">format</span>: <span class="tsd-signature-type">&quot;mps&quot;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1922">types.d.ts:1922</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2619">types.d.ts:2619</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="exportpresolvedmodel"><span>export<wbr/>Presolved<wbr/>Model</span><a href="#exportpresolvedmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -625,7 +631,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">format</span>: <span class="tsd-signature-type">&quot;lp&quot;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1924">types.d.ts:1924</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2621">types.d.ts:2621</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="exportpresolvedmodel-2"><span class="tsd-kind-call-signature">exportPresolvedModel</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mps&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><a href="#exportpresolvedmodel-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -637,7 +643,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><span class="tsd-kind-parameter">format</span>: <span class="tsd-signature-type">&quot;mps&quot;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1926">types.d.ts:1926</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2623">types.d.ts:2623</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="exportsolution"><span>export<wbr/>Solution</span><a href="#exportsolution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -652,7 +658,7 @@ must be supplied together or both omitted. <code>rowValue</code> is ignored.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">pretty</span>: <span class="tsd-signature-type">false</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1928">types.d.ts:1928</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2625">types.d.ts:2625</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="exportsolution-2"><span class="tsd-kind-call-signature">exportSolution</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pretty</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#exportsolution-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -665,7 +671,7 @@ fields are represented by the native pretty writer rather than rejected.</p>
 <li><span><span class="tsd-kind-parameter">pretty</span>: <span class="tsd-signature-type">true</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1933">types.d.ts:1933</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2630">types.d.ts:2630</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="feasibilityrelaxation"><span>feasibility<wbr/>Relaxation</span><a href="#feasibilityrelaxation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -674,7 +680,8 @@ fields are represented by the native pretty writer rather than rejected.</p>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Solves a feasibility relaxation synchronously, then restores the original
 model and prior model status. The relaxation solution and objective value
-remain available; negative penalties prohibit their corresponding violation.</p>
+remain available; negative penalties prohibit their corresponding violation,
+local vectors override globals, and the retained basis is invalidated.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -682,7 +689,7 @@ remain available; negative penalties prohibit their corresponding violation.</p>
 <li><span><span class="tsd-kind-parameter">input</span>: <a href="FeasibilityRelaxationInput.html" class="tsd-signature-type tsd-kind-interface">FeasibilityRelaxationInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2110">types.d.ts:2110</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2835">types.d.ts:2835</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasicvariables"><span>get<wbr/>Basic<wbr/>Variables</span><a href="#getbasicvariables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -694,25 +701,26 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Int32Array</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2084">types.d.ts:2084</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2808">types.d.ts:2808</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasis"><span>get<wbr/>Basis</span><a href="#getbasis" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getbasis-1"><span class="tsd-kind-call-signature">getBasis</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="Basis.html" class="tsd-signature-type tsd-kind-interface">Basis</a><a href="#getbasis-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns a detached basis; throws if the model has not established basis state.</p>
+<div class="tsd-comment tsd-typography"><p>Copies current basis-status buffers. Inspect <code>basis_validity</code>; a solved MIP
+or an interior-point solve without crossover need not have a valid basis.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="Basis.html" class="tsd-signature-type tsd-kind-interface">Basis</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1964">types.d.ts:1964</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2678">types.d.ts:2678</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasisinversecol"><span>get<wbr/>Basis<wbr/>Inverse<wbr/>Col</span><a href="#getbasisinversecol" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getbasisinversecol-1"><span class="tsd-kind-call-signature">getBasisInverseCol</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">col</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><a href="#getbasisinversecol-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns column <code>col</code> of the basis inverse; requires a valid invertible basis.</p>
+<div class="tsd-comment tsd-typography"><p>Returns one of <code>numRows</code> columns of square <code>B^-1</code>; <code>col</code> is a basis-matrix index.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -721,14 +729,14 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2088">types.d.ts:2088</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2812">types.d.ts:2812</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasisinverserow"><span>get<wbr/>Basis<wbr/>Inverse<wbr/>Row</span><a href="#getbasisinverserow" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getbasisinverserow-1"><span class="tsd-kind-call-signature">getBasisInverseRow</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">row</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><a href="#getbasisinverserow-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns row <code>row</code> of the basis inverse; requires a valid invertible basis.</p>
+<div class="tsd-comment tsd-typography"><p>Returns one of <code>numRows</code> rows of square <code>B^-1</code>; output length is <code>numRows</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -737,7 +745,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2086">types.d.ts:2086</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2810">types.d.ts:2810</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasissolve"><span>get<wbr/>Basis<wbr/>Solve</span><a href="#getbasissolve" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -753,14 +761,14 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2090">types.d.ts:2090</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2814">types.d.ts:2814</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbasistransposesolve"><span>get<wbr/>Basis<wbr/>Transpose<wbr/>Solve</span><a href="#getbasistransposesolve" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getbasistransposesolve-1"><span class="tsd-kind-call-signature">getBasisTransposeSolve</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">rhs</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><a href="#getbasistransposesolve-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Solves <code>B' x = rhs</code>; <code>rhs.length</code> must equal <code>numRows</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Solves <code>B^-T x = rhs</code>; input and output lengths equal <code>numRows</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -769,7 +777,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2092">types.d.ts:2092</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2816">types.d.ts:2816</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcolbyname"><span>get<wbr/>Col<wbr/>By<wbr/>Name</span><a href="#getcolbyname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -784,7 +792,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2018">types.d.ts:2018</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2732">types.d.ts:2732</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcolintegrality"><span>get<wbr/>Col<wbr/>Integrality</span><a href="#getcolintegrality" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -799,7 +807,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2022">types.d.ts:2022</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2736">types.d.ts:2736</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcolname"><span>get<wbr/>Col<wbr/>Name</span><a href="#getcolname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -814,14 +822,14 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2010">types.d.ts:2010</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2724">types.d.ts:2724</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcols"><span>get<wbr/>Cols</span><a href="#getcols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getcols-1"><span class="tsd-kind-call-signature">getCols</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a><a href="#getcols-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Copies selected columns and their coefficients; output order follows selection order.</p>
+<div class="tsd-comment tsd-typography"><p>Copies selected columns in ascending current index order with a CSC matrix.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -829,7 +837,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><span class="tsd-kind-parameter">selection</span>: <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="ColumnData.html" class="tsd-signature-type tsd-kind-interface">ColumnData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2006">types.d.ts:2006</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2720">types.d.ts:2720</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getdimensions"><span>get<wbr/>Dimensions</span><a href="#getdimensions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -840,7 +848,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="ModelDimensions.html" class="tsd-signature-type tsd-kind-interface">ModelDimensions</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2002">types.d.ts:2002</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2716">types.d.ts:2716</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getdualray"><span>get<wbr/>Dual<wbr/>Ray</span><a href="#getdualray" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -851,7 +859,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1983">types.d.ts:1983</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2697">types.d.ts:2697</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getdualunboundednessdirection"><span>get<wbr/>Dual<wbr/>Unboundedness<wbr/>Direction</span><a href="#getdualunboundednessdirection" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -862,7 +870,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1985">types.d.ts:1985</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2699">types.d.ts:2699</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getfixedlp"><span>get<wbr/>Fixed<wbr/>Lp</span><a href="#getfixedlp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -877,25 +885,27 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">format</span>: <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1999">types.d.ts:1999</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2713">types.d.ts:2713</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getiis"><span>get<wbr/>Iis</span><a href="#getiis" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getiis-1"><span class="tsd-kind-call-signature">getIis</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="IisResult.html" class="tsd-signature-type tsd-kind-interface">IisResult</a><a href="#getiis-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Computes and returns an IIS for an infeasible model; may run additional solves.</p>
+<div class="tsd-comment tsd-typography"><p>Attempts to compute an infeasible subsystem for an LP/QP or MIP relaxation.
+It may run multiple blocking solves. Empty indices mean none was found;
+limited/warning results may be candidates rather than proved irreducible IISs.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="IisResult.html" class="tsd-signature-type tsd-kind-interface">IisResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2112">types.d.ts:2112</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2841">types.d.ts:2841</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getiislp"><span>get<wbr/>Iis<wbr/>Lp</span><a href="#getiislp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getiislp-1"><span class="tsd-kind-call-signature">getIisLp</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><a href="#getiislp-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns the LP associated with the most recent IIS computation.</p>
+<div class="tsd-comment tsd-typography"><p>Returns IIS working-model data; meaningful after a non-error <code>getIis()</code> found a subsystem.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -903,14 +913,14 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">format</span>: <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1997">types.d.ts:1997</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2711">types.d.ts:2711</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getlp"><span>get<wbr/>Lp</span><a href="#getlp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getlp-1"><span class="tsd-kind-call-signature">getLp</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">format</span><span class="tsd-signature-symbol">?:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a><a href="#getlp-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns the current LP portion without names as a detached snapshot.</p>
+<div class="tsd-comment tsd-typography"><p>Returns current linear-model data without Hessian, names, or auxiliary objectives.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -918,7 +928,7 @@ a row activity/slack uses exactly <code>-rowIndex - 1</code>.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">format</span>: <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1993">types.d.ts:1993</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2707">types.d.ts:2707</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getmodel"><span>get<wbr/>Model</span><a href="#getmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -934,7 +944,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">format</span>: <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1991">types.d.ts:1991</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2705">types.d.ts:2705</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getmodelstatus"><span>get<wbr/>Model<wbr/>Status</span><a href="#getmodelstatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -945,7 +955,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="../types/ModelStatusCode.html" class="tsd-signature-type tsd-kind-type-alias">ModelStatusCode</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1966">types.d.ts:1966</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2680">types.d.ts:2680</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getobjectiveoffset"><span>get<wbr/>Objective<wbr/>Offset</span><a href="#getobjectiveoffset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -956,7 +966,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1972">types.d.ts:1972</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2686">types.d.ts:2686</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getobjectivesense"><span>get<wbr/>Objective<wbr/>Sense</span><a href="#getobjectivesense" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -967,7 +977,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1970">types.d.ts:1970</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2684">types.d.ts:2684</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getobjectivevalue"><span>get<wbr/>Objective<wbr/>Value</span><a href="#getobjectivevalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -978,7 +988,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1968">types.d.ts:1968</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2682">types.d.ts:2682</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getpresolvedcolname"><span>get<wbr/>Presolved<wbr/>Col<wbr/>Name</span><a href="#getpresolvedcolname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -993,7 +1003,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2014">types.d.ts:2014</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2728">types.d.ts:2728</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getpresolveddimensions"><span>get<wbr/>Presolved<wbr/>Dimensions</span><a href="#getpresolveddimensions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1004,7 +1014,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="PresolvedDimensions.html" class="tsd-signature-type tsd-kind-interface">PresolvedDimensions</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2004">types.d.ts:2004</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2718">types.d.ts:2718</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getpresolvedlp"><span>get<wbr/>Presolved<wbr/>Lp</span><a href="#getpresolvedlp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1019,7 +1029,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">format</span>: <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="DetachedModelData.html" class="tsd-signature-type tsd-kind-interface">DetachedModelData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1995">types.d.ts:1995</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2709">types.d.ts:2709</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getpresolvedrowname"><span>get<wbr/>Presolved<wbr/>Row<wbr/>Name</span><a href="#getpresolvedrowname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1034,7 +1044,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2016">types.d.ts:2016</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2730">types.d.ts:2730</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getprimalray"><span>get<wbr/>Primal<wbr/>Ray</span><a href="#getprimalray" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1045,25 +1055,25 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1981">types.d.ts:1981</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2695">types.d.ts:2695</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getranging"><span>get<wbr/>Ranging</span><a href="#getranging" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getranging-1"><span class="tsd-kind-call-signature">getRanging</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="RangingResult.html" class="tsd-signature-type tsd-kind-interface">RangingResult</a><a href="#getranging-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Computes LP sensitivity ranging synchronously; requires an optimal basic solution.</p>
+<div class="tsd-comment tsd-typography"><p>Requires an optimal LP simplex solution with initialized valid basis state; IPM alone is insufficient.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="RangingResult.html" class="tsd-signature-type tsd-kind-interface">RangingResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2104">types.d.ts:2104</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2828">types.d.ts:2828</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getreducedcolumn"><span>get<wbr/>Reduced<wbr/>Column</span><a href="#getreducedcolumn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getreducedcolumn-1"><span class="tsd-kind-call-signature">getReducedColumn</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">col</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><a href="#getreducedcolumn-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns one column of <code>B^-1 A</code>; requires a valid basis.</p>
+<div class="tsd-comment tsd-typography"><p>Returns one original model column of <code>B^-1 A</code>; output length is <code>numRows</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1072,14 +1082,14 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2096">types.d.ts:2096</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2820">types.d.ts:2820</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getreducedrow"><span>get<wbr/>Reduced<wbr/>Row</span><a href="#getreducedrow" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getreducedrow-1"><span class="tsd-kind-call-signature">getReducedRow</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">row</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">sparse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a><a href="#getreducedrow-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns one row of <code>B^-1 A</code>; requires a valid basis.</p>
+<div class="tsd-comment tsd-typography"><p>Returns one row of <code>B^-1 A</code>; output length is <code>numCols</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1088,7 +1098,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sparse</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="NumericVector.html" class="tsd-signature-type tsd-kind-interface">NumericVector</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2094">types.d.ts:2094</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2818">types.d.ts:2818</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getrowbyname"><span>get<wbr/>Row<wbr/>By<wbr/>Name</span><a href="#getrowbyname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1103,7 +1113,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2020">types.d.ts:2020</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2734">types.d.ts:2734</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getrowname"><span>get<wbr/>Row<wbr/>Name</span><a href="#getrowname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1118,14 +1128,14 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2012">types.d.ts:2012</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2726">types.d.ts:2726</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getrows"><span>get<wbr/>Rows</span><a href="#getrows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getrows-1"><span class="tsd-kind-call-signature">getRows</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">selection</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a><a href="#getrows-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Copies selected rows and their coefficients; output order follows selection order.</p>
+<div class="tsd-comment tsd-typography"><p>Copies selected rows in ascending current index order with a CSR matrix.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1133,29 +1143,31 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">selection</span>: <a href="../types/IndexSelection.html" class="tsd-signature-type tsd-kind-type-alias">IndexSelection</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="RowData.html" class="tsd-signature-type tsd-kind-interface">RowData</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2008">types.d.ts:2008</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2722">types.d.ts:2722</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getruntime"><span>get<wbr/>Run<wbr/>Time</span><a href="#getruntime" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getruntime-1"><span class="tsd-kind-call-signature">getRunTime</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><a href="#getruntime-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns cumulative native elapsed time since creation or <code>zeroAllClocks()</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Returns cumulative wall-clock seconds spent in solver runs since the last clock reset.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1957">types.d.ts:1957</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2664">types.d.ts:2664</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getsolution"><span>get<wbr/>Solution</span><a href="#getsolution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getsolution-1"><span class="tsd-kind-call-signature">getSolution</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="Solution.html" class="tsd-signature-type tsd-kind-interface">Solution</a><a href="#getsolution-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns a detached dense solution; throws if the model has not been solved.</p>
+<div class="tsd-comment tsd-typography"><p>Copies current solution buffers when model state permits the native query.
+This is not an availability guarantee: inspect model status plus the
+<code>primal_solution_status</code> and <code>dual_solution_status</code> info values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="Solution.html" class="tsd-signature-type tsd-kind-interface">Solution</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1962">types.d.ts:1962</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2673">types.d.ts:2673</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passcolname"><span>pass<wbr/>Col<wbr/>Name</span><a href="#passcolname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1171,7 +1183,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2074">types.d.ts:2074</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2798">types.d.ts:2798</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passhessian"><span>pass<wbr/>Hessian</span><a href="#passhessian" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1186,7 +1198,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">hessian</span>: <a href="HessianInput.html" class="tsd-signature-type tsd-kind-interface">HessianInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1938">types.d.ts:1938</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2635">types.d.ts:2635</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passlinearobjectives"><span>pass<wbr/>Linear<wbr/>Objectives</span><a href="#passlinearobjectives" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1201,14 +1213,14 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">objectives</span>: <span class="tsd-signature-keyword">readonly</span> <a href="LinearObjectiveInput.html" class="tsd-signature-type tsd-kind-interface">LinearObjectiveInput</a><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1940">types.d.ts:1940</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2637">types.d.ts:2637</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passmodel"><span>pass<wbr/>Model</span><a href="#passmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="passmodel-1"><span class="tsd-kind-call-signature">passModel</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">model</span><span class="tsd-signature-symbol">:</span> <a href="ModelData.html" class="tsd-signature-type tsd-kind-interface">ModelData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#passmodel-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Replaces current state with a copied LP/MIP/QP selected from optional fields.</p>
+<div class="tsd-comment tsd-typography"><p>Replaces current numerical state; integrality and Hessian independently select MIP/QP features.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1216,7 +1228,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">model</span>: <a href="ModelData.html" class="tsd-signature-type tsd-kind-interface">ModelData</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1936">types.d.ts:1936</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2633">types.d.ts:2633</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passmodelname"><span>pass<wbr/>Model<wbr/>Name</span><a href="#passmodelname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1231,7 +1243,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2078">types.d.ts:2078</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2802">types.d.ts:2802</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="passrowname"><span>pass<wbr/>Row<wbr/>Name</span><a href="#passrowname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1247,14 +1259,17 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2076">types.d.ts:2076</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2800">types.d.ts:2800</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="postsolve"><span>postsolve</span><a href="#postsolve" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="postsolve-1"><span class="tsd-kind-call-signature">postsolve</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <a href="PostsolveInput.html" class="tsd-signature-type tsd-kind-interface">PostsolveInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#postsolve-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Maps a presolved primal/optional dual solution back to original model space.</p>
+<div class="tsd-comment tsd-typography"><p>Maps values in the current presolved model's ordering back to original model
+space. Vector lengths must match <code>getPresolvedDimensions()</code> and model
+mutation may invalidate presolve state. Read the recovered values with
+<code>getSolution()</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1262,7 +1277,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">input</span>: <a href="PostsolveInput.html" class="tsd-signature-type tsd-kind-interface">PostsolveInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1955">types.d.ts:1955</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2662">types.d.ts:2662</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="presolve"><span>presolve</span><a href="#presolve" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1273,7 +1288,7 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1947">types.d.ts:1947</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2644">types.d.ts:2644</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="readmodel"><span>read<wbr/>Model</span><a href="#readmodel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1288,28 +1303,32 @@ Names and auxiliary multi-objective linear objectives are not included.</p>
 <li><span><span class="tsd-kind-parameter">source</span>: <a href="EncodedModel.html" class="tsd-signature-type tsd-kind-interface">EncodedModel</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1918">types.d.ts:1918</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2615">types.d.ts:2615</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="releasememory"><span>release<wbr/>Memory</span><a href="#releasememory" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="releasememory-1"><span class="tsd-kind-call-signature">releaseMemory</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#releasememory-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Clears model and solver state, then releases retained vector capacity. The
-native instance and its options remain reusable.</p>
+<div class="tsd-comment tsd-typography"><p>Clears model and solver state, releases retained vector capacity, and resets
+native clocks. The native instance and its options remain reusable.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1915">types.d.ts:1915</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2612">types.d.ts:2612</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="run"><span>run</span><a href="#run" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="run-1"><span class="tsd-kind-call-signature">run</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">callbacks</span><span class="tsd-signature-symbol">?:</span> <a href="../types/HighsCallbackMap.html" class="tsd-signature-type tsd-kind-type-alias">HighsCallbackMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RunResult.html" class="tsd-signature-type tsd-kind-interface">RunResult</a><a href="#run-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Runs synchronously to termination or a configured limit. Supplied handlers
-are registered only for this call and removed in <code>finally</code>. During a
-handler, only callback controls are reentrant; other model/raw calls throw.</p>
+<div class="tsd-comment tsd-typography"><p>Runs synchronously to termination, callback interruption, or a configured
+limit. Put long browser solves in a Web Worker so this blocking call does
+not freeze the UI. Supplied handlers are active only for this call and are
+removed in <code>finally</code>.</p>
+<p>During a handler, only controls on that event are reentrant. Every model/raw
+method, including queries and callback registration, throws. Event data is
+detached and can be retained or posted to another thread after the handler.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1317,14 +1336,16 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">callbacks</span>: <a href="../types/HighsCallbackMap.html" class="tsd-signature-type tsd-kind-type-alias">HighsCallbackMap</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="RunResult.html" class="tsd-signature-type tsd-kind-interface">RunResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1953">types.d.ts:1953</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2655">types.d.ts:2655</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scalecol"><span>scale<wbr/>Col</span><a href="#scalecol" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="scalecol-1"><span class="tsd-kind-call-signature">scaleCol</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">factor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#scalecol-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Multiplies one column's coefficients, cost, and bounds consistently by a nonzero factor.</p>
+<div class="tsd-comment tsd-typography"><p>Applies variable substitution <code>x[index] = factor * xNew[index]</code>: matrix
+coefficients and cost are multiplied by <code>factor</code>, while variable bounds are
+divided by it and reordered when it is negative. <code>factor</code> must be nonzero.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1333,14 +1354,14 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 <li><span><span class="tsd-kind-parameter">factor</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2070">types.d.ts:2070</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2794">types.d.ts:2794</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scalerow"><span>scale<wbr/>Row</span><a href="#scalerow" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="scalerow-1"><span class="tsd-kind-call-signature">scaleRow</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">factor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#scalerow-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Multiplies one row's coefficients and bounds consistently by a nonzero factor.</p>
+<div class="tsd-comment tsd-typography"><p>Multiplies one row's coefficients and bounds by a nonzero factor, reordering bounds if negative.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1349,14 +1370,14 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 <li><span><span class="tsd-kind-parameter">factor</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L2072">types.d.ts:2072</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2796">types.d.ts:2796</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setbasis"><span>set<wbr/>Basis</span><a href="#setbasis" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="setbasis-1"><span class="tsd-kind-call-signature">setBasis</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">basis</span><span class="tsd-signature-symbol">?:</span> <a href="BasisInput.html" class="tsd-signature-type tsd-kind-interface">BasisInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a><a href="#setbasis-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Installs a complete basis, or resets to HiGHS' default basis when omitted.</p>
+<div class="tsd-comment tsd-typography"><p>Installs a complete basis; omission is exactly equivalent to <code>setLogicalBasis()</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -1364,7 +1385,7 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">basis</span>: <a href="BasisInput.html" class="tsd-signature-type tsd-kind-interface">BasisInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1976">types.d.ts:1976</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2690">types.d.ts:2690</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setlogicalbasis"><span>set<wbr/>Logical<wbr/>Basis</span><a href="#setlogicalbasis" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1375,7 +1396,7 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1978">types.d.ts:1978</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2692">types.d.ts:2692</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setsolution"><span>set<wbr/>Solution</span><a href="#setsolution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1390,7 +1411,7 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 <li><span><span class="tsd-kind-parameter">solution</span>: <a href="SolutionInput.html" class="tsd-signature-type tsd-kind-interface">SolutionInput</a> <span class="tsd-signature-symbol">|</span> <a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1974">types.d.ts:1974</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2688">types.d.ts:2688</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="zeroallclocks"><span>zero<wbr/>All<wbr/>Clocks</span><a href="#zeroallclocks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1401,7 +1422,7 @@ handler, only callback controls are reentrant; other model/raw calls throw.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="CallMetadata.html" class="tsd-signature-type tsd-kind-interface">CallMetadata</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1959">types.d.ts:1959</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2666">types.d.ts:2666</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

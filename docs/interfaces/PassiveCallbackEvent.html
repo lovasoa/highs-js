@@ -11,7 +11,8 @@
 <li><a href="" aria-current="page">PassiveCallbackEvent</a></li></ul>
 <h1>Interface PassiveCallbackEvent</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Observation-only logging, MIP solution, progress, or cut-pool event.</p>
+<div class="tsd-comment tsd-typography"><p>Observation-only event. It intentionally has no solver control methods; copy,
+retain, visualize, or post its detached data without reentering the model.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">PassiveCallbackEvent</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#data">data</a><span class="tsd-signature-symbol">:</span> <a href="CallbackData.html" class="tsd-signature-type tsd-kind-interface">CallbackData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#message">message</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#type">type</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">3</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">4</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">5</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">7</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
 <section class="tsd-panel tsd-hierarchy" data-refl="770">
@@ -21,7 +22,7 @@
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">PassiveCallbackEvent</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1804">types.d.ts:1804</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2442">types.d.ts:2442</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -43,15 +44,15 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#data">data</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1785">types.d.ts:1785</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2405">types.d.ts:2405</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="message"><code class="tsd-tag">Readonly</code><span>message</span><a href="#message" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-<div class="tsd-comment tsd-typography"><p>Native log/progress message, possibly empty.</p>
+<div class="tsd-comment tsd-typography"><p>Native log/progress text. Do not assume it is non-empty or machine-parseable.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#message">message</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1783">types.d.ts:1783</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2403">types.d.ts:2403</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="type"><code class="tsd-tag">Readonly</code><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">3</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">4</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">5</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">7</span></div>
@@ -59,7 +60,7 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#type">type</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1781">types.d.ts:1781</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2401">types.d.ts:2401</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

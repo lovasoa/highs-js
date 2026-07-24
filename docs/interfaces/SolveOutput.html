@@ -11,11 +11,13 @@
 <li><a href="" aria-current="page">SolveOutput</a></li></ul>
 <h1>Interface SolveOutput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Output of stateless LP/QP calls; all arrays are JavaScript-owned copies.</p>
+<div class="tsd-comment tsd-typography"><p>Output of a successful-status stateless LP/QP call. Always inspect
+<code>modelStatus</code>: array presence alone does not guarantee a feasible primal,
+valid dual, or valid basis. All arrays are JavaScript-owned copies.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SolveOutput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#basis">basis</a><span class="tsd-signature-symbol">:</span> <a href="Basis.html" class="tsd-signature-type tsd-kind-interface">Basis</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#modelstatus">modelStatus</a><span class="tsd-signature-symbol">:</span> <a href="../types/ModelStatusCode.html" class="tsd-signature-type tsd-kind-type-alias">ModelStatusCode</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#solution">solution</a><span class="tsd-signature-symbol">:</span> <a href="Solution.html" class="tsd-signature-type tsd-kind-interface">Solution</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1566">types.d.ts:1566</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2114">types.d.ts:2114</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -36,21 +38,21 @@
 <div class="tsd-comment tsd-typography"><p>Final simplex basis where available.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1572">types.d.ts:1572</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2120">types.d.ts:2120</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="modelstatus"><code class="tsd-tag">Readonly</code><span>model<wbr/>Status</span><a href="#modelstatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">modelStatus</span><span class="tsd-signature-symbol">:</span> <a href="../types/ModelStatusCode.html" class="tsd-signature-type tsd-kind-type-alias">ModelStatusCode</a></div>
 <div class="tsd-comment tsd-typography"><p>Final model status, independent of the enclosing call status.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1568">types.d.ts:1568</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2116">types.d.ts:2116</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="solution"><code class="tsd-tag">Readonly</code><span>solution</span><a href="#solution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">solution</span><span class="tsd-signature-symbol">:</span> <a href="Solution.html" class="tsd-signature-type tsd-kind-interface">Solution</a></div>
 <div class="tsd-comment tsd-typography"><p>Dense primal/dual solution buffers.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1570">types.d.ts:1570</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2118">types.d.ts:2118</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -2,414 +2,414 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/index.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/modules.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/hierarchy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/GlpsolCostRowLocation.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/HighsAnalysisLevel.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/HighsDebugLevel.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/IisStrategy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/SimplexCrashStrategy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/SimplexEdgeWeightStrategy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/SimplexScaleStrategy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/SimplexStrategy.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/enums/SolutionStyle.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/Basis.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/BasisInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/CallbackData.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/CallbackEventBase.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/CallMetadata.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/ColumnData.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/DetachedModelData.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/EncodedModel.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/FeasibilityRelaxationInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/Hessian.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HessianInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsConstants.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsDisposedError.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsError.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsErrorConstructors.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsInfeasibleSolutionBase.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsInfeasibleSolutionColumn.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsInfeasibleSolutionRow.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsLinearSolutionColumn.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsLinearSolutionRow.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsMixedIntegerLinearSolutionColumn.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsMixedIntegerLinearSolutionRow.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsReentrancyError.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsSolutionBase.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsUnsupportedOptionError.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsValidationError.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/HighsVersion.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/IisResult.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/InfoStore.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/InitOptions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/InterruptCallbackEvent.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/LinearObjectiveInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/MipSolveOutput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/Model.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/ModelData.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/ModelDimensions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/NumericVector.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/OptionDescriptor.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/OptionStore.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/PassiveCallbackEvent.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/PostsolveInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/PresolvedDimensions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RangingRecord.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RangingResult.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RawModelApi.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RawRuntimeApi.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RawStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RowData.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/RunResult.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/Solution.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SolutionInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SolveOutput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SparseEntriesInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SparseMatrix.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SparseMatrixInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/SparseSolutionInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/interfaces/UserSolutionCallbackEvent.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/BasisStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/CallbackEvent.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/CallbackEventFor.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/CallbackType.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/GenericHighsSolution.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HessianFormat.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/Highs.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsBasisStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsCallback.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsCallbackMap.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsLoaderOptions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsModelStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsOptions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsSolution.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/HighsStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/IndexInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/IndexSelection.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/InfoType.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/LegacyHighs.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/LegacyHighsOptions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/LegacyHighsSolution.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/LegacyLoaderOptions.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/MaskInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/MatrixFormat.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/ModelStatusCode.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/NumberInput.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/ObjectiveSense.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/OptionType.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/OptionValue.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/RawResult.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/SuccessfulHighsStatus.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/types/VariableType.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/variables/__objectiveSenseBrand.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 	<url>
 		<loc>https://lovasoa.github.io/highs-js/docs/functions/default.html</loc>
-		<lastmod>2026-07-23T23:33:44.008Z</lastmod>
+		<lastmod>2026-07-24T15:01:18.590Z</lastmod>
 	</url>
 </urlset>

@@ -11,11 +11,14 @@
 <li><a href="" aria-current="page">SparseMatrix</a></li></ul>
 <h1>Interface SparseMatrix</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Detached compressed sparse matrix snapshot owned by JavaScript.</p>
+<div class="tsd-comment tsd-typography"><p>Detached compressed-sparse snapshot owned by JavaScript. Its arrays obey the
+<code>SparseMatrixInput</code> layout, and the last <code>starts</code> value is the stored nonzero
+count. The properties are readonly references, but typed-array elements are
+mutable; changing them never changes the native model.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SparseMatrix</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#format">format</a><span class="tsd-signature-symbol">:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#indices">indices</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numcols">numCols</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numrows">numRows</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#starts">starts</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#values">values</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1350">types.d.ts:1350</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1576">types.d.ts:1576</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -36,45 +39,57 @@
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="format"><code class="tsd-tag">Readonly</code><span>format</span><a href="#format" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">format</span><span class="tsd-signature-symbol">:</span> <a href="../types/MatrixFormat.html" class="tsd-signature-type tsd-kind-type-alias">MatrixFormat</a></div>
-<div class="tsd-comment tsd-typography"><p>Snapshot orientation.</p>
+<div class="tsd-comment tsd-typography"><p>Orientation of this snapshot. In <code>&quot;csc&quot;</code>, <code>starts</code> groups coefficients by
+column and <code>indices</code> contains row indices. In <code>&quot;csr&quot;</code>, <code>starts</code> groups by
+row and <code>indices</code> contains column indices.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1352">types.d.ts:1352</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1582">types.d.ts:1582</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="indices"><code class="tsd-tag">Readonly</code><span>indices</span><a href="#indices" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
-<div class="tsd-comment tsd-typography"><p>Zero-based minor indices, one per nonzero.</p>
+<div class="tsd-comment tsd-typography"><p>Zero-based minor coordinate at each packed position: a row number for CSC
+or a column number for CSR. <code>indices[k]</code> identifies the coordinate of
+<code>values[k]</code>; the enclosing row/column is determined from <code>starts</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1360">types.d.ts:1360</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1605">types.d.ts:1605</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numcols"><code class="tsd-tag">Readonly</code><span>num<wbr/>Cols</span><a href="#numcols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numCols</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Number of columns in the snapshot.</p>
+<div class="tsd-comment tsd-typography"><p>Number of matrix columns. It bounds CSR <code>indices</code> values and determines the
+number of packed segments (<code>numCols</code>) when <code>format === &quot;csc&quot;</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1356">types.d.ts:1356</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1592">types.d.ts:1592</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numrows"><code class="tsd-tag">Readonly</code><span>num<wbr/>Rows</span><a href="#numrows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numRows</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Number of rows in the snapshot.</p>
+<div class="tsd-comment tsd-typography"><p>Number of matrix rows. It bounds CSC <code>indices</code> values and determines the
+number of packed segments (<code>numRows</code>) when <code>format === &quot;csr&quot;</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1354">types.d.ts:1354</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1587">types.d.ts:1587</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="starts"><code class="tsd-tag">Readonly</code><span>starts</span><a href="#starts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">starts</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
-<div class="tsd-comment tsd-typography"><p>Major-axis starts, length <code>majorDimension + 1</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Packed-segment boundaries. Segment <code>j</code> occupies positions from <code>starts[j]</code>
+inclusive to <code>starts[j + 1]</code> exclusive in both <code>indices</code> and <code>values</code>.
+Segments are columns for CSC and rows for CSR. The array begins with zero,
+is nondecreasing, and its final entry equals the two data-array lengths.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1358">types.d.ts:1358</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1599">types.d.ts:1599</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="values"><code class="tsd-tag">Readonly</code><span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">values</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span></div>
-<div class="tsd-comment tsd-typography"><p>Coefficients, one per index.</p>
+<div class="tsd-comment tsd-typography"><p>Stored coefficients parallel to <code>indices</code>. <code>values[k]</code> and <code>indices[k]</code>
+describe one coordinate in the packed segment containing position <code>k</code>.
+This typed array is detached from Wasm; mutating it changes only the
+snapshot and never the native model.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1362">types.d.ts:1362</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1612">types.d.ts:1612</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

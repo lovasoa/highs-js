@@ -11,10 +11,26 @@
 <li><a href="" aria-current="page">CallbackType</a></li></ul>
 <h1>Type Alias CallbackType</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">CallbackType</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">1</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">2</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">3</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">4</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">5</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">6</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">7</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">9</span></div>
-<div class="tsd-comment tsd-typography"><p>Stable callback channel code; compare with <code>highs.constants.callbackType</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Callback channel accepted by <code>Model.run()</code> and the raw callback methods.
+Prefer <code>highs.constants.callbackType.&lt;name&gt;</code> to numeric literals:</p>
+<ul>
+<li><code>logging</code> (<code>0</code>): native log messages</li>
+<li><code>simplexInterrupt</code> (<code>1</code>), <code>ipmInterrupt</code> (<code>2</code>), <code>mipInterrupt</code> (<code>6</code>):
+periodic solver checkpoints that expose <code>event.interrupt()</code></li>
+<li><code>mipSolution</code> (<code>3</code>): feasible MIP solutions</li>
+<li><code>mipImprovingSolution</code> (<code>4</code>): new MIP incumbents, including a detached
+<code>mip_solution</code> vector suitable for live visualization or persistence</li>
+<li><code>mipLogging</code> (<code>5</code>): MIP bounds, gap, nodes, iterations, and runtime</li>
+<li><code>mipCutPool</code> (<code>7</code>): the current detached MIP cut pool</li>
+<li><code>mipUserSolution</code> (<code>9</code>): a checkpoint that accepts <code>setSolution()</code> and
+<code>repairSolution()</code></li>
+</ul>
+<p>A channel is not guaranteed to fire for every model or solver run. For
+example, a small MIP may solve before progress or improving-solution events
+are needed. Native callback type <code>8</code> (lazy constraints) is not exposed.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1773">types.d.ts:1773</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2388">types.d.ts:2388</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

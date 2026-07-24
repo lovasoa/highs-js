@@ -11,7 +11,10 @@
 <li><a href="" aria-current="page">UserSolutionCallbackEvent</a></li></ul>
 <h1>Interface UserSolutionCallbackEvent</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>MIP user-solution event that permits submitting a candidate before return.</p>
+<div class="tsd-comment tsd-typography"><p>MIP checkpoint at which an application may submit a heuristic candidate.
+Dense candidates contain one value per current column; sparse candidates may
+specify only selected columns. HiGHS validates feasibility and may reject the
+candidate. This channel may not fire during every MIP solve.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">UserSolutionCallbackEvent</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#data">data</a><span class="tsd-signature-symbol">:</span> <a href="CallbackData.html" class="tsd-signature-type tsd-kind-interface">CallbackData</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#message">message</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#type">type</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">9</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#repairsolution-1">repairSolution</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#setsolution-1">setSolution</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">solution</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a> <span class="tsd-signature-symbol">|</span> <a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
 <section class="tsd-panel tsd-hierarchy" data-refl="761">
@@ -21,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">UserSolutionCallbackEvent</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1796">types.d.ts:1796</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2428">types.d.ts:2428</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -48,15 +51,15 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#data">data</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1785">types.d.ts:1785</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2405">types.d.ts:2405</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="message"><code class="tsd-tag">Readonly</code><span>message</span><a href="#message" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-<div class="tsd-comment tsd-typography"><p>Native log/progress message, possibly empty.</p>
+<div class="tsd-comment tsd-typography"><p>Native log/progress text. Do not assume it is non-empty or machine-parseable.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#message">message</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1783">types.d.ts:1783</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2403">types.d.ts:2403</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="type"><code class="tsd-tag">Readonly</code><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">9</span></div>
@@ -64,7 +67,7 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="CallbackEventBase.html">CallbackEventBase</a>.<a href="CallbackEventBase.html#type">type</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1781">types.d.ts:1781</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2401">types.d.ts:2401</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -74,18 +77,19 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="repairsolution-1"><span class="tsd-kind-call-signature">repairSolution</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a><a href="#repairsolution-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Asks HiGHS to repair the candidate currently exposed to this callback.</p>
+<div class="tsd-comment tsd-typography"><p>Asks HiGHS to repair the current type-9 candidate, normally after
+<code>setSolution()</code>. The repaired vector is retained natively, not returned.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1800">types.d.ts:1800</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2435">types.d.ts:2435</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setsolution"><span>set<wbr/>Solution</span><a href="#setsolution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="setsolution-1"><span class="tsd-kind-call-signature">setSolution</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">solution</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a> <span class="tsd-signature-symbol">|</span> <a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a><a href="#setsolution-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Valid only while a MIP user-solution callback is active.</p>
+<div class="tsd-comment tsd-typography"><p>Copies a dense or sparse candidate into the active callback and returns its native acceptance status.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -93,7 +97,7 @@
 <li><span><span class="tsd-kind-parameter">solution</span>: <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a> <span class="tsd-signature-symbol">|</span> <a href="SparseSolutionInput.html" class="tsd-signature-type tsd-kind-interface">SparseSolutionInput</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="RawStatus.html" class="tsd-signature-type tsd-kind-interface">RawStatus</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1798">types.d.ts:1798</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2430">types.d.ts:2430</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

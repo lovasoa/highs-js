@@ -11,12 +11,15 @@
 <li><a href="" aria-current="page">FeasibilityRelaxationInput</a></li></ul>
 <h1>Interface FeasibilityRelaxationInput</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Feasibility-relaxation penalties. Negative global or local penalties prohibit
-violation of the corresponding bound or row rather than rewarding it.</p>
+<div class="tsd-comment tsd-typography"><p>Feasibility-relaxation penalties, used as objective costs for bound/row
+violations. A positive value charges per unit of violation, zero allows a
+free violation, and a negative value prohibits that violation. Each supplied
+local vector spans its complete axis and replaces, rather than adds to, the
+corresponding global penalty entry by entry.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">FeasibilityRelaxationInput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#globallowerpenalty">globalLowerPenalty</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#globalrowpenalty">globalRowPenalty</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#globalupperpenalty">globalUpperPenalty</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#locallowerpenalty">localLowerPenalty</a><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#localrowpenalty">localRowPenalty</a><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#localupperpenalty">localUpperPenalty</a><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1749">types.d.ts:1749</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2342">types.d.ts:2342</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -40,42 +43,42 @@ violation of the corresponding bound or row rather than rewarding it.</p>
 <div class="tsd-comment tsd-typography"><p>Default penalty for violating column lower bounds.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1751">types.d.ts:1751</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2344">types.d.ts:2344</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="globalrowpenalty"><code class="tsd-tag">Readonly</code><span>global<wbr/>Row<wbr/>Penalty</span><a href="#globalrowpenalty" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">globalRowPenalty</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Default penalty for violating row bounds.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1755">types.d.ts:1755</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2348">types.d.ts:2348</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="globalupperpenalty"><code class="tsd-tag">Readonly</code><span>global<wbr/>Upper<wbr/>Penalty</span><a href="#globalupperpenalty" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">globalUpperPenalty</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Default penalty for violating column upper bounds.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1753">types.d.ts:1753</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2346">types.d.ts:2346</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="locallowerpenalty"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>local<wbr/>Lower<wbr/>Penalty</span><a href="#locallowerpenalty" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">localLowerPenalty</span><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
 <div class="tsd-comment tsd-typography"><p>Per-column lower penalties, length <code>numCols</code>; omission uses the global penalty.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1757">types.d.ts:1757</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2350">types.d.ts:2350</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="localrowpenalty"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>local<wbr/>Row<wbr/>Penalty</span><a href="#localrowpenalty" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">localRowPenalty</span><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
 <div class="tsd-comment tsd-typography"><p>Per-row penalties, length <code>numRows</code>; omission uses the global penalty.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1761">types.d.ts:1761</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2354">types.d.ts:2354</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="localupperpenalty"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>local<wbr/>Upper<wbr/>Penalty</span><a href="#localupperpenalty" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">localUpperPenalty</span><span class="tsd-signature-symbol">?:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
 <div class="tsd-comment tsd-typography"><p>Per-column upper penalties, length <code>numCols</code>; omission uses the global penalty.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1759">types.d.ts:1759</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2352">types.d.ts:2352</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

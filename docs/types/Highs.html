@@ -54,7 +54,9 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link"><span class="tsd-kind-call-signature">createModel</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">source</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/ModelData.html" class="tsd-signature-type tsd-kind-interface">ModelData</a> <span class="tsd-signature-symbol">|</span> <a href="../interfaces/EncodedModel.html" class="tsd-signature-type tsd-kind-interface">EncodedModel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/Model.html" class="tsd-signature-type tsd-kind-interface">Model</a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Creates an owned persistent instance and optionally copies/decodes its initial model.</p>
+<div class="tsd-comment tsd-typography"><p>Creates a persistent native instance and optionally loads copied structured
+data or parses in-memory LP/MPS content. The caller must eventually call
+<code>dispose()</code>; garbage collection does not release the native instance.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -62,9 +64,9 @@
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">source</span>: <a href="../interfaces/ModelData.html" class="tsd-signature-type tsd-kind-interface">ModelData</a> <span class="tsd-signature-symbol">|</span> <a href="../interfaces/EncodedModel.html" class="tsd-signature-type tsd-kind-interface">EncodedModel</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../interfaces/Model.html" class="tsd-signature-type tsd-kind-interface">Model</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L969">types.d.ts:969</a></li></ul></aside></div></li></ul></li></ul></div><aside class="tsd-sources">
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1054">types.d.ts:1054</a></li></ul></aside></div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L952">types.d.ts:952</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1033">types.d.ts:1033</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

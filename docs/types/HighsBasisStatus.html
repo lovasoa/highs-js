@@ -11,31 +11,32 @@
 <li><a href="" aria-current="page">HighsBasisStatus</a></li></ul>
 <h1>Type Alias HighsBasisStatus</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">HighsBasisStatus</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;FX&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;LB&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;BS&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;UB&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;FR&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;NB&quot;</span></div>
-<div class="tsd-comment tsd-typography"><p>Compact legacy basis labels used by the one-shot result.</p>
+<div class="tsd-comment tsd-typography"><p>Compact one-shot basis labels: fixed (<code>FX</code>), at lower bound (<code>LB</code>), basic
+(<code>BS</code>), at upper bound (<code>UB</code>), free (<code>FR</code>), or generic nonbasic (<code>NB</code>).</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type Declaration</h4>
 <ul>
 <li><span class="tsd-signature-type">&quot;FX&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Fixed</p>
+<div class="tsd-comment tsd-typography"><p>Fixed variable/row whose lower and upper bounds coincide.</p>
 </div></li>
 <li><span class="tsd-signature-type">&quot;LB&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Lower Bound</p>
+<div class="tsd-comment tsd-typography"><p>Nonbasic at the lower bound.</p>
 </div></li>
 <li><span class="tsd-signature-type">&quot;BS&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Basis</p>
+<div class="tsd-comment tsd-typography"><p>Basic variable or row slack.</p>
 </div></li>
 <li><span class="tsd-signature-type">&quot;UB&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Upper Bound</p>
+<div class="tsd-comment tsd-typography"><p>Nonbasic at the upper bound.</p>
 </div></li>
 <li><span class="tsd-signature-type">&quot;FR&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Free</p>
+<div class="tsd-comment tsd-typography"><p>Free item with no finite active bound.</p>
 </div></li>
 <li><span class="tsd-signature-type">&quot;NB&quot;</span>
-<div class="tsd-comment tsd-typography"><p>Non-Bounded</p>
+<div class="tsd-comment tsd-typography"><p>Generic nonbasic item not represented by a bound-specific label.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L687">types.d.ts:687</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L767">types.d.ts:767</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

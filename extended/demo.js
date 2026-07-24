@@ -25,8 +25,8 @@ rerunButton?.addEventListener("click", () => {
   if (cost && upper) {
     send({
       action: "mutate",
-      cost: Number(cost.value),
-      upper: Number(upper.value),
+      cost: cost.value === "" ? NaN : Number(cost.value),
+      upper: upper.value === "" ? NaN : Number(upper.value),
     });
   }
 });

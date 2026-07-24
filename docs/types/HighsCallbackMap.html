@@ -11,10 +11,24 @@
 <li><a href="" aria-current="page">HighsCallbackMap</a></li></ul>
 <h1>Type Alias HighsCallbackMap</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">HighsCallbackMap</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-type-parameter">T</span> <span class="tsd-signature-keyword">in</span> <a href="CallbackType.html" class="tsd-signature-type tsd-kind-type-alias">CallbackType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="CallbackEventFor.html" class="tsd-signature-type tsd-kind-type-alias">CallbackEventFor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">undefined</span><br/><span class="tsd-signature-symbol">}</span></div>
-<div class="tsd-comment tsd-typography"><p>Per-channel callback registry; omitted channels are not activated.</p>
-</div><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>Per-channel hooks installed for one <code>Model.run()</code> call.</p>
+<p>Use computed keys from <code>highs.constants.callbackType</code>; each key narrows its
+handler to the correct event capabilities. Omitted channels remain inactive.
+Registration is temporary: <code>run()</code> starts the selected channels, executes
+synchronously, then stops and unregisters them even if solving or a handler
+throws.</p>
+<p>Handlers must be synchronous and must not call model or raw methods. They may
+retain typed-array snapshots, update closure state, or call <code>postMessage()</code>.
+Only event controls are reentrant, and they expire when the handler returns.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-stream-mip-progress-and-stop-when-the-gap-is-good-enough">Example: Stream MIP progress and stop when the gap is good enough<a href="#example-stream-mip-progress-and-stop-when-the-gap-is-good-enough" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-3">callbacks</span><span class="hl-0">:</span><span class="hl-1"> </span><span class="hl-6">HighsCallbackMap</span><span class="hl-1"> </span><span class="hl-0">=</span><span class="hl-1"> {</span><br/><span class="hl-1">  [highs.constants.callbackType.mipImprovingSolution](</span><span class="hl-6">event</span><span class="hl-1">) {</span><br/><span class="hl-1">    worker.</span><span class="hl-4">postMessage</span><span class="hl-1">({ solution: event.data.mip_solution });</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  [highs.constants.callbackType.mipLogging](</span><span class="hl-6">event</span><span class="hl-1">) {</span><br/><span class="hl-1">    worker.</span><span class="hl-4">postMessage</span><span class="hl-1">({ gap: event.data.mip_gap });</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  [highs.constants.callbackType.mipInterrupt](</span><span class="hl-6">event</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">if</span><span class="hl-1"> ((event.data.mip_gap </span><span class="hl-0">??</span><span class="hl-1"> </span><span class="hl-3">Infinity</span><span class="hl-1">) </span><span class="hl-0">&lt;=</span><span class="hl-1"> </span><span class="hl-3">0.01</span><span class="hl-1">) event.</span><span class="hl-4">interrupt</span><span class="hl-1">();</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">};</span><br/><span class="hl-1">model.</span><span class="hl-4">run</span><span class="hl-1">(callbacks);</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1882">types.d.ts:1882</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2575">types.d.ts:2575</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

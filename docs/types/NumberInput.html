@@ -11,10 +11,14 @@
 <li><a href="" aria-current="page">NumberInput</a></li></ul>
 <h1>Type Alias NumberInput</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">NumberInput</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Float64Array</span></div>
-<div class="tsd-comment tsd-typography"><p>Dense floating-point input copied into temporary Wasm memory before return.</p>
+<div class="tsd-comment tsd-typography"><p>Numeric vector copied synchronously into temporary Wasm memory.</p>
+<p>The input never aliases native storage and may be reused or mutated as soon
+as the call returns. <code>NaN</code> is rejected. Infinity is meaningful only for
+properties that explicitly permit an unbounded value; matrix, objective, and
+Hessian coefficients should be finite.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1267">types.d.ts:1267</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1367">types.d.ts:1367</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

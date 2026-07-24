@@ -11,11 +11,22 @@
 <li><a href="" aria-current="page">ModelData</a></li></ul>
 <h1>Interface ModelData</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Complete LP, MIP, or QP model input. Every supplied array/string is copied.</p>
+<div class="tsd-comment tsd-typography"><p>Complete linear, mixed-integer, quadratic, or mixed-integer quadratic model.</p>
+<p>Columns are decision variables <code>x[j]</code>. The bounds mean
+<code>colLower[j] &lt;= x[j] &lt;= colUpper[j]</code>; rows mean
+<code>rowLower[i] &lt;= A[i]x &lt;= rowUpper[i]</code>. Use <code>-highs.infinity</code> for a missing
+lower bound and <code>highs.infinity</code> for a missing upper bound. All axis vectors
+must have exactly the documented length, dimensions must be non-negative
+signed 32-bit integers, and matrix dimensions must equal <code>numRows</code> by
+<code>numCols</code>.</p>
+<p>Omitting <code>integrality</code> makes every column continuous. Supplying it selects
+variable domains independently of whether <code>hessian</code> supplies a quadratic
+objective. Every supplied array and string is validated and copied; caller
+mutation after the call cannot change the native model.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">ModelData</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#colcost">colCost</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#collower">colLower</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#colnames">colNames</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#colupper">colUpper</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#hessian">hessian</a><span class="tsd-signature-symbol">?:</span> <a href="HessianInput.html" class="tsd-signature-type tsd-kind-interface">HessianInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#integrality">integrality</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-keyword">readonly</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#matrix">matrix</a><span class="tsd-signature-symbol">:</span> <a href="SparseMatrixInput.html" class="tsd-signature-type tsd-kind-interface">SparseMatrixInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#modelname">modelName</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numcols">numCols</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#numrows">numRows</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#offset">offset</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowlower">rowLower</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rownames">rowNames</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowupper">rowUpper</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sense">sense</a><span class="tsd-signature-symbol">?:</span> <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1394">types.d.ts:1394</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1736">types.d.ts:1736</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -45,108 +56,148 @@
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colcost"><code class="tsd-tag">Readonly</code><span>col<wbr/>Cost</span><a href="#colcost" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colCost</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Linear objective coefficients, length <code>numCols</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Linear objective coefficient for each variable, in column order. The
+linear term is <code>sum(colCost[j] * x[j])</code>, or <code>c'x</code>. The array must contain
+exactly <code>numCols</code> finite numbers. Use <code>0</code> when a variable has no linear
+objective contribution; infinity is not a substitute for a bound.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1404">types.d.ts:1404</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1769">types.d.ts:1769</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="collower"><code class="tsd-tag">Readonly</code><span>col<wbr/>Lower</span><a href="#collower" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colLower</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Column lower bounds, length <code>numCols</code>; use <code>highs.infinity</code> for infinity.</p>
+<div class="tsd-comment tsd-typography"><p>Lower bound for each variable: <code>colLower[j] &lt;= x[j]</code>. The array must have
+exactly <code>numCols</code> entries. Use <code>-highs.infinity</code> for no lower bound. A
+finite lower bound equal to <code>colUpper[j]</code> fixes the variable; normally each
+lower bound must not exceed its corresponding upper bound.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1406">types.d.ts:1406</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1776">types.d.ts:1776</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colnames"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>col<wbr/>Names</span><a href="#colnames" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colNames</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
-<div class="tsd-comment tsd-typography"><p>Optional column names, length <code>numCols</code>; duplicate/invalid names may be rejected.</p>
+<div class="tsd-comment tsd-typography"><p>Optional variable names in exact column order, with exactly <code>numCols</code>
+strings. Names are copied and later used by name lookup and serialization.
+Empty, duplicate, or format-invalid names may be rejected by HiGHS.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1420">types.d.ts:1420</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1825">types.d.ts:1825</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colupper"><code class="tsd-tag">Readonly</code><span>col<wbr/>Upper</span><a href="#colupper" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colUpper</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Column upper bounds, length <code>numCols</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Upper bound for each variable: <code>x[j] &lt;= colUpper[j]</code>. The array must have
+exactly <code>numCols</code> entries. Use <code>highs.infinity</code> for no upper bound. A finite
+upper bound equal to <code>colLower[j]</code> fixes the variable; normally each upper
+bound must not be below its corresponding lower bound.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1408">types.d.ts:1408</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1783">types.d.ts:1783</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="hessian"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>hessian</span><a href="#hessian" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">hessian</span><span class="tsd-signature-symbol">?:</span> <a href="HessianInput.html" class="tsd-signature-type tsd-kind-interface">HessianInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Optional quadratic objective; its dimension must equal <code>numCols</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Optional symmetric matrix <code>Q</code> adding <code>0.5 * x'Qx</code> to the objective. Its
+<code>dimension</code> must equal <code>numCols</code>. Omission makes the objective linear;
+supplying it is independent of <code>integrality</code>, so both may be present.
+See <code>HessianInput</code> for triangular and square storage rules.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1418">types.d.ts:1418</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1819">types.d.ts:1819</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="integrality"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>integrality</span><a href="#integrality" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">integrality</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-keyword">readonly</span> <a href="../types/VariableType.html" class="tsd-signature-type tsd-kind-type-alias">VariableType</a><span class="tsd-signature-symbol">[]</span></div>
-<div class="tsd-comment tsd-typography"><p>Optional variable types, length <code>numCols</code>; omission makes an LP/QP.</p>
+<div class="tsd-comment tsd-typography"><p>Domain code for each variable in column order. It must have exactly
+<code>numCols</code> entries, each one of <code>0</code> continuous, <code>1</code> integer, <code>2</code>
+semi-continuous, <code>3</code> semi-integer, or <code>4</code> implicit integer. Prefer named
+<code>highs.constants.variableType</code> values. Omission makes every variable
+continuous; it does not remove a supplied quadratic Hessian.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1416">types.d.ts:1416</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1812">types.d.ts:1812</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="matrix"><code class="tsd-tag">Readonly</code><span>matrix</span><a href="#matrix" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">matrix</span><span class="tsd-signature-symbol">:</span> <a href="SparseMatrixInput.html" class="tsd-signature-type tsd-kind-interface">SparseMatrixInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Constraint matrix whose dimensions must match <code>numRows</code> and <code>numCols</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Sparse coefficient matrix <code>A</code> used by every row activity <code>Ax</code>. Its
+<code>numRows</code> and <code>numCols</code> must exactly match this model. See
+<code>SparseMatrixInput</code> for the complete CSC/CSR encoding, offset, index,
+duplicate, and coefficient rules.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1414">types.d.ts:1414</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1804">types.d.ts:1804</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="modelname"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>model<wbr/>Name</span><a href="#modelname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">modelName</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
-<div class="tsd-comment tsd-typography"><p>Optional model name copied into the native instance.</p>
+<div class="tsd-comment tsd-typography"><p>Optional name for the model as a whole. It is metadata used by supported
+serializers and does not affect optimization. The string is copied.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1424">types.d.ts:1424</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1836">types.d.ts:1836</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numcols"><code class="tsd-tag">Readonly</code><span>num<wbr/>Cols</span><a href="#numcols" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numCols</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Number of columns; all column vectors must have this length.</p>
+<div class="tsd-comment tsd-typography"><p>Number of decision variables, also called columns. It must be a
+non-negative signed 32-bit integer. <code>colCost</code>, <code>colLower</code>, <code>colUpper</code>, and
+supplied <code>integrality</code>/<code>colNames</code> vectors must have exactly this length;
+<code>matrix.numCols</code> and a supplied <code>hessian.dimension</code> must equal it.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1396">types.d.ts:1396</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1743">types.d.ts:1743</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="numrows"><code class="tsd-tag">Readonly</code><span>num<wbr/>Rows</span><a href="#numrows" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">numRows</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Number of rows; all row vectors must have this length.</p>
+<div class="tsd-comment tsd-typography"><p>Number of linear constraints, also called rows. It must be a non-negative
+signed 32-bit integer. <code>rowLower</code>, <code>rowUpper</code>, and supplied <code>rowNames</code>
+vectors must have exactly this length, and <code>matrix.numRows</code> must equal it.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1398">types.d.ts:1398</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1749">types.d.ts:1749</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="offset"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>offset</span><a href="#offset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">offset</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
-<div class="tsd-comment tsd-typography"><p>Constant objective term; defaults to zero.</p>
+<div class="tsd-comment tsd-typography"><p>Constant added to the objective independently of all variable values. It
+changes the reported objective and objective-based stopping criteria but
+not which <code>x</code> is feasible. Omission means <code>0</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1402">types.d.ts:1402</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1762">types.d.ts:1762</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowlower"><code class="tsd-tag">Readonly</code><span>row<wbr/>Lower</span><a href="#rowlower" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowLower</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Row lower bounds, length <code>numRows</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Lower bound for each row activity: <code>rowLower[i] &lt;= sum(A[i,j] * x[j])</code>.
+This is a bound on the computed left-hand side <code>Ax</code>, not a variable value
+or slack. The array must have exactly <code>numRows</code> entries. Use
+<code>-highs.infinity</code> when a row has no lower bound.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1410">types.d.ts:1410</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1790">types.d.ts:1790</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rownames"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>row<wbr/>Names</span><a href="#rownames" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowNames</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
-<div class="tsd-comment tsd-typography"><p>Optional row names, length <code>numRows</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Optional constraint names in exact row order, with exactly <code>numRows</code>
+strings. Names are copied and later used by name lookup and serialization;
+empty, duplicate, or format-invalid names may be rejected.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1422">types.d.ts:1422</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1831">types.d.ts:1831</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowupper"><code class="tsd-tag">Readonly</code><span>row<wbr/>Upper</span><a href="#rowupper" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowUpper</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
-<div class="tsd-comment tsd-typography"><p>Row upper bounds, length <code>numRows</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Upper bound for each row activity: <code>sum(A[i,j] * x[j]) &lt;= rowUpper[i]</code>.
+The array must have exactly <code>numRows</code> entries. Use <code>highs.infinity</code> when a
+row has no upper bound. Equal finite lower/upper values represent an
+equality constraint.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1412">types.d.ts:1412</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1797">types.d.ts:1797</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sense"><code class="tsd-tag">Optional</code> <code class="tsd-tag">Readonly</code><span>sense</span><a href="#sense" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sense</span><span class="tsd-signature-symbol">?:</span> <a href="../types/ObjectiveSense.html" class="tsd-signature-type tsd-kind-type-alias">ObjectiveSense</a></div>
-<div class="tsd-comment tsd-typography"><p>Objective direction; defaults to minimize.</p>
+<div class="tsd-comment tsd-typography"><p>Whether HiGHS minimizes or maximizes the complete objective. Omission means
+minimize. Use <code>highs.constants.objectiveSense.minimize</code> or <code>.maximize</code>;
+plain numeric <code>1</code>/<code>-1</code> literals are deliberately not accepted by the type.
+The sense applies to the offset, linear term, and quadratic term together.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1400">types.d.ts:1400</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1756">types.d.ts:1756</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

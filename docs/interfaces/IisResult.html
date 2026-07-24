@@ -11,11 +11,16 @@
 <li><a href="" aria-current="page">IisResult</a></li></ul>
 <h1>Interface IisResult</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Irreducible-infeasible-subsystem membership and bound classifications.</p>
+<div class="tsd-comment tsd-typography"><p>Infeasible-subsystem candidate and conflict classifications. Compact index
+arrays identify retained rows/columns and have matching parallel bound-code
+arrays. Full status arrays have <code>numCols</code>/<code>numRows</code> entries. Empty compact
+arrays mean no subsystem was found, not necessarily that feasibility was
+proved. A limited computation can mark entries <code>maybeInConflict</code> and need not
+have proved irreducibility; compare codes with <code>highs.constants.iis</code>.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">IisResult</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#colbound">colBound</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#colindex">colIndex</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#colstatus">colStatus</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowbound">rowBound</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowindex">rowIndex</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rowstatus">rowStatus</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1730">types.d.ts:1730</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2320">types.d.ts:2320</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -39,42 +44,42 @@
 <div class="tsd-comment tsd-typography"><p>Bound-type code for each <code>colIndex</code> entry.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1736">types.d.ts:1736</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2326">types.d.ts:2326</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colindex"><code class="tsd-tag">Readonly</code><span>col<wbr/>Index</span><a href="#colindex" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colIndex</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Zero-based columns retained in the compact IIS result.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1732">types.d.ts:1732</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2322">types.d.ts:2322</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="colstatus"><code class="tsd-tag">Readonly</code><span>col<wbr/>Status</span><a href="#colstatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">colStatus</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Conflict-membership status for every model column.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1740">types.d.ts:1740</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2330">types.d.ts:2330</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowbound"><code class="tsd-tag">Readonly</code><span>row<wbr/>Bound</span><a href="#rowbound" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowBound</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Bound-type code for each <code>rowIndex</code> entry.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1738">types.d.ts:1738</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2328">types.d.ts:2328</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowindex"><code class="tsd-tag">Readonly</code><span>row<wbr/>Index</span><a href="#rowindex" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowIndex</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Zero-based rows retained in the compact IIS result.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1734">types.d.ts:1734</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2324">types.d.ts:2324</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rowstatus"><code class="tsd-tag">Readonly</code><span>row<wbr/>Status</span><a href="#rowstatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rowStatus</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Int32Array</span></div>
 <div class="tsd-comment tsd-typography"><p>Conflict-membership status for every model row.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1742">types.d.ts:1742</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L2332">types.d.ts:2332</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

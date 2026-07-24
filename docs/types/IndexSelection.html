@@ -11,7 +11,16 @@
 <li><a href="" aria-current="page">IndexSelection</a></li></ul>
 <h1>Type Alias IndexSelection</h1></div>
 <div class="tsd-signature"><span class="tsd-kind-type-alias">IndexSelection</span><span class="tsd-signature-symbol">:</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">from</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;range&quot;</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">to</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;set&quot;</span> <span class="tsd-signature-symbol">}</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mask&quot;</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">mask</span><span class="tsd-signature-symbol">:</span> <a href="MaskInput.html" class="tsd-signature-type tsd-kind-type-alias">MaskInput</a> <span class="tsd-signature-symbol">}</span></div>
-<div class="tsd-comment tsd-typography"><p>Zero-based row/column selection used by query, change, and deletion operations.</p>
+<div class="tsd-comment tsd-typography"><p>Selection of current zero-based rows or columns.</p>
+<p>A range is inclusive and requires <code>0 &lt;= from &lt;= to &lt; axisLength</code>. A set must
+contain valid indices in strictly increasing order. A mask has exactly
+<code>axisLength</code> entries and selects true/<code>1</code> positions. Results are ordered by
+ascending current model index for every selection kind.</p>
+<p>For bulk changes, range/set value arrays are packed with one value per
+selected item. Mask value arrays instead span the complete axis; only values
+at selected positions are consumed. For example, selecting columns 1 and 2
+with mask <code>[0, 1, 1, 0]</code> requires a four-element value array such as
+<code>[0, 20, 30, 0]</code>, not <code>[20, 30]</code>.</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type Declaration</h4>
@@ -20,15 +29,20 @@
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">from</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-<div class="tsd-comment tsd-typography"><p>First selected zero-based index.</p>
+<div class="tsd-comment tsd-typography"><p>First selected current row/column index. It is zero-based and must
+satisfy <code>0 &lt;= from &lt;= to</code>; deletion or insertion can change which model
+item occupies this index in a later call.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;range&quot;</span></h5>
-<div class="tsd-comment tsd-typography"><p>Select an inclusive contiguous range.</p>
+<div class="tsd-comment tsd-typography"><p>Selects every current axis position from <code>from</code> through <code>to</code>, including
+both endpoints. Use this when the desired rows/columns are contiguous.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">to</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-<div class="tsd-comment tsd-typography"><p>Last selected zero-based index, inclusive.</p>
+<div class="tsd-comment tsd-typography"><p>Last selected current row/column index, included in the selection. It
+must satisfy <code>from &lt;= to &lt; currentAxisLength</code>. Empty ranges are not
+represented; use an empty set if the operation supports one.</p>
 </div></li></ul></li>
 <li><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;set&quot;</span> <span class="tsd-signature-symbol">}</span>
 <div class="tsd-comment tsd-typography"><p>Indices must increase strictly, matching the stable C set operations.</p>
@@ -36,11 +50,15 @@
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">: </span><a href="IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></h5>
-<div class="tsd-comment tsd-typography"><p>Zero-based selected indices.</p>
+<div class="tsd-comment tsd-typography"><p>Zero-based current model indices in strictly increasing order, with no
+duplicates. Every value must be below the current axis length. This
+order is also the packed order expected by parallel values in bulk
+range/set mutation methods.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;set&quot;</span></h5>
-<div class="tsd-comment tsd-typography"><p>Select an explicit strictly increasing set.</p>
+<div class="tsd-comment tsd-typography"><p>Selects explicitly listed current rows/columns. Use this for a sparse,
+non-contiguous selection where a full-axis mask would be inconvenient.</p>
 </div></li></ul></li>
 <li><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;mask&quot;</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">mask</span><span class="tsd-signature-symbol">:</span> <a href="MaskInput.html" class="tsd-signature-type tsd-kind-type-alias">MaskInput</a> <span class="tsd-signature-symbol">}</span>
 <div class="tsd-comment tsd-typography"><p>Masks contain one boolean/0/1 entry per model row or column.</p>
@@ -48,14 +66,19 @@
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;mask&quot;</span></h5>
-<div class="tsd-comment tsd-typography"><p>Select positions whose mask value is true/nonzero.</p>
+<div class="tsd-comment tsd-typography"><p>Selects current axis positions whose corresponding mask entry is
+<code>true</code>/<code>1</code>; <code>false</code>/<code>0</code> entries are not selected.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">mask</span><span class="tsd-signature-symbol">: </span><a href="MaskInput.html" class="tsd-signature-type tsd-kind-type-alias">MaskInput</a></h5>
-<div class="tsd-comment tsd-typography"><p>Full-axis mask copied before the native call.</p>
+<div class="tsd-comment tsd-typography"><p>Full-axis bitmap with exactly one entry per current model row or column.
+Each entry must be exactly boolean or 0/1. Unlike range/set mutations,
+parallel mutation vectors also span the full axis rather than containing
+only selected values. For mask <code>[0, 1, 1, 0]</code>, costs might therefore be
+<code>[0, 20, 30, 0]</code>; only positions 1 and 2 are consumed.</p>
 </div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/7a427c7e553087b2d65ed0f8caf41ab5d46d2663/types.d.ts#L1464">types.d.ts:1464</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1899">types.d.ts:1899</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
