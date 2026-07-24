@@ -140,9 +140,45 @@ async function mainDemo(page, baseUrl) {
   expect(wasm.ok() && wasm.headers()["content-type"] === "application/wasm", "loads the WebAssembly runtime with the wasm MIME type");
   expect(await page.evaluate(() => crossOriginIsolated && typeof SharedArrayBuffer === "function"), "enables cross-origin isolation for shared-memory callback interruption");
 
+  const rollingPlot = await page.evaluate(async () => {
+    const { renderCallbackProgress } = await import("./visualizations.js");
+    const container = document.createElement("div");
+    Object.assign(container.style, { position: "absolute", visibility: "hidden", width: "300px", height: "360px" });
+    document.body.append(container);
+    const history = [
+      { elapsed: 0, incumbent: 100000, bound: 50000 },
+      { elapsed: 4, incumbent: 76000, bound: 60000 },
+      { elapsed: 6, incumbent: 70000, bound: 65000 },
+    ];
+    const paths = () => [...container.querySelectorAll("path")].map((path) => [...path.getAttribute("d").matchAll(/[ML]\s+(-?[\d.]+)\s+(-?[\d.]+)/g)].map((match) => [Number(match[1]), Number(match[2])]));
+    renderCallbackProgress(container, history, 12);
+    const initial = paths();
+    const svg = container.querySelector("svg");
+    const viewBox = svg.getAttribute("viewBox");
+    const labels = [...svg.querySelectorAll("text")].map((text) => {
+      const box = text.getBBox();
+      return { x: box.x, width: box.width };
+    });
+    renderCallbackProgress(container, history, 12.1);
+    const advanced = paths();
+    container.remove();
+    return { initial, advanced, labels, viewBox };
+  });
+  expect(Math.abs(rollingPlot.initial[0][0][0] + 2) < 0.2 && Math.abs(rollingPlot.initial[0][1][0] - 92) < 0.2 && rollingPlot.initial[0].at(-1)[0] === 280, "retains one predecessor on the fixed ten-second callback chart");
+  expect(rollingPlot.initial[0][1][1] === 90.5 && Math.abs(rollingPlot.initial[1][1][1] - 32.5) < 0.01, "scales the callback chart from zero to a rounded visible maximum");
+  expect(Math.abs(rollingPlot.advanced[0][1][0] - rollingPlot.initial[0][1][0] + 2.35) < 0.02, "advances callback chart time independently of new solver points");
+  expect(rollingPlot.viewBox === "0 0 300 360", "adapts the callback chart viewBox to its container");
+  expect(rollingPlot.labels.every((label) => label.x >= 0 && label.x + label.width <= 300), "keeps callback chart labels inside a narrow container");
+
   await waitForOutput(page, "lp-output");
   expect(!(await page.locator("#lp-output").evaluate((element) => element.classList.contains("error"))), "solves the legacy LP without an error");
-  expect(await page.locator("#lp-obj-val").textContent() === "16.0000", "returns the legacy LP optimum");
+  expect(await page.locator("#lp-obj-val").textContent() === "15.0000", "returns the legacy LP optimum");
+  await page.fill("#lp-input", "Maximize\n obj: 3 x + 2 y\nSubject To\n material: 2 x + y <= 9\n labor: x + 2 y <= 9\nBounds\n x >= 0\n y >= 3\nEnd");
+  await page.click("#lp-solve");
+  await page.waitForFunction(() => [...document.querySelectorAll(".bound-tag")].some((tag) => tag.textContent.includes("y ≥ 3") && tag.textContent.includes("FULL")), null, { timeout: 30000 });
+  const activeYBound = page.locator(".bound-wall").filter({ hasText: "y ≥ 3" });
+  await activeYBound.locator(".bound-tag").hover();
+  await expectText(page.locator("#lp-visual-bars .viz-narration"), /y's lower bound is active.*reduced cost/s, "explains an active variable bound on hover");
 
   for (const key of ["production", "diet", "transport", "knapsack", "facility", "qp", "grid", "ranging", "iis"]) {
     await waitForLiveSolve(page, key);
@@ -237,7 +273,7 @@ async function mainDemo(page, baseUrl) {
   expect(await page.locator("#callback-start").textContent() === "Resume search" && !(await page.locator("#callback-start").isDisabled()), "offers resume after interruption");
   await page.click("#callback-start");
   expect(Number((await page.locator("#callback-incumbent").textContent()).replaceAll(",", "")) <= pausedTour, "resumes without discarding the retained incumbent");
-  await waitForText(page.locator("#callback-state"), /Branch-and-cut/);
+  await waitForText(page.locator("#callback-state"), /Branch-and-cut|Optimality proved/);
   expect(Number((await page.locator("#callback-nodes").textContent()).replaceAll(",", "")) >= pausedNodes, "does not reset cumulative search nodes on resume");
   expect(Number.parseFloat(await page.locator("#callback-elapsed").textContent()) >= pausedElapsed, "does not reset cumulative elapsed time on resume");
   expect(await page.evaluate(() => window.__callbackMetrics.every((metrics, index, all) => index === 0 || (

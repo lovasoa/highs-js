@@ -9,7 +9,25 @@ let callbackModelReady = false;
 let callbackRunning = false;
 let callbackStartAfterReset = false;
 let callbackRestartPending = false;
+let callbackChartFrame;
+let callbackChartClock;
+let callbackChartRenderedAt = 0;
 const sharedCallbackStop = window.crossOriginIsolated && typeof SharedArrayBuffer === "function";
+
+function animateCallbackChart() {
+  if (callbackChartFrame || !callbackRunning) return;
+  const tick = (now) => {
+    callbackChartFrame = undefined;
+    if (!callbackRunning) return;
+    if (callbackChartClock && now - callbackChartRenderedAt >= 1000 / 30) {
+      const elapsed = callbackChartClock.elapsed + (now - callbackChartClock.receivedAt) / 1000;
+      renderCallbackProgress(document.getElementById("callback-progress-viz"), callbackHistory, elapsed);
+      callbackChartRenderedAt = now;
+    }
+    callbackChartFrame = requestAnimationFrame(tick);
+  };
+  callbackChartFrame = requestAnimationFrame(tick);
+}
 
 function setCallbackControls(state) {
   const start = document.getElementById("callback-start");
@@ -50,6 +68,7 @@ function updateCallbackMetrics(metrics = {}) {
     "callback-elapsed": Number.isFinite(metrics.elapsed) ? `${metrics.elapsed.toFixed(1)} s` : null,
   };
   for (const [id, text] of Object.entries(values)) if (text !== null) document.getElementById(id).textContent = text;
+  if (Number.isFinite(metrics.elapsed)) callbackChartClock = { elapsed: metrics.elapsed, receivedAt: performance.now() };
   if (Number.isFinite(metrics.incumbent) || Number.isFinite(metrics.bound)) {
     callbackHistory.push(metrics);
     if (callbackHistory.length > 180) callbackHistory.shift();
@@ -59,6 +78,8 @@ function updateCallbackMetrics(metrics = {}) {
 
 function resetCallbackDisplay() {
   callbackHistory = [];
+  callbackChartClock = undefined;
+  callbackChartRenderedAt = 0;
   callbackGraph = { size: 0, points: [], route: [] };
   for (const id of ["callback-incumbent", "callback-bound", "callback-gap", "callback-nodes", "callback-elapsed"]) document.getElementById(id).textContent = "--";
   document.getElementById("callback-progress-viz").replaceChildren(element("span", { text: "Waiting for callback events…" }));
@@ -161,6 +182,8 @@ function runCallbackSearch() {
   ensureCallbackWorker();
   callbackStopFlag = sharedCallbackStop ? new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT)) : undefined;
   callbackRunning = true;
+  if (callbackChartClock) callbackChartClock.receivedAt = performance.now();
+  animateCallbackChart();
   const state = document.getElementById("callback-state");
   state.dataset.state = "solving";
   state.textContent = "Starting the retained model…";

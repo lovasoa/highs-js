@@ -167,7 +167,7 @@
   .callback-stage h4 { margin: 0; padding: 0.8rem 1rem; border-bottom: 1px solid #dcebea; font-size: 0.72rem; }
   #callback-graph-viz { display: block; width: 100%; height: 360px; }
   #callback-progress-viz { display: grid; min-height: 360px; place-items: center; color: #718b89; font: 0.67rem var(--font-mono); }
-  #callback-progress-viz svg { width: 100%; height: auto; }
+  #callback-progress-viz svg { width: 100%; height: 100%; }
   .optimality-map svg, .sensitivity-chart svg { display: block; width: 100%; height: auto; }
   .optimality-map, .sensitivity-lens, .iis-proof { overflow: hidden; border: 1px solid #cfe1e0; border-radius: 10px; background: linear-gradient(145deg, #f4f9f8, #fff 70%); }
   .plot-grid { fill: none; stroke: #dce9e8; stroke-width: 1; }
@@ -176,11 +176,18 @@
   .pressure-wall { cursor: help; outline: none; }
   .pressure-line { stroke: #607f7d; stroke-width: var(--pressure); stroke-linecap: round; transition: stroke 180ms ease, stroke-width 180ms ease; }
   .pressure-wall.is-slack .pressure-line { stroke: #a8bfbd; stroke-dasharray: 5 7; }
-  .pressure-ghost { opacity: 0; stroke: #d45e6a; stroke-width: 2; stroke-dasharray: 6 5; transition: opacity 180ms ease; }
+  .pressure-ghost { opacity: 0; stroke: #d45e6a; stroke-width: 2; stroke-dasharray: 6 5; pointer-events: none; transition: opacity 180ms ease; }
   .pressure-wall.is-active .pressure-line, .pressure-wall:hover .pressure-line, .pressure-wall:focus .pressure-line { stroke: #b44a55; }
   .pressure-wall.is-active .pressure-ghost, .pressure-wall:hover .pressure-ghost, .pressure-wall:focus .pressure-ghost { opacity: 0.8; }
   .pressure-tag rect { fill: #fff; stroke: #b8d1cf; }
   .pressure-tag text { fill: #385553; font: 600 9px var(--font-mono); letter-spacing: 0.04em; }
+  .bound-wall { cursor: help; outline: none; }
+  .bound-line { stroke: #7ca4a1; stroke-width: 2; transition: stroke 180ms ease, stroke-width 180ms ease; }
+  .bound-wall.is-slack .bound-line { stroke: #aac3c1; stroke-dasharray: 5 7; }
+  .bound-wall.is-active .bound-line, .bound-wall:hover .bound-line, .bound-wall:focus .bound-line { stroke: #b44a55; stroke-width: 3; }
+  .bound-tag rect { fill: #fff; stroke: #b8d1cf; }
+  .bound-tag text { fill: #385553; font: 600 8px var(--font-mono); letter-spacing: 0.03em; }
+  .bound-wall.is-active .bound-tag rect, .bound-wall:hover .bound-tag rect, .bound-wall:focus .bound-tag rect { stroke: #b44a55; }
   .objective-contour { stroke: #c65360; stroke-width: 2; stroke-dasharray: 8 6; }
   .objective-direction { stroke: #c65360; stroke-width: 3; }
   .objective-direction-label { fill: #a43f49; font: 600 9px var(--font-mono); text-transform: uppercase; }

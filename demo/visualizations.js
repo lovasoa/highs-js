@@ -260,34 +260,55 @@ export function renderCallbackGraph(canvas, size, points, route = []) {
   }
 }
 
-export function renderCallbackProgress(container, history) {
+export function renderCallbackProgress(container, history, currentTime) {
   if (!container || !history.length) return;
-  const latestTime = Math.max(...history.map((point) => point.elapsed || 0));
-  history = history.filter((point) => (point.elapsed || 0) >= latestTime - 120);
-  const width = 740;
-  const height = 180;
-  const values = history.flatMap((point) => [point.incumbent, point.bound]).filter(Number.isFinite);
+  const windowSeconds = 10;
+  history = history.filter((point) => Number.isFinite(point.elapsed));
+  if (!history.length) return;
+  const latestSampleTime = Math.max(...history.map((point) => point.elapsed));
+  const latestTime = Number.isFinite(currentTime) ? Math.max(latestSampleTime, currentTime) : latestSampleTime;
+  if (latestTime > latestSampleTime) {
+    const currentPoint = { elapsed: latestTime };
+    for (const key of ["incumbent", "bound"]) currentPoint[key] = history.findLast((point) => Number.isFinite(point[key]))?.[key];
+    history = [...history, currentPoint];
+  }
+  const windowStart = latestTime - windowSeconds;
+  const visibleHistory = history.filter((point) => point.elapsed >= windowStart && point.elapsed <= latestTime);
+  const predecessor = history.filter((point) => point.elapsed < windowStart).at(-1);
+  const pathHistory = predecessor ? [predecessor, ...visibleHistory] : visibleHistory;
+  const width = container.clientWidth || 740;
+  const height = container.clientHeight || 180;
+  const values = visibleHistory.flatMap((point) => [point.incumbent, point.bound]).filter(Number.isFinite);
   if (!values.length) return;
-  const min = Math.log(Math.max(Math.min(...values), 1));
-  const max = Math.log(Math.max(...values, 1));
-  const span = Math.max(max - min, 0.01);
-  const x = (index) => 34 + index / Math.max(history.length - 1, 1) * (width - 54);
-  const y = (value) => 18 + (max - Math.log(Math.max(value, 1))) / span * (height - 44);
+  const max = Math.max(10000, Math.ceil(Math.max(...values, 0) / 10000) * 10000);
+  const top = 18;
+  const right = 20;
+  const bottom = 52;
+  const left = Math.max(42, displayNumber(max).length * 7 + 10);
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const x = (elapsed) => left + (elapsed - windowStart) / windowSeconds * plotWidth;
+  const y = (value) => top + (max - Math.max(value, 0)) / max * plotHeight;
   const pathFor = (key) => {
     let started = false;
-    return history.map((point, index) => {
+    return pathHistory.map((point) => {
       if (!Number.isFinite(point[key])) return "";
       const command = started ? "L" : "M";
       started = true;
-      return `${command} ${x(index)} ${y(point[key])}`;
+      return `${command} ${x(point.elapsed)} ${y(point[key])}`;
     }).join(" ");
   };
   container.replaceChildren(visualization(`0 0 ${width} ${height}`, "Live MIP incumbent and dual bound convergence",
-    [0, 0.5, 1].map((ratio) => svgElement("line", { x1: 34, x2: width - 20, y1: 18 + ratio * (height - 44), y2: 18 + ratio * (height - 44), stroke: "#dce9e8" })),
-    svgElement("path", { d: pathFor("bound"), fill: "none", stroke: "#7896bf", "stroke-width": 2 }),
-    svgElement("path", { d: pathFor("incumbent"), fill: "none", stroke: "#d45e6a", "stroke-width": 3 }),
-    svgText("lower bound", { class: "viz-label", x: 38, y: height - 8 }),
-    svgText("shortest tour", { class: "viz-label", x: 125, y: height - 8 })));
+    svgElement("defs", {}, svgElement("clipPath", { id: "callback-progress-window" },
+      svgElement("rect", { x: left, y: top, width: plotWidth, height: plotHeight }))),
+    [0, 0.5, 1].map((ratio) => svgElement("line", { x1: left, x2: width - right, y1: top + ratio * plotHeight, y2: top + ratio * plotHeight, stroke: "#dce9e8" })),
+    svgText(displayNumber(max), { class: "viz-label", x: left - 8, y: top + 4, "text-anchor": "end" }),
+    svgText("0", { class: "viz-label", x: left - 8, y: top + plotHeight + 4, "text-anchor": "end" }),
+    svgElement("path", { d: pathFor("bound"), fill: "none", stroke: "#7896bf", "stroke-width": 2, "clip-path": "url(#callback-progress-window)" }),
+    svgElement("path", { d: pathFor("incumbent"), fill: "none", stroke: "#d45e6a", "stroke-width": 3, "clip-path": "url(#callback-progress-window)" }),
+    svgText("lower bound", { class: "viz-label", x: left, y: height - 22 }),
+    svgText("shortest tour", { class: "viz-label", x: width - right, y: height - 22, "text-anchor": "end" }),
+    svgText("last 10 seconds", { class: "viz-label", x: width - right, y: height - 7, "text-anchor": "end" })));
 }
 
 function clipPolygon(polygon, a, b, rhs) {
@@ -315,11 +336,15 @@ function plotDomain(parsed, point = [0, 0]) {
     const values = [row.coefficients[xName], row.coefficients[yName]].filter(Boolean).map((value) => row.rhs / value);
     return values.filter(Number.isFinite).map(Math.abs);
   });
-  const extent = Math.max(1, ...scaleCandidates, ...point.map(Math.abs), ...bounds.flatMap((bound) => [bound?.lower, bound?.upper]).filter(Number.isFinite).map(Math.abs)) * 1.18;
+  const rawExtent = Math.max(1, ...scaleCandidates, ...point.map(Math.abs), ...bounds.flatMap((bound) => [bound?.lower, bound?.upper]).filter(Number.isFinite).map(Math.abs)) * 1.18;
   const minX = Math.min(0, Number.isFinite(bounds[0]?.lower) ? bounds[0].lower : 0, point[0] || 0);
   const minY = Math.min(0, Number.isFinite(bounds[1]?.lower) ? bounds[1].lower : 0, point[1] || 0);
-  const maxX = Math.max(extent, Number.isFinite(bounds[0]?.upper) ? bounds[0].upper : 0, point[0] || 0);
-  const maxY = Math.max(extent, Number.isFinite(bounds[1]?.upper) ? bounds[1].upper : 0, point[1] || 0);
+  const rawDomain = { minX, minY, maxX: rawExtent, maxY: rawExtent };
+  const polygon = feasiblePolygon(parsed, rawDomain);
+  const feasibleExtent = Math.max(1, ...polygon.flat().map(Math.abs), ...point.map(Math.abs)) * 1.5;
+  const extent = Math.min(rawExtent, feasibleExtent);
+  const maxX = Math.max(extent, point[0] || 0);
+  const maxY = Math.max(extent, point[1] || 0);
   return { minX, minY, maxX, maxY };
 }
 
@@ -397,7 +422,37 @@ export function renderOptimalityMap(container, result, parsed) {
   const { sx, sy } = geometryScale(domain);
   const narration = element("div", { class: "viz-narration", role: "status", "aria-live": "polite" },
     element("strong", { text: `Best feasible point: ${parsed.variables[0]} = ${displayNumber(point[0])}, ${parsed.variables[1]} = ${displayNumber(point[1])}` }),
-    element("span", { text: "Both walls are full. A thicker wall means one more unit is worth more objective value; hover it for the exact dual and basis status." }));
+    element("span", { text: "Hover a constraint, variable bound, or the optimum for its exact solver values and basis status." }));
+  const columnsByName = new Map(columns.map((column) => [column.Name, column]));
+  const boundMarks = parsed.variables.flatMap((name, variableIndex) => {
+    const solved = columnsByName.get(name) || columns[variableIndex] || {};
+    const bound = parsed.bounds[name] || {};
+    return [["lower", bound.lower], ["upper", bound.upper]].flatMap(([side, value]) => {
+      if (!Number.isFinite(value)) return [];
+      const isX = variableIndex === 0;
+      if ((isX && (value < domain.minX || value > domain.maxX)) || (!isX && (value < domain.minY || value > domain.maxY))) return [];
+      const slack = side === "lower" ? solved.Primal - value : value - solved.Primal;
+      const binding = Math.abs(slack) <= 1e-7;
+      const relation = side === "lower" ? "≥" : "≤";
+      const line = isX
+        ? { x1: sx(value), y1: sy(domain.minY), x2: sx(value), y2: sy(domain.maxY) }
+        : { x1: sx(domain.minX), y1: sy(value), x2: sx(domain.maxX), y2: sy(value) };
+      const labelX = isX ? sx(value) + (side === "lower" ? 50 : -50) : 645;
+      const labelY = isX ? 365 : sy(value) + (side === "lower" ? -16 : 18);
+      const label = `${name} ${relation} ${displayNumber(value)} · ${binding ? "FULL" : `${displayNumber(Math.max(0, slack))} SLACK`}`;
+      const group = focusableMark("g", { class: `bound-wall ${binding ? "is-binding" : "is-slack"}` }, `${name} ${relation} ${displayNumber(value)}`,
+        svgElement("line", { class: "bound-line", ...line }),
+        svgElement("g", { class: "bound-tag", transform: `translate(${Math.min(645, Math.max(115, labelX))} ${Math.min(375, Math.max(88, labelY))})` },
+          svgElement("rect", { x: -63, y: -13, width: 126, height: 24, rx: 12 }),
+          svgText(label, { x: 0, y: 4, "text-anchor": "middle" })));
+      bindExplanation(group, narration, () => [
+        element("strong", { text: `${name}'s ${side} bound is ${binding ? "active" : "not limiting the solution"}.` }),
+        element("span", { text: `${name} = ${displayNumber(solved.Primal)}; bound ${name} ${relation} ${displayNumber(value)}; ${displayNumber(Math.max(0, slack))} slack.` }),
+        element("span", { text: `Column status: ${statusDescription(solved.Status)} (${solved.Status || "no code"}); HiGHS reduced cost ${displayNumber(solved.Dual)}.` }),
+      ]);
+      return [group];
+    });
+  });
   const maxDual = Math.max(1e-9, ...result.Rows.map((row) => Math.abs(row.Dual || 0)));
   const wallMarks = parsed.constraintData.flatMap((row, index) => {
     const segment = lineSegment(row.coefficients[parsed.variables[0]] || 0, row.coefficients[parsed.variables[1]] || 0, row.rhs, domain);
@@ -408,7 +463,7 @@ export function renderOptimalityMap(container, result, parsed) {
     const binding = slack <= 1e-7;
     const pressure = Math.abs(solved.Dual || 0) / maxDual;
     const [[x1, y1], [x2, y2]] = segment;
-    const labelPosition = index % 2 ? 0.72 : 0.32;
+    const labelPosition = 0.9;
     const labelX = sx(x1) + (sx(x2) - sx(x1)) * labelPosition;
     const labelY = sy(y1) + (sy(y2) - sy(y1)) * labelPosition;
     const relaxedRhs = row.rhs + (solved.Status === "LB" ? -1 : 1);
@@ -441,8 +496,9 @@ export function renderOptimalityMap(container, result, parsed) {
       svgElement("marker", { id: "objective-arrow", markerWidth: 8, markerHeight: 8, refX: 6, refY: 3, orient: "auto" }, svgElement("path", { d: "M0 0L6 3L0 6Z", fill: "#c65360" }))),
     svgElement("path", { class: "plot-grid", d: "M70 70V400H710M70 334H710M198 70V400M326 70V400M454 70V400M582 70V400" }),
     polygon.length ? svgElement("polygon", { class: "feasible-region pressure-region", points: polygon.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ") }) : null,
-    wallMarks,
     objective ? svgElement("line", { class: "objective-contour", x1: sx(objective[0][0]), y1: sy(objective[0][1]), x2: sx(objective[1][0]), y2: sy(objective[1][1]) }) : null,
+    wallMarks,
+    boundMarks,
     svgElement("line", { class: "objective-direction", x1: cx, y1: cy, x2: cx + direction * objectiveVector[0] / vectorLength * 72, y2: cy - direction * objectiveVector[1] / vectorLength * 72, "marker-end": "url(#objective-arrow)" }),
     svgText("better objective", { class: "objective-direction-label", x: cx + direction * objectiveVector[0] / vectorLength * 82, y: cy - direction * objectiveVector[1] / vectorLength * 82 }),
     focusableMark("g", { class: "optimum-mark", transform: `translate(${cx} ${cy})` }, `Optimal point ${parsed.variables[0]} ${point[0]}, ${parsed.variables[1]} ${point[1]}, objective ${result.ObjectiveValue}`,

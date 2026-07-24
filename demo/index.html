@@ -87,7 +87,7 @@ console.log(result.ObjectiveValue);</pre>
 </section>
 
 <aside class="prerelease-banner">
-  <strong>Extended API preview</strong> <code>highs@1.15.3-pre.2</code> includes persistent models, MIP, QP, IIS, and ranging.
+  <strong>Extended API preview</strong> Run <code>npm install highs@next</code> to try persistent models, MIP, QP, IIS, and ranging.
   <a href="https://github.com/lovasoa/highs-js/issues/new" target="_blank" rel="noopener">Found something odd? Tell us &rarr;</a>
 </aside>
 
@@ -176,8 +176,8 @@ const x = result.Columns.x.Primal;</textarea>
        <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
  obj: 3 x + 2 y
 Subject To
- material: 2 x + y &lt;= 10
- labor: x + 2 y &lt;= 8
+ material: 2 x + y &lt;= 9
+ labor: x + 2 y &lt;= 9
 Bounds
  x &gt;= 0
  y &gt;= 0
@@ -197,7 +197,7 @@ End</textarea>
         </div>
         <div class="stat-box">
           <span class="stat-label">OPTIMAL OBJECTIVE</span>
-          <span class="stat-val" id="lp-obj-val">16.0000</span>
+          <span class="stat-val" id="lp-obj-val">15.0000</span>
         </div>
       </div>
       <h4>Why this point is optimal</h4>
