@@ -5,9 +5,20 @@ ARG NODE_VARIANT=use-compose
 FROM mcr.microsoft.com/devcontainers/javascript-node:${NODE_VARIANT}
 ARG EMSDK_VERSION
 
-# [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install cmake
+    && apt-get -y install cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Playwright Chromium and its system dependencies.
+# Uses the same tooling as the official mcr.microsoft.com/playwright image.
+# Both browsers and OS shared libraries are baked into the layer -- no
+# runtime download cost.
+ARG PLAYWRIGHT_VERSION=1.61
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+RUN npx -y playwright@${PLAYWRIGHT_VERSION} install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod -R 777 /ms-playwright
 
 # Entrypoint that sources the Emscripten environment before every command.
 # This lets callers run e.g. "docker compose run --rm tests npm run build"
