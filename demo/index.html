@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="highs-js packages the open-source HiGHS linear, mixed-integer, and convex quadratic optimization solver for Node.js and browsers">
 <title>highs-js — HiGHS for JavaScript</title>
+<script src="coi-serviceworker.js"></script>
 <link rel="stylesheet" href="demo.css">
 </head>
 <body>
@@ -579,7 +580,7 @@ model.dispose();</textarea>
   <div class="example-card">
     <div class="tech-header-line"><span>MULTI-OBJECTIVE // POLICY BEFORE ARITHMETIC</span><span>addLinearObjective()</span></div>
     <div class="problem-header">
-      <h3>Keep the grid reliable, clean, and affordable</h3>
+      <h3>Multiple ordered objectives</h3>
       <p>A heatwave dispatch model must meet electricity demand using renewable generation, gas, and imports. Three linear objectives represent policy: first prevent unserved demand, then reduce carbon, then lower operating cost. Compare strict priorities with a weighted blend to see why a single combined score can silently trade away reliability when quantities use different units.</p>
       <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#addlinearobjective"><code>Model.addLinearObjective()</code></a><a href="docs/interfaces/LinearObjectiveInput.html"><code>LinearObjectiveInput</code></a><a href="docs/interfaces/OptionStore.html#set"><code>blend_multi_objectives</code></a></p>
     </div>
@@ -604,12 +605,10 @@ model.run();
 // Compute each policy metric from colValue. A lexicographic solve does
 // not have one meaningful combined objective value.</textarea></div>
     </div>
-    <div class="visual-inputs grid-policy-controls" data-live-example="grid">
-      <label>Policy mode <select id="grid-mode"><option value="lexicographic">Strict priorities</option><option value="blended">Weighted blend</option></select></label>
-      <label>Gas capacity <input id="grid-gas-capacity" type="number" value="45" min="0" max="80" step="5"> MW</label>
-      <label>Carbon tolerance <input id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1"> t</label>
-      <label>Reliability weight <input id="grid-reliability-weight" type="number" value="50" min="0" step="10"></label>
-      <label>Carbon weight <input id="grid-carbon-weight" type="number" value="20" min="0" step="5"></label>
+    <div class="model-story" data-live-example="grid">
+      <p>During a heatwave, the grid can draw at most <input class="story-input" id="grid-gas-capacity" type="number" value="45" min="0" max="80" step="5" aria-label="Maximum gas generation"> MW from gas plants. The operator dispatches power using <select class="story-input story-select" id="grid-mode" aria-label="Objective policy"><option value="lexicographic">strict priorities</option><option value="blended">a weighted blend</option></select>.</p>
+      <p>With strict priorities, preventing blackouts comes first. The final cost optimization may accept at most <input class="story-input" id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1" aria-label="Permitted carbon degradation"> extra tonnes of carbon after finding the cleanest reliable plan.</p>
+      <p>With a weighted blend, one MWh of unmet demand counts as <input class="story-input" id="grid-reliability-weight" type="number" value="50" min="0" step="10" aria-label="Reliability objective weight"> points and one tonne of carbon counts as <input class="story-input" id="grid-carbon-weight" type="number" value="20" min="0" step="5" aria-label="Carbon objective weight"> points. A poor choice can make a blackout look cheaper than generation.</p>
     </div>
     <div class="model-state" id="grid-state">Preparing the first dispatch policy…</div>
     <div class="stat-grid">
@@ -628,13 +627,16 @@ model.run();
   <div class="example-card callback-lab">
     <div class="tech-header-line"><span>CALLBACKS // OBSERVE AND CONTROL A LIVE SEARCH</span><span>HighsCallbackMap</span></div>
     <div class="problem-header">
-      <h3>Watch branch-and-cut solve a hard conflict graph</h3>
-      <p>Hundreds of candidate projects have pairwise conflicts. Every project is a binary column, every conflict adds <code>xᵢ + xⱼ ≤ 1</code>, and the solver seeks the highest-impact compatible portfolio. Larger seeded instances are intended to keep searching for minutes, so improving solutions and bound convergence are visible instead of disappearing behind one blocking call.</p>
+      <h3>Live hooks to observe and steer the optimizer</h3>
+      <p>A dispatcher needs the shortest round trip visiting every city exactly once. Binary route choices and subtour-elimination constraints create a deliberately difficult traveling-salesperson MIP. The solver starts with a poor crossing tour, then streams genuinely shorter incumbent routes for minutes instead of hiding the search behind one blocking call.</p>
       <p class="api-reference-links"><span>API reference</span><a href="docs/types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a><a href="docs/interfaces/MipImprovingSolutionCallbackEvent.html"><code>mipImprovingSolution</code></a><a href="docs/interfaces/MipInterruptCallbackEvent.html"><code>mipInterrupt</code></a></p>
     </div>
     <div class="code-section">
       <div class="code-header"><span>Core Solving Code</span><span>callbacks are synchronous</span></div>
-      <div class="code-editor-box"><textarea id="callbacks-core-code" spellcheck="false">model.run({
+      <div class="code-editor-box"><textarea id="callbacks-core-code" spellcheck="false">// message.stopBuffer is a SharedArrayBuffer created by the UI and sent
+// to this Worker before run(); writing 1 to it does not need our event loop.
+const workerStopFlag = new Int32Array(message.stopBuffer);
+model.run({
   [highs.constants.callbackType.mipImprovingSolution](event) {
     postMessage({ type: "incumbent", solution: event.data.mip_solution });
   },
@@ -642,30 +644,33 @@ model.run();
     postMessage({ type: "metrics", gap: event.data.mip_gap });
   },
   [highs.constants.callbackType.mipInterrupt](event) {
-    if (event.data.running_time >= automaticCutoff) event.interrupt();
+    if (Atomics.load(workerStopFlag, 0) !== 0) event.interrupt();
   }
 });</textarea></div>
     </div>
-    <div class="visual-inputs callback-controls">
-      <label>Challenge size <select id="callback-size"><option value="160">160 projects · quick</option><option value="260" selected>260 projects · hard</option><option value="360">360 projects · extreme</option></select></label>
-      <label>Conflict density <select id="callback-density"><option value="0.06">6% · sparse</option><option value="0.09" selected>9% · hard</option><option value="0.13">13% · dense</option></select></label>
-      <label>Callback cutoff <select id="callback-auto-stop"><option value="0">No automatic cutoff</option><option value="15">Interrupt after 15 seconds</option><option value="60">Interrupt after 60 seconds</option></select></label>
-      <div class="btn-row"><button class="btn" id="callback-start">Launch search</button><button class="btn callback-stop" id="callback-stop" disabled>Stop now</button></div>
+    <div class="model-story callback-story">
+      <p>The dispatcher must visit <select class="story-input story-select" id="callback-size" aria-label="Number of cities"><option value="30">30 cities for a quick search</option><option value="60" selected>60 cities for a sustained search</option><option value="70">70 cities for an extreme search</option></select> and return to the depot. The initial route visits cities in their input order, intentionally leaving many crossings for HiGHS to remove.</p>
+      <p>Let branch-and-cut continue until I stop it, or ask the native callback to <select class="story-input story-select" id="callback-auto-stop" aria-label="Automatic callback cutoff"><option value="0">keep searching</option><option value="15">interrupt after 15 seconds</option><option value="60">interrupt after 60 seconds</option><option value="120">interrupt after two minutes</option></select>. Every shorter feasible tour is posted back immediately. Stop and Resume retain the model; Restart from scratch rebuilds it.</p>
+      <div class="btn-row"><button class="btn" id="callback-start">Start search</button><button class="btn callback-stop" id="callback-stop" disabled>Stop now</button><button class="btn ghost" id="callback-restart" disabled>Restart from scratch</button></div>
     </div>
     <div class="model-state" id="callback-state" data-state="ready" aria-live="polite">Choose a challenge and launch the dedicated solver Worker.</div>
+    <div class="callback-verdict" id="callback-verdict" hidden aria-live="polite">
+      <strong id="callback-verdict-title">Search ready</strong>
+      <span id="callback-verdict-detail">Launch the solver to begin.</span>
+    </div>
     <div class="stat-grid callback-stats">
-      <div class="stat-box"><span class="stat-label">BEST IMPACT</span><span class="stat-val" id="callback-incumbent">--</span></div>
-      <div class="stat-box"><span class="stat-label">BEST BOUND</span><span class="stat-val" id="callback-bound">--</span></div>
+      <div class="stat-box" id="callback-incumbent-box"><span class="stat-label" id="callback-incumbent-label">SHORTEST TOUR</span><span class="stat-val" id="callback-incumbent">--</span></div>
+      <div class="stat-box" id="callback-bound-box"><span class="stat-label" id="callback-bound-label">LOWER BOUND</span><span class="stat-val" id="callback-bound">--</span></div>
       <div class="stat-box"><span class="stat-label">MIP GAP</span><span class="stat-val" id="callback-gap">--</span></div>
       <div class="stat-box"><span class="stat-label">SEARCH NODES</span><span class="stat-val" id="callback-nodes">--</span></div>
       <div class="stat-box"><span class="stat-label">ELAPSED</span><span class="stat-val" id="callback-elapsed">--</span></div>
     </div>
     <div class="callback-stage">
-      <div><h4>Current compatible portfolio</h4><canvas id="callback-graph-viz" aria-label="Candidate projects with the current selected portfolio highlighted"></canvas></div>
-      <div><h4>Incumbent and bound convergence</h4><div id="callback-progress-viz" class="callback-progress-empty">Waiting for callback events…</div></div>
+      <div><h4 id="callback-tour-title">Current shortest tour</h4><canvas id="callback-graph-viz" aria-label="Cities connected by the current shortest tour"></canvas></div>
+      <div><h4 id="callback-progress-title">Tour length and lower bound</h4><div id="callback-progress-viz" class="callback-progress-empty">Waiting for callback events…</div></div>
     </div>
-    <div class="section-intro-note">“Stop now” terminates and recreates the dedicated Worker because synchronous Wasm cannot receive a new message during <code>run()</code>. The configured cutoff uses the callback API’s native <code>event.interrupt()</code> control.</div>
-    <div class="metadata-footer">Dedicated Web Worker • Streamed detached callback snapshots • Greedy MIP start • Native callback interruption • Manual hard stop</div>
+    <div class="section-intro-note" id="callback-interrupt-note">Preparing the callback interruption channel…</div>
+    <div class="metadata-footer">60-city asymmetric route MIP • Dedicated Web Worker • Streamed detached callback snapshots • Native callback interruption • Manual hard stop</div>
   </div>
 </section>
 

@@ -1250,23 +1250,23 @@ export interface HighsConstants {
    * (define MIP lazy constraints) exists but is intentionally excluded.
    */
   readonly callbackType: Readonly<{
-    /** General log-message callback. */
+    /** Observe native log records through `event.message` and `data.log_type`; no solver controls are available. */
     logging: 0;
-    /** Simplex interrupt polling callback. */
+    /** Inspect simplex iteration progress and optionally call `event.interrupt()`. */
     simplexInterrupt: 1;
-    /** Interior-point interrupt polling callback. */
+    /** Inspect interior-point iteration progress and optionally call `event.interrupt()`. */
     ipmInterrupt: 2;
-    /** MIP feasible-solution callback. */
+    /** Observe a feasible MIP solution and its detached full column vector. */
     mipSolution: 3;
-    /** MIP incumbent-improvement callback. */
+    /** Observe each new best feasible MIP solution and its detached full column vector. */
     mipImprovingSolution: 4;
-    /** MIP progress/logging callback. */
+    /** Observe MIP runtime, incumbent, bound, gap, node count, and LP iterations without a solution vector. */
     mipLogging: 5;
-    /** MIP interrupt polling callback. */
+    /** Inspect MIP progress and optionally call `event.interrupt()` from a synchronous stopping policy. */
     mipInterrupt: 6;
-    /** MIP cut-pool callback. */
+    /** Inspect a detached CSR snapshot of cuts currently offered by the MIP cut pool. */
     mipCutPool: 7;
-    /** MIP callback that accepts a user solution. */
+    /** Submit or repair a heuristic MIP candidate with `event.setSolution()` / `event.repairSolution()`. */
     mipUserSolution: 9;
   }>;
   /** Result codes produced by presolve. */
@@ -2366,32 +2366,67 @@ export interface NumericVector {
   readonly nonzeroIndices?: Int32Array;
 }
 
-/** Stable callback channel code; compare with `highs.constants.callbackType`. */
+/**
+ * Callback channel accepted by `Model.run()` and the raw callback methods.
+ * Prefer `highs.constants.callbackType.<name>` to numeric literals:
+ *
+ * - `logging` (`0`): native log messages
+ * - `simplexInterrupt` (`1`), `ipmInterrupt` (`2`), `mipInterrupt` (`6`):
+ *   periodic solver checkpoints that expose `event.interrupt()`
+ * - `mipSolution` (`3`): feasible MIP solutions
+ * - `mipImprovingSolution` (`4`): new MIP incumbents, including a detached
+ *   `mip_solution` vector suitable for live visualization or persistence
+ * - `mipLogging` (`5`): MIP bounds, gap, nodes, iterations, and runtime
+ * - `mipCutPool` (`7`): the current detached MIP cut pool
+ * - `mipUserSolution` (`9`): a checkpoint that accepts `setSolution()` and
+ *   `repairSolution()`
+ *
+ * A channel is not guaranteed to fire for every model or solver run. For
+ * example, a small MIP may solve before progress or improving-solution events
+ * are needed. Native callback type `8` (lazy constraints) is not exposed.
+ */
 export type CallbackType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9;
 
 /**
- * Common synchronous callback event. `message`, `data`, and all nested arrays
- * are detached copies and remain usable after return; control methods expire.
+ * Values common to every synchronous callback event.
+ *
+ * `message`, `data`, and nested typed arrays are JavaScript-owned snapshots:
+ * they remain valid after the handler returns and may be posted from a Web
+ * Worker. In contrast, control methods such as `interrupt()` and
+ * `setSolution()` modify the active native callback and expire immediately when
+ * the handler returns.
  */
 export interface CallbackEventBase<T extends CallbackType = CallbackType> {
   /** Callback channel that triggered the event. */
   readonly type: T;
-  /** Native log/progress message, possibly empty. */
+  /** Native log/progress text. Do not assume it is non-empty or machine-parseable. */
   readonly message: string;
   /** Detached snapshot of fields available for this callback channel. */
   readonly data: CallbackData;
 }
 
-/** Interrupt-capable event emitted while a solver is running. */
+/**
+ * Solver checkpoint at which JavaScript may request early termination.
+ *
+ * Calling `interrupt()` asks HiGHS to stop and normally produces model status
+ * `highs.constants.modelStatus.interrupted`. Decide from data already available
+ * in the handler, such as elapsed time or MIP gap. A separate `postMessage()`
+ * cannot update the decision while synchronous `run()` is blocking that Worker.
+ */
 export interface InterruptCallbackEvent
   extends CallbackEventBase<1 | 2 | 6> {
-  /** Valid only for simplex, IPM, and MIP interrupt callback types. */
+  /** Requests interruption of the currently executing native solve. Valid only before the handler returns. */
   interrupt(): void;
 }
 
-/** MIP user-solution event that permits submitting a candidate before return. */
+/**
+ * MIP checkpoint at which an application may submit a heuristic candidate.
+ * Dense candidates contain one value per current column; sparse candidates may
+ * specify only selected columns. HiGHS validates feasibility and may reject the
+ * candidate. This channel may not fire during every MIP solve.
+ */
 export interface UserSolutionCallbackEvent extends CallbackEventBase<9> {
-  /** Valid only while a MIP user-solution callback is active. */
+  /** Copies a dense or sparse candidate into the active callback and returns its native acceptance status. */
   setSolution(solution: NumberInput | SparseSolutionInput): RawStatus;
   /**
    * Asks HiGHS to repair the current type-9 candidate, normally after
@@ -2400,17 +2435,30 @@ export interface UserSolutionCallbackEvent extends CallbackEventBase<9> {
   repairSolution(): RawStatus;
 }
 
-/** Observation-only logging, MIP solution, progress, or cut-pool event. */
+/**
+ * Observation-only event. It intentionally has no solver control methods; copy,
+ * retain, visualize, or post its detached data without reentering the model.
+ */
 export interface PassiveCallbackEvent
   extends CallbackEventBase<0 | 3 | 4 | 5 | 7> {}
 
-/** Discriminated union of all callback event capabilities. */
+/**
+ * Discriminated union received by a handler that is not tied to one channel.
+ * Narrow on `event.type` before using channel-specific controls. A callback in
+ * `HighsCallbackMap` is usually preferable because its numeric key selects the
+ * narrower `CallbackEventFor<T>` automatically.
+ */
 export type CallbackEvent =
   | InterruptCallbackEvent
   | UserSolutionCallbackEvent
   | PassiveCallbackEvent;
 
-/** Event type corresponding to a particular callback channel code. */
+/**
+ * Event capabilities for one `CallbackType`. Interrupt channels expose only
+ * `interrupt()`, type `9` exposes solution submission, and passive channels
+ * expose no controls. This conditional type is what makes handlers in
+ * `HighsCallbackMap` channel-safe.
+ */
 export type CallbackEventFor<T extends CallbackType> =
   T extends 1 | 2 | 6
     ? InterruptCallbackEvent & {
@@ -2425,32 +2473,44 @@ export type CallbackEventFor<T extends CallbackType> =
         };
 
 /**
- * Detached callback payload; optional fields are channel-dependent. Native MIP
- * node and LP-iteration counts are int64 values and therefore use `bigint`.
+ * Detached callback payload. Fields are optional because one interface serves
+ * all channels; read only the fields documented for the active `event.type`.
+ *
+ * Channel field guide:
+ *
+ * - `logging`: `log_type`; use `event.message` for the text
+ * - simplex/IPM interrupt: the corresponding iteration count
+ * - MIP channels `3`-`7` and `9`: runtime and available objective/bound metrics
+ * - `mipSolution` and `mipImprovingSolution`: `mip_solution`
+ * - `mipCutPool`: `cut_pool`
+ *
+ * MIP node and LP-iteration counts are native int64 values represented as
+ * `bigint`. Convert them before `JSON.stringify`; structured cloning and
+ * `postMessage()` support them directly in modern runtimes.
  */
 export interface CallbackData
   extends Readonly<Record<string, unknown>> {
   /** Present only for callback type 0. */
   readonly log_type?: number;
-  /** MIP scalar fields are present only for callback types 3 through 7 and 9. */
+  /** Solver runtime in seconds, available on MIP callback channels. */
   readonly running_time?: number;
   /** Present only for callback type 1. */
   readonly simplex_iteration_count?: number;
   /** Present only for callback type 2. */
   readonly ipm_iteration_count?: number;
-  /** Current objective value when supplied by the callback channel. */
+  /** Objective of the solution associated with this event when the channel supplies one. */
   readonly objective_function_value?: number;
   /** Explored MIP node count; represented as `bigint` to preserve `HighsInt`. */
   readonly mip_node_count?: bigint;
   /** Total MIP LP iterations, preserving native integer precision. */
   readonly mip_total_lp_iterations?: bigint;
-  /** Best known feasible MIP objective bound. */
+  /** Best feasible incumbent objective. It is an upper bound for minimization and lower bound for maximization. */
   readonly mip_primal_bound?: number;
-  /** Best known dual MIP bound. */
+  /** Best proven objective bound. It is a lower bound for minimization and upper bound for maximization. */
   readonly mip_dual_bound?: number;
-  /** Current relative MIP gap. */
+  /** Relative distance between incumbent and proven bound; use it for progress displays or stopping policies. */
   readonly mip_gap?: number;
-  /** Present only for callback types 3 and 4. */
+  /** Complete detached column vector, present only for MIP solution channels `3` and `4`. */
   readonly mip_solution?: Float64Array;
   /** Present only for callback type 7. */
   readonly cut_pool?: {
@@ -2472,15 +2532,48 @@ export interface CallbackData
 }
 
 /**
- * Callback execution is synchronous. The runtime ignores ordinary return
- * values, but rejects Promises and other thenables. The `undefined` return type
- * expresses the recommended callback contract.
+ * General callback function for raw registration. Prefer `HighsCallbackMap`
+ * with `Model.run()` when possible because map handlers receive channel-specific
+ * event types.
+ *
+ * Execution is synchronous. Promises and thenables are rejected, and no model
+ * or raw API may be called reentrantly from the handler. Use only controls on
+ * the current event. For browser applications, run HiGHS in a Worker and post
+ * detached snapshots to the UI thread.
  */
 export type HighsCallback = (event: CallbackEvent) => undefined;
 
-/** Per-channel callback registry; omitted channels are not activated. */
+/**
+ * Per-channel hooks installed for one `Model.run()` call.
+ *
+ * Use computed keys from `highs.constants.callbackType`; each key narrows its
+ * handler to the correct event capabilities. Omitted channels remain inactive.
+ * Registration is temporary: `run()` starts the selected channels, executes
+ * synchronously, then stops and unregisters them even if solving or a handler
+ * throws.
+ *
+ * Handlers must be synchronous and must not call model or raw methods. They may
+ * retain typed-array snapshots, update closure state, or call `postMessage()`.
+ * Only event controls are reentrant, and they expire when the handler returns.
+ *
+ * @example Stream MIP progress and stop when the gap is good enough
+ * ```ts
+ * const callbacks: HighsCallbackMap = {
+ *   [highs.constants.callbackType.mipImprovingSolution](event) {
+ *     worker.postMessage({ solution: event.data.mip_solution });
+ *   },
+ *   [highs.constants.callbackType.mipLogging](event) {
+ *     worker.postMessage({ gap: event.data.mip_gap });
+ *   },
+ *   [highs.constants.callbackType.mipInterrupt](event) {
+ *     if ((event.data.mip_gap ?? Infinity) <= 0.01) event.interrupt();
+ *   },
+ * };
+ * model.run(callbacks);
+ * ```
+ */
 export type HighsCallbackMap = {
-  /** Synchronous handler; ordinary return values are ignored, but thenables are rejected. */
+  /** Synchronous handler for channel `T`; Promise-returning handlers are rejected. */
   readonly [T in CallbackType]?: (
     event: CallbackEventFor<T>,
   ) => undefined;
@@ -2550,10 +2643,14 @@ export interface Model {
   /** Presolves the current model synchronously and stores presolved state. */
   presolve(): CallMetadata;
   /**
-   * Runs synchronously to termination or a configured limit. Supplied handlers
-   * are registered only for this call and removed in `finally`. During a
-    * handler, only control methods on that event are reentrant; every model/raw
-    * method, including callback registration/channel methods, throws.
+   * Runs synchronously to termination, callback interruption, or a configured
+   * limit. Put long browser solves in a Web Worker so this blocking call does
+   * not freeze the UI. Supplied handlers are active only for this call and are
+   * removed in `finally`.
+   *
+   * During a handler, only controls on that event are reentrant. Every model/raw
+   * method, including queries and callback registration, throws. Event data is
+   * detached and can be retained or posted to another thread after the handler.
    */
   run(callbacks?: HighsCallbackMap): RunResult;
   /**

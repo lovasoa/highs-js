@@ -22,7 +22,7 @@ const MIME = {
   ".wasm": "application/wasm",
 };
 
-for (const file of ["highs.js", "highs.wasm", "index.html", "demo.js", "worker.js", "extended/index.html", "extended/demo.js", "extended/worker.js"]) {
+for (const file of ["highs.js", "highs.wasm", "index.html", "demo.js", "worker.js", "callback-worker.js", "coi-serviceworker.js", "extended/index.html", "extended/demo.js", "extended/worker.js"]) {
   if (!existsSync(join(DEMO_DIR, file))) {
     throw new Error(`Missing demo/${file}. Run "npm run build:demo" first.`);
   }
@@ -93,10 +93,25 @@ async function visit(page, hash) {
 
 async function mainDemo(page, baseUrl) {
   console.log("\nMain demo");
+  await page.addInitScript(() => {
+    window.__callbackMetrics = [];
+    const NativeWorker = window.Worker;
+    window.Worker = class ObservedWorker extends NativeWorker {
+      constructor(url, options) {
+        super(url, options);
+        if (String(url).includes("callback-worker.js")) {
+          this.addEventListener("message", ({ data }) => {
+            if (data?.metrics) window.__callbackMetrics.push(data.metrics);
+          });
+        }
+      }
+    };
+  });
   await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 30000 });
 
   const wasm = await page.request.get(`${baseUrl}highs.wasm`);
   expect(wasm.ok() && wasm.headers()["content-type"] === "application/wasm", "loads the WebAssembly runtime with the wasm MIME type");
+  expect(await page.evaluate(() => crossOriginIsolated && typeof SharedArrayBuffer === "function"), "enables cross-origin isolation for shared-memory callback interruption");
 
   await waitForOutput(page, "lp-output");
   expect(!(await page.locator("#lp-output").evaluate((element) => element.classList.contains("error"))), "solves the legacy LP without an error");
@@ -137,13 +152,49 @@ async function mainDemo(page, baseUrl) {
   await visit(page, "#panel-callbacks");
   await page.click("#callback-start");
   await page.waitForFunction(() => document.getElementById("callback-incumbent")?.textContent !== "--", { timeout: 30000 });
+  const initialTour = await page.locator("#callback-incumbent").textContent();
   expect(await page.locator("#callback-graph-viz").getAttribute("width") !== null, "streams a feasible incumbent through the callback Worker");
+  await page.waitForFunction((initialTour) => document.getElementById("callback-incumbent")?.textContent !== initialTour, initialTour, { timeout: 20000 });
+  expect(true, "streams a genuinely shorter incumbent tour during the search");
   await page.waitForFunction(() => document.getElementById("callback-elapsed")?.textContent !== "--", { timeout: 15000 });
   expect(await page.locator("#callback-progress-viz svg").count() === 1, "streams live MIP bound metrics while branch-and-cut runs");
+  await page.waitForTimeout(1500);
+  const rawMetricsMonotonic = await page.evaluate(() => window.__callbackMetrics.every((metrics, index, all) => {
+    if (index === 0) return true;
+    const previous = all[index - 1];
+    return metrics.elapsed >= previous.elapsed && metrics.nodes >= previous.nodes;
+  }));
+  expect(rawMetricsMonotonic, "emits monotonic elapsed time and node counts from the Worker itself");
   if (!(await page.locator("#callback-stop").isDisabled())) {
-    await page.click("#callback-stop");
-    await expectText(page.locator("#callback-state"), /Stopped immediately/, "stops a running synchronous solve by terminating its Worker");
+    await page.evaluate(() => document.getElementById("callback-stop").click());
+    expect(await page.locator("#callback-stop").textContent() === "Stopping…", "shows a loading state while interruption is pending");
+    await waitForText(page.locator("#callback-state"), /status interrupted/i);
+    await expectText(page.locator("#callback-state"), /status interrupted/i, "interrupts a running synchronous solve through an atomic callback flag");
   }
+  const pausedTour = Number((await page.locator("#callback-incumbent").textContent()).replaceAll(",", ""));
+  const pausedNodes = Number((await page.locator("#callback-nodes").textContent()).replaceAll(",", ""));
+  const pausedElapsed = Number.parseFloat(await page.locator("#callback-elapsed").textContent());
+  expect(await page.locator("#callback-start").textContent() === "Resume search" && !(await page.locator("#callback-start").isDisabled()), "offers resume after interruption");
+  await page.click("#callback-start");
+  expect(Number((await page.locator("#callback-incumbent").textContent()).replaceAll(",", "")) <= pausedTour, "resumes without discarding the retained incumbent");
+  await waitForText(page.locator("#callback-state"), /Branch-and-cut/);
+  expect(Number((await page.locator("#callback-nodes").textContent()).replaceAll(",", "")) >= pausedNodes, "does not reset cumulative search nodes on resume");
+  expect(Number.parseFloat(await page.locator("#callback-elapsed").textContent()) >= pausedElapsed, "does not reset cumulative elapsed time on resume");
+  expect(await page.evaluate(() => window.__callbackMetrics.every((metrics, index, all) => index === 0 || (
+    metrics.elapsed >= all[index - 1].elapsed && metrics.nodes >= all[index - 1].nodes
+  ))), "keeps raw Worker counters monotonic across pause and resume");
+  await page.click("#callback-restart");
+  expect(await page.locator("#callback-restart").textContent() === "Restarting…", "shows a loading state while restarting from scratch");
+  await waitForText(page.locator("#callback-state"), /Branch-and-cut/);
+  expect(Number((await page.locator("#callback-incumbent").textContent()).replaceAll(",", "")) > pausedTour, "restart rebuilds the deliberately poor initial tour");
+  await page.click("#callback-stop");
+  await waitForText(page.locator("#callback-state"), /status interrupted/i);
+  await page.selectOption("#callback-size", "30");
+  await page.click("#callback-restart");
+  await waitForText(page.locator("#callback-verdict-title"), /Optimal tour proven/i);
+  expect(await page.locator("#callback-incumbent").textContent() === await page.locator("#callback-bound").textContent(), "final optimal tour and proven bound use the same authoritative value");
+  expect(await page.locator("#callback-gap").textContent() === "0.00%", "final optimal state reports a closed MIP gap");
+  expect(await page.locator("#callback-start").textContent() === "Optimal found" && await page.locator("#callback-start").isDisabled(), "makes completed optimality visually explicit");
 
   await visit(page, "#panel-options");
   await page.waitForFunction(() => document.querySelectorAll("#opts-body tr").length > 50, { timeout: 30000 });

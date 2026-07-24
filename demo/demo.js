@@ -463,14 +463,50 @@ async function solveGridModel() {
    ══════════════════════════════════════════ */
 
 let callbackWorker;
-let callbackGraph = { size: 0, weights: [], selected: [] };
+let callbackStopFlag;
+let callbackGraph = { size: 0, points: [], route: [] };
 let callbackHistory = [];
+let callbackModelReady = false;
+let callbackRunning = false;
+let callbackStartAfterReset = false;
+let callbackRestartPending = false;
 
-function setCallbackRunning(running) {
+const callbackInterruptNote = document.getElementById("callback-interrupt-note");
+const sharedCallbackStop = window.crossOriginIsolated && typeof SharedArrayBuffer === "function";
+if (callbackInterruptNote) {
+  callbackInterruptNote.innerHTML = sharedCallbackStop
+    ? `“Stop now” writes to a <code>SharedArrayBuffer</code>. The blocked solver Worker reads that atomic flag inside <code>mipInterrupt</code> and calls <code>event.interrupt()</code>. Resume runs the same native model with its incumbent; only “Restart from scratch” disposes and rebuilds it.`
+    : `Cross-origin isolation is unavailable, so “Stop now” falls back to terminating the dedicated Worker. On HTTPS, <code>coi-serviceworker</code> normally enables shared-memory callback interruption after its first automatic reload.`;
+}
+
+function setCallbackControls(state) {
   const start = document.getElementById("callback-start");
   const stop = document.getElementById("callback-stop");
-  if (start) start.disabled = running;
-  if (stop) stop.disabled = !running;
+  const restart = document.getElementById("callback-restart");
+  const labels = {
+    initial: ["Start search", "Stop now", "Restart from scratch"],
+    building: ["Building model…", "Stop now", "Restart from scratch"],
+    running: ["Search running…", "Stop now", "Restart from scratch"],
+    stopping: ["Search running…", "Stopping…", "Restart from scratch"],
+    restarting: ["Search running…", "Stop now", "Restarting…"],
+    paused: ["Resume search", "Stop now", "Restart from scratch"],
+    finished: ["Optimal found", "Stop now", "Restart from scratch"],
+  };
+  const [startLabel, stopLabel, restartLabel] = labels[state];
+  start.textContent = startLabel;
+  stop.textContent = stopLabel;
+  restart.textContent = restartLabel;
+  start.disabled = !["initial", "paused"].includes(state);
+  stop.disabled = state !== "running";
+  restart.disabled = !["running", "paused", "finished"].includes(state);
+}
+
+function setCallbackVerdict(kind, title, detail) {
+  const verdict = document.getElementById("callback-verdict");
+  verdict.hidden = false;
+  verdict.className = `callback-verdict ${kind}`;
+  document.getElementById("callback-verdict-title").textContent = title;
+  document.getElementById("callback-verdict-detail").textContent = detail;
 }
 
 function updateCallbackMetrics(metrics = {}) {
@@ -489,25 +525,44 @@ function updateCallbackMetrics(metrics = {}) {
   }
 }
 
-function launchCallbackSearch() {
-  callbackWorker?.terminate();
+function resetCallbackDisplay() {
   callbackHistory = [];
-  callbackGraph = { size: 0, weights: [], selected: [] };
+  callbackGraph = { size: 0, points: [], route: [] };
   for (const id of ["callback-incumbent", "callback-bound", "callback-gap", "callback-nodes", "callback-elapsed"]) {
     document.getElementById(id).textContent = "--";
   }
   document.getElementById("callback-progress-viz").replaceChildren(element("span", { text: "Waiting for callback events…" }));
+  document.getElementById("callback-verdict").hidden = true;
+  document.getElementById("callback-incumbent-label").textContent = "SHORTEST TOUR";
+  document.getElementById("callback-bound-label").textContent = "LOWER BOUND";
+  document.getElementById("callback-incumbent-box").classList.remove("proven");
+  document.getElementById("callback-bound-box").classList.remove("proven");
+  document.getElementById("callback-tour-title").textContent = "Current shortest tour";
+  document.getElementById("callback-progress-title").textContent = "Tour length and lower bound";
+}
+
+function ensureCallbackWorker() {
+  if (callbackWorker) return;
+  callbackWorker = new Worker(`callback-worker.js?api=extended-1&fresh=${Date.now()}`);
   const state = document.getElementById("callback-state");
-  state.dataset.state = "solving";
-  state.textContent = "Starting a dedicated solver Worker…";
-  setCallbackRunning(true);
-  callbackWorker = new Worker("callback-worker.js");
   callbackWorker.addEventListener("message", ({ data }) => {
     if (data.type === "phase") {
       state.textContent = data.message;
       if (data.size) {
-        callbackGraph = { size: data.size, weights: data.weights || [], selected: [] };
-        renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights);
+        callbackGraph = { size: data.size, points: data.points || [], route: [] };
+        renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.points);
+      }
+      return;
+    }
+    if (data.type === "ready") {
+      callbackModelReady = true;
+      if (callbackStartAfterReset) {
+        callbackStartAfterReset = false;
+        runCallbackSearch();
+      } else {
+        state.dataset.state = "ready";
+        state.textContent = "Model rebuilt and ready to search.";
+        setCallbackControls("paused");
       }
       return;
     }
@@ -516,50 +571,128 @@ function launchCallbackSearch() {
       return;
     }
     if (data.type === "incumbent") {
-      callbackGraph.selected = data.selected || [];
-      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights, callbackGraph.selected);
+      callbackGraph.route = data.route || [];
+      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.points, callbackGraph.route);
       if (Number.isFinite(data.value)) document.getElementById("callback-incumbent").textContent = Math.round(data.value).toLocaleString();
       updateCallbackMetrics(data.metrics);
-      state.textContent = `${data.source === "greedy start" ? "Seeded" : "Improved"} incumbent: ${callbackGraph.selected.length} compatible projects.`;
+      state.textContent = `${data.source === "initial tour" ? "Seeded" : "Improved"} tour: ${Math.round(data.value).toLocaleString()} distance units.`;
       return;
     }
     if (data.type === "complete") {
-      callbackGraph.selected = data.selected || callbackGraph.selected;
-      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights, callbackGraph.selected);
+      callbackRunning = false;
+      callbackGraph.route = data.route || callbackGraph.route;
+      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.points, callbackGraph.route);
       document.getElementById("callback-incumbent").textContent = Math.round(data.value).toLocaleString();
-      if (Number.isFinite(data.gap)) document.getElementById("callback-gap").textContent = `${(data.gap * 100).toFixed(2)}%`;
+      updateCallbackMetrics(data.metrics);
+      if (callbackRestartPending) {
+        callbackRestartPending = false;
+        resetCallbackSearch(true, true);
+        return;
+      }
       state.dataset.state = "ready";
-      state.textContent = `Search ended with status ${data.status}.`;
-      setCallbackRunning(false);
+      if (data.status === "optimal") {
+        const objective = Math.round(data.value).toLocaleString();
+        state.textContent = `Optimality proved: tour and lower bound both equal ${objective}.`;
+        setCallbackVerdict("optimal", "Optimal tour proven", `HiGHS closed the MIP gap. No shorter feasible tour exists below the proven bound of ${objective}.`);
+        document.getElementById("callback-incumbent-label").textContent = "OPTIMAL TOUR";
+        document.getElementById("callback-bound-label").textContent = "PROVEN BOUND";
+        document.getElementById("callback-incumbent-box").classList.add("proven");
+        document.getElementById("callback-bound-box").classList.add("proven");
+        document.getElementById("callback-tour-title").textContent = "Proven optimal tour";
+        document.getElementById("callback-progress-title").textContent = "Optimality gap closed";
+        setCallbackControls("finished");
+      } else {
+        state.textContent = data.status === "interrupted"
+          ? "Search paused with status interrupted. Resume keeps this model and incumbent."
+          : `Search ended with status ${data.status}.`;
+        setCallbackVerdict("paused", data.status === "interrupted" ? "Search paused" : `Search ended: ${data.status}`, "The displayed tour is feasible, but optimality has not been proved. Resume to continue from this retained model.");
+        setCallbackControls("paused");
+      }
       return;
     }
     if (data.type === "error") {
       state.dataset.state = "error";
       state.textContent = data.error;
-      setCallbackRunning(false);
+      callbackRunning = false;
+      setCallbackControls(callbackModelReady ? "paused" : "initial");
     }
   });
   callbackWorker.addEventListener("error", () => {
     state.dataset.state = "error";
     state.textContent = "The callback Worker failed to load.";
-    setCallbackRunning(false);
-  });
-  callbackWorker.postMessage({
-    action: "start",
-    size: Number(document.getElementById("callback-size")?.value),
-    density: Number(document.getElementById("callback-density")?.value),
-    autoStopSeconds: Number(document.getElementById("callback-auto-stop")?.value),
+    callbackWorker = undefined;
+    callbackModelReady = false;
+    callbackRunning = false;
+    setCallbackControls("initial");
   });
 }
 
-document.getElementById("callback-start")?.addEventListener("click", launchCallbackSearch);
-document.getElementById("callback-stop")?.addEventListener("click", () => {
+function runCallbackSearch() {
+  ensureCallbackWorker();
+  callbackStopFlag = sharedCallbackStop ? new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT)) : undefined;
+  callbackRunning = true;
+  const state = document.getElementById("callback-state");
+  state.dataset.state = "solving";
+  state.textContent = "Starting the retained model…";
+  setCallbackVerdict("running", "Search in progress", "The shortest tour is only an incumbent until it meets the proven lower bound.");
+  setCallbackControls("running");
+  callbackWorker.postMessage({
+    action: "run",
+    autoStopSeconds: Number(document.getElementById("callback-auto-stop")?.value),
+    stopBuffer: callbackStopFlag?.buffer,
+  });
+}
+
+function resetCallbackSearch(startAfterReset, restarting = false) {
+  ensureCallbackWorker();
+  resetCallbackDisplay();
+  callbackModelReady = false;
+  callbackStartAfterReset = startAfterReset;
+  const state = document.getElementById("callback-state");
+  state.dataset.state = "solving";
+  state.textContent = "Building a fresh model…";
+  setCallbackControls(restarting ? "restarting" : "building");
+  callbackWorker.postMessage({
+    action: "reset",
+    size: Number(document.getElementById("callback-size")?.value),
+  });
+}
+
+function requestCallbackInterrupt(restart) {
+  const state = document.getElementById("callback-state");
+  if (callbackWorker && callbackStopFlag) {
+    callbackRestartPending = restart;
+    Atomics.store(callbackStopFlag, 0, 1);
+    Atomics.notify(callbackStopFlag, 0);
+    setCallbackControls(restart ? "restarting" : "stopping");
+    state.textContent = restart
+      ? "Stopping the current run before rebuilding from scratch…"
+      : "Interruption requested; waiting for the next MIP callback checkpoint…";
+    setCallbackVerdict("paused", restart ? "Restart pending" : "Stopping search", "Waiting for HiGHS to reach a MIP interruption checkpoint.");
+    return;
+  }
   callbackWorker?.terminate();
   callbackWorker = undefined;
-  setCallbackRunning(false);
-  const state = document.getElementById("callback-state");
-  state.dataset.state = "ready";
-  state.textContent = "Stopped immediately by terminating the dedicated Worker. The best streamed incumbent remains visible.";
+  callbackModelReady = false;
+  callbackRunning = false;
+  if (restart) resetCallbackSearch(true, true);
+  else {
+    setCallbackControls("initial");
+    state.dataset.state = "ready";
+    state.textContent = "Stopped by terminating the Worker because shared-memory interruption is unavailable. Model state was lost.";
+  }
+}
+
+document.getElementById("callback-start")?.addEventListener("click", () => {
+  if (callbackModelReady) runCallbackSearch();
+  else resetCallbackSearch(true);
+});
+document.getElementById("callback-stop")?.addEventListener("click", () => {
+  if (callbackRunning) requestCallbackInterrupt(false);
+});
+document.getElementById("callback-restart")?.addEventListener("click", () => {
+  if (callbackRunning) requestCallbackInterrupt(true);
+  else resetCallbackSearch(true, true);
 });
 
 /* ══════════════════════════════════════════

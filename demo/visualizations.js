@@ -216,7 +216,7 @@ export function renderGridDispatch(container, data) {
     ticks, legend));
 }
 
-export function renderCallbackGraph(canvas, size, weights, selected = []) {
+export function renderCallbackGraph(canvas, size, points, route = []) {
   if (!canvas) return;
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
   const bounds = canvas.getBoundingClientRect();
@@ -230,50 +230,64 @@ export function renderCallbackGraph(canvas, size, weights, selected = []) {
   context.clearRect(0, 0, width, height);
   context.fillStyle = "#f7fbfa";
   context.fillRect(0, 0, width, height);
-  const selectedSet = new Set(selected);
-  const columns = Math.ceil(Math.sqrt(size * width / height));
-  const rows = Math.ceil(size / columns);
-  const gapX = width / (columns + 1);
-  const gapY = height / (rows + 1);
+  const coordinates = points?.length === size
+    ? points.map(([x, y]) => [x * width, y * height])
+    : Array.from({ length: size }, (_, index) => [width * (0.05 + 0.9 * ((index * 47) % size) / size), height * (0.08 + 0.84 * ((index * 31) % size) / size)]);
+  if (route.length > 1) {
+    context.beginPath();
+    route.forEach((city, index) => {
+      const [x, y] = coordinates[city];
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    });
+    if (route.length === size) context.lineTo(...coordinates[route[0]]);
+    context.strokeStyle = "#d45e6a";
+    context.lineWidth = 1.7;
+    context.globalAlpha = 0.65;
+    context.stroke();
+    context.globalAlpha = 1;
+  }
   for (let index = 0; index < size; index++) {
-    const column = index % columns;
-    const row = Math.floor(index / columns);
-    const jitterX = ((index * 47) % 11 - 5) * 0.35;
-    const jitterY = ((index * 31) % 13 - 6) * 0.3;
-    const x = gapX * (column + 1) + jitterX;
-    const y = gapY * (row + 1) + jitterY;
-    const chosen = selectedSet.has(index);
-    const radius = chosen ? 3.5 + (weights?.[index] || 0) / 45 : 1.8;
+    const [x, y] = coordinates[index];
+    const radius = index === 0 ? 6 : 4;
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
-    context.fillStyle = chosen ? "#d45e6a" : "#c6d9d7";
+    context.fillStyle = index === 0 ? "#222629" : "#fff";
     context.fill();
-    if (chosen) {
-      context.strokeStyle = "#fff";
-      context.lineWidth = 1.5;
-      context.stroke();
-    }
+    context.strokeStyle = index === 0 ? "#fff" : "#7896bf";
+    context.lineWidth = 1.5;
+    context.stroke();
   }
 }
 
 export function renderCallbackProgress(container, history) {
   if (!container || !history.length) return;
+  const latestTime = Math.max(...history.map((point) => point.elapsed || 0));
+  history = history.filter((point) => (point.elapsed || 0) >= latestTime - 120);
   const width = 740;
   const height = 180;
   const values = history.flatMap((point) => [point.incumbent, point.bound]).filter(Number.isFinite);
   if (!values.length) return;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = Math.max(max - min, 1);
+  const min = Math.log(Math.max(Math.min(...values), 1));
+  const max = Math.log(Math.max(...values, 1));
+  const span = Math.max(max - min, 0.01);
   const x = (index) => 34 + index / Math.max(history.length - 1, 1) * (width - 54);
-  const y = (value) => 18 + (max - value) / span * (height - 44);
-  const pathFor = (key) => history.map((point, index) => Number.isFinite(point[key]) ? `${index ? "L" : "M"} ${x(index)} ${y(point[key])}` : "").join(" ");
+  const y = (value) => 18 + (max - Math.log(Math.max(value, 1))) / span * (height - 44);
+  const pathFor = (key) => {
+    let started = false;
+    return history.map((point, index) => {
+      if (!Number.isFinite(point[key])) return "";
+      const command = started ? "L" : "M";
+      started = true;
+      return `${command} ${x(index)} ${y(point[key])}`;
+    }).join(" ");
+  };
   container.replaceChildren(visualization(`0 0 ${width} ${height}`, "Live MIP incumbent and dual bound convergence",
     [0, 0.5, 1].map((ratio) => svgElement("line", { x1: 34, x2: width - 20, y1: 18 + ratio * (height - 44), y2: 18 + ratio * (height - 44), stroke: "#dce9e8" })),
     svgElement("path", { d: pathFor("bound"), fill: "none", stroke: "#7896bf", "stroke-width": 2 }),
     svgElement("path", { d: pathFor("incumbent"), fill: "none", stroke: "#d45e6a", "stroke-width": 3 }),
-    svgText("best bound", { class: "viz-label", x: 38, y: height - 8 }),
-    svgText("incumbent", { class: "viz-label", x: 125, y: height - 8 })));
+    svgText("lower bound", { class: "viz-label", x: 38, y: height - 8 }),
+    svgText("shortest tour", { class: "viz-label", x: 125, y: height - 8 })));
 }
 
 function clipPolygon(polygon, a, b, rhs) {

@@ -23,7 +23,7 @@
     "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && node tests/test.js && node --test tests/extended/*.test.cjs",
     "test:package": "node scripts/test-packed-package.mjs",
     "test:demo": "node scripts/test-demo.mjs",
-    "build:demo": "cp build/highs.js build/highs.wasm demo/ && npm run docs:api",
+    "build:demo": "node scripts/prepare-demo.mjs && npm run docs:api",
     "build": "./build.sh",
     "check:api": "node scripts/generate-highs-api.mjs --check",
     "docs:options": "node scripts/generate-options-docs.mjs",
