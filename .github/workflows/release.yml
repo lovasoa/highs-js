@@ -25,16 +25,14 @@ jobs:
           . ./.env
           echo "emsdk=$EMSDK_VERSION" >> "$GITHUB_OUTPUT"
           echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
-      - name: Cache CMake build
-        uses: actions/cache@v5
+      - name: Cache C++ archives
+        id: cache-archives
+        uses: actions/cache@v4
         with:
-          path: |
-            build/CMakeFiles
-            build/highs/CMakeFiles
-            build/lib
-          key: ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-cmake-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt', 'HiGHS/highs/**/*.cpp', 'HiGHS/highs/**/*.h', 'build.sh') }}
+          path: build/lib
+          key: ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-archives-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt', 'HiGHS/highs/**/*.cpp', 'HiGHS/highs/**/*.h', 'build.sh') }}
           restore-keys: |
-            ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-cmake-
+            ${{ runner.os }}-emsdk-${{ steps.versions.outputs.emsdk }}-archives-
       - uses: mymindstorm/setup-emsdk@v16
         with: { version: "${{ steps.versions.outputs.emsdk }}" }
       - uses: actions/setup-node@v6
@@ -48,6 +46,8 @@ jobs:
       - name: verify generated C API inventory
         run: npm run check:api
       - name: build
+        env:
+          HIGHS_SKIP_MAKE: ${{ steps.cache-archives.outputs.cache-hit == 'true' && '1' || '0' }}
         run: npm run build
       - name: test
         run: npm test

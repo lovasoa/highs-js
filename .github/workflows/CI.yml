@@ -30,10 +30,12 @@ jobs:
           submodules: "recursive"
       - name: Cache C++ archives
         id: cache-archives
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: build/lib
           key: ${{ runner.os }}-emsdk-${{ needs.toolchain.outputs.emsdk }}-archives-${{ hashFiles('HiGHS/**/*.cmake', 'HiGHS/**/CMakeLists.txt', 'HiGHS/highs/**/*.cpp', 'HiGHS/highs/**/*.h', 'build.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-emsdk-${{ needs.toolchain.outputs.emsdk }}-archives-
       - uses: mymindstorm/setup-emsdk@v16
         with: { version: "${{ needs.toolchain.outputs.emsdk }}" }
       - uses: actions/setup-node@v6
