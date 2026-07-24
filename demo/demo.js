@@ -24,6 +24,7 @@ import {
   renderOptimalityMap,
   renderDietViz,
   renderFacilityViz,
+  renderGridDispatch,
   renderIisPlot,
   renderIoViz,
   renderKnapsackViz,
@@ -31,6 +32,8 @@ import {
   renderProductionViz,
   renderRangingViz,
   renderTransportViz,
+  renderCallbackGraph,
+  renderCallbackProgress,
 } from "./visualizations.js";
 
 let buildMatrixExplorer;
@@ -421,6 +424,145 @@ async function solveQpModel() {
 }
 
 /* ══════════════════════════════════════════
+   TAB 5: Multiple Linear Objectives
+   ══════════════════════════════════════════ */
+
+async function solveGridModel() {
+  const revision = beginLiveSolve("grid");
+  const mode = document.getElementById("grid-mode")?.value || "lexicographic";
+  const payload = {
+    mode,
+    gasCapacity: readNumber("grid-gas-capacity", 45),
+    carbonTolerance: readNumber("grid-carbon-tolerance", 3),
+    reliabilityWeight: readNumber("grid-reliability-weight", 50),
+    carbonWeight: readNumber("grid-carbon-weight", 20),
+  };
+  if (Object.values(payload).some((value) => typeof value === "number" && (!Number.isFinite(value) || value < 0))) {
+    finishLiveSolve("grid", revision, "Grid policy values must be non-negative numbers.", true);
+    return;
+  }
+  const data = await send("multiObjectiveGrid", payload);
+  if (liveRevisions.get("grid") !== revision) return;
+  if (data.error) {
+    finishLiveSolve("grid", revision, data.error, true);
+    return;
+  }
+  finishLiveSolve("grid", revision, `${mode === "lexicographic" ? "Priority" : "Blended"} dispatch updated in ${data.elapsed} ms.`);
+  document.getElementById("grid-unserved").textContent = `${data.objectives.unserved.toFixed(1)} MWh`;
+  document.getElementById("grid-emissions").textContent = `${data.objectives.emissions.toFixed(1)} t`;
+  document.getElementById("grid-cost").textContent = `$${Math.round(data.objectives.cost).toLocaleString()}`;
+  const explanation = document.getElementById("grid-explanation");
+  if (explanation) explanation.textContent = mode === "lexicographic"
+    ? `Reliability is optimized first. Carbon may degrade by at most ${payload.carbonTolerance} t while cost is reduced.`
+    : `All units are mixed into one score. At reliability weight ${payload.reliabilityWeight}, the optimizer may prefer an outage over expensive generation.`;
+  renderGridDispatch(document.getElementById("grid-viz"), data);
+}
+
+/* ══════════════════════════════════════════
+   TAB 6: Streaming MIP Callbacks
+   ══════════════════════════════════════════ */
+
+let callbackWorker;
+let callbackGraph = { size: 0, weights: [], selected: [] };
+let callbackHistory = [];
+
+function setCallbackRunning(running) {
+  const start = document.getElementById("callback-start");
+  const stop = document.getElementById("callback-stop");
+  if (start) start.disabled = running;
+  if (stop) stop.disabled = !running;
+}
+
+function updateCallbackMetrics(metrics = {}) {
+  const values = {
+    "callback-incumbent": Number.isFinite(metrics.incumbent) ? Math.round(metrics.incumbent).toLocaleString() : null,
+    "callback-bound": Number.isFinite(metrics.bound) ? Math.round(metrics.bound).toLocaleString() : null,
+    "callback-gap": Number.isFinite(metrics.gap) ? `${(metrics.gap * 100).toFixed(2)}%` : null,
+    "callback-nodes": Number.isFinite(metrics.nodes) ? Math.round(metrics.nodes).toLocaleString() : null,
+    "callback-elapsed": Number.isFinite(metrics.elapsed) ? `${metrics.elapsed.toFixed(1)} s` : null,
+  };
+  for (const [id, text] of Object.entries(values)) if (text !== null) document.getElementById(id).textContent = text;
+  if (Number.isFinite(metrics.incumbent) || Number.isFinite(metrics.bound)) {
+    callbackHistory.push(metrics);
+    if (callbackHistory.length > 180) callbackHistory.shift();
+    renderCallbackProgress(document.getElementById("callback-progress-viz"), callbackHistory);
+  }
+}
+
+function launchCallbackSearch() {
+  callbackWorker?.terminate();
+  callbackHistory = [];
+  callbackGraph = { size: 0, weights: [], selected: [] };
+  for (const id of ["callback-incumbent", "callback-bound", "callback-gap", "callback-nodes", "callback-elapsed"]) {
+    document.getElementById(id).textContent = "--";
+  }
+  document.getElementById("callback-progress-viz").replaceChildren(element("span", { text: "Waiting for callback events…" }));
+  const state = document.getElementById("callback-state");
+  state.dataset.state = "solving";
+  state.textContent = "Starting a dedicated solver Worker…";
+  setCallbackRunning(true);
+  callbackWorker = new Worker("callback-worker.js");
+  callbackWorker.addEventListener("message", ({ data }) => {
+    if (data.type === "phase") {
+      state.textContent = data.message;
+      if (data.size) {
+        callbackGraph = { size: data.size, weights: data.weights || [], selected: [] };
+        renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights);
+      }
+      return;
+    }
+    if (data.type === "metrics") {
+      updateCallbackMetrics(data.metrics);
+      return;
+    }
+    if (data.type === "incumbent") {
+      callbackGraph.selected = data.selected || [];
+      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights, callbackGraph.selected);
+      if (Number.isFinite(data.value)) document.getElementById("callback-incumbent").textContent = Math.round(data.value).toLocaleString();
+      updateCallbackMetrics(data.metrics);
+      state.textContent = `${data.source === "greedy start" ? "Seeded" : "Improved"} incumbent: ${callbackGraph.selected.length} compatible projects.`;
+      return;
+    }
+    if (data.type === "complete") {
+      callbackGraph.selected = data.selected || callbackGraph.selected;
+      renderCallbackGraph(document.getElementById("callback-graph-viz"), callbackGraph.size, callbackGraph.weights, callbackGraph.selected);
+      document.getElementById("callback-incumbent").textContent = Math.round(data.value).toLocaleString();
+      if (Number.isFinite(data.gap)) document.getElementById("callback-gap").textContent = `${(data.gap * 100).toFixed(2)}%`;
+      state.dataset.state = "ready";
+      state.textContent = `Search ended with status ${data.status}.`;
+      setCallbackRunning(false);
+      return;
+    }
+    if (data.type === "error") {
+      state.dataset.state = "error";
+      state.textContent = data.error;
+      setCallbackRunning(false);
+    }
+  });
+  callbackWorker.addEventListener("error", () => {
+    state.dataset.state = "error";
+    state.textContent = "The callback Worker failed to load.";
+    setCallbackRunning(false);
+  });
+  callbackWorker.postMessage({
+    action: "start",
+    size: Number(document.getElementById("callback-size")?.value),
+    density: Number(document.getElementById("callback-density")?.value),
+    autoStopSeconds: Number(document.getElementById("callback-auto-stop")?.value),
+  });
+}
+
+document.getElementById("callback-start")?.addEventListener("click", launchCallbackSearch);
+document.getElementById("callback-stop")?.addEventListener("click", () => {
+  callbackWorker?.terminate();
+  callbackWorker = undefined;
+  setCallbackRunning(false);
+  const state = document.getElementById("callback-state");
+  state.dataset.state = "ready";
+  state.textContent = "Stopped immediately by terminating the dedicated Worker. The best streamed incumbent remains visible.";
+});
+
+/* ══════════════════════════════════════════
    TAB 5: Ranging
    ══════════════════════════════════════════ */
 
@@ -680,6 +822,7 @@ const liveSolvers = {
   knapsack: solveMipModel,
   facility: solveFacilityModel,
   qp: solveQpModel,
+  grid: solveGridModel,
   ranging: solveRangingModel,
   iis: solveIisModel,
 };
@@ -687,7 +830,7 @@ const liveTimers = new Map();
 
 function scheduleLiveSolve(key) {
   clearTimeout(liveTimers.get(key));
-  liveTimers.set(key, setTimeout(() => runLiveSolve(key), 350));
+  liveTimers.set(key, setTimeout(() => runLiveSolve(key), 5));
 }
 
 async function runLiveSolve(key) {
@@ -712,7 +855,7 @@ iisLP?.addEventListener("input", () => scheduleLiveSolve("iis"));
 
 (async function initializeDemo() {
   if (defaultLP) await solveLPFormat();
-  for (const key of ["production", "diet", "transport", "knapsack", "facility", "qp", "ranging", "iis"]) {
+  for (const key of ["production", "diet", "transport", "knapsack", "facility", "qp", "grid", "ranging", "iis"]) {
     await runLiveSolve(key);
   }
   await loadOptions();

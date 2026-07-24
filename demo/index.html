@@ -118,13 +118,15 @@ console.log(result.ObjectiveValue);</pre>
       </div>
     </div>
     <a class="nav-item nav-item-root" href="#panel-qp"><span class="nav-marker">04</span><span class="nav-copy"><strong>Quadratic objectives</strong><small>passHessian()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-multiobjective"><span class="nav-marker">05</span><span class="nav-copy"><strong>Decision priorities</strong><small>addLinearObjective()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-callbacks"><span class="nav-marker">06</span><span class="nav-copy"><strong>Live MIP search</strong><small>HighsCallbackMap</small></span></a>
   </div>
   <div class="nav-group">
     <div class="nav-group-label"><span aria-hidden="true"></span><strong>Inspect and exchange</strong></div>
-    <a class="nav-item nav-item-root" href="#panel-ranging"><span class="nav-marker">05</span><span class="nav-copy"><strong>Sensitivity</strong><small>getRanging()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-options"><span class="nav-marker">06</span><span class="nav-copy"><strong>Solver options</strong><small>options.describe()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-iis"><span class="nav-marker">07</span><span class="nav-copy"><strong>Infeasibility</strong><small>getIis()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-io"><span class="nav-marker">08</span><span class="nav-copy"><strong>Model exchange</strong><small>LP · MPS · export</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-ranging"><span class="nav-marker">07</span><span class="nav-copy"><strong>Sensitivity</strong><small>getRanging()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-options"><span class="nav-marker">08</span><span class="nav-copy"><strong>Solver options</strong><small>options.describe()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-iis"><span class="nav-marker">09</span><span class="nav-copy"><strong>Infeasibility</strong><small>getIis()</small></span></a>
+    <a class="nav-item nav-item-root" href="#panel-io"><span class="nav-marker">10</span><span class="nav-copy"><strong>Model exchange</strong><small>LP · MPS · export</small></span></a>
   </div>
 </nav>
 
@@ -139,7 +141,7 @@ console.log(result.ObjectiveValue);</pre>
     <div class="problem-header">
       <h3>Solve a model from LP text</h3>
       <p>Use this entry point when a model already exists in CPLEX LP format, or when generating readable model text is simpler than assembling sparse arrays. <code>solve()</code> parses and solves the text in one call, then returns a name-keyed result with the objective, column values, row values, duals, and basis statuses. It reparses the model on every call; use a persistent model for repeated solves or incremental changes.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/types/LegacyHighs.html#solve"><code>LegacyHighs.solve()</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs</code></a><a href="docs/types/LegacyHighs.html#solve"><code>LegacyHighs.solve()</code></a><a href="docs/types/LegacyHighsSolution.html"><code>LegacyHighsSolution</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -231,7 +233,7 @@ End</textarea>
     <div class="problem-header">
       <h3 id="build-title">Production Planning Optimization</h3>
       <p id="build-explain">Use a persistent model when an application builds models from data, changes coefficients or bounds, or solves the same structure repeatedly. This production example maximizes revenue under capacity constraints and passes the constraint matrix in compressed sparse column (CSC) form.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs.createModel()</code></a><a href="docs/interfaces/Model.html#passmodel"><code>Model.passModel()</code></a><a href="docs/interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs.createModel()</code></a><a href="docs/interfaces/Model.html#passmodel"><code>Model.passModel()</code></a><a href="docs/interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <div class="section-intro-note">The model lifecycle and CSC representation below apply to all three examples. Each model then has its own visualization and solve result.</div>
@@ -354,7 +356,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3 id="mip-title">0/1 Knapsack Discrete Optimization</h3>
       <p id="mip-explain">Use integer or binary variables when decisions represent indivisible quantities, selections, or on/off choices. This knapsack model chooses items without exceeding capacity; HiGHS solves it as a mixed-integer linear program using branch-and-cut, and reports a bound-based MIP gap when optimality has not yet been proven.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/ModelData.html#integrality"><code>ModelData.integrality</code></a><a href="docs/interfaces/HighsConstants.html#variabletype"><code>HighsConstants.variableType</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/ModelData.html#integrality"><code>ModelData.integrality</code></a><a href="docs/interfaces/HighsConstants.html#variabletype"><code>HighsConstants.variableType</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -479,7 +481,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Markowitz Portfolio Risk Minimization</h3>
       <p>Use a convex quadratic program when cost or risk depends on interactions between continuous decisions, such as portfolio covariance or least-squares penalties. This model minimizes portfolio variance while meeting a target return. HiGHS evaluates <code>½xᵀQx + cᵀx</code>, so <code>Q</code> is twice the covariance matrix here. The Hessian must have the correct semidefinite sign for the objective sense; HiGHS does not solve non-convex QP or mixed-integer QP.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#passhessian"><code>Model.passHessian()</code></a><a href="docs/interfaces/HessianInput.html"><code>HessianInput</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#passhessian"><code>Model.passHessian()</code></a><a href="docs/interfaces/HessianInput.html"><code>HessianInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <div class="sparse-explorer" id="qp-matrix-explorer" aria-label="Interactive Hessian storage explanation"></div>
@@ -572,6 +574,101 @@ model.dispose();</textarea>
   </div>
 </section>
 
+<!-- ═══════════ TAB 5: MULTIPLE OBJECTIVES ═══════════ -->
+<section class="tab-panel" id="panel-multiobjective">
+  <div class="example-card">
+    <div class="tech-header-line"><span>MULTI-OBJECTIVE // POLICY BEFORE ARITHMETIC</span><span>addLinearObjective()</span></div>
+    <div class="problem-header">
+      <h3>Keep the grid reliable, clean, and affordable</h3>
+      <p>A heatwave dispatch model must meet electricity demand using renewable generation, gas, and imports. Three linear objectives represent policy: first prevent unserved demand, then reduce carbon, then lower operating cost. Compare strict priorities with a weighted blend to see why a single combined score can silently trade away reliability when quantities use different units.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#addlinearobjective"><code>Model.addLinearObjective()</code></a><a href="docs/interfaces/LinearObjectiveInput.html"><code>LinearObjectiveInput</code></a><a href="docs/interfaces/OptionStore.html#set"><code>blend_multi_objectives</code></a></p>
+    </div>
+    <div class="code-section">
+      <div class="code-header"><span>Core Solving Code</span><span>three explicit policies</span></div>
+      <div class="code-editor-box"><textarea id="multiobjective-core-code" spellcheck="false">model.options.set("blend_multi_objectives", false);
+
+model.addLinearObjective({
+  coefficients: unservedEnergy, weight: 1, priority: 300,
+  absoluteTolerance: 0, relativeTolerance: 0, offset: 0
+});
+model.addLinearObjective({
+  coefficients: carbon, weight: 1, priority: 200,
+  absoluteTolerance: carbonTolerance, relativeTolerance: 0, offset: 0
+});
+model.addLinearObjective({
+  coefficients: operatingCost, weight: 1, priority: 100,
+  absoluteTolerance: 0, relativeTolerance: 0, offset: 0
+});
+
+model.run();
+// Compute each policy metric from colValue. A lexicographic solve does
+// not have one meaningful combined objective value.</textarea></div>
+    </div>
+    <div class="visual-inputs grid-policy-controls" data-live-example="grid">
+      <label>Policy mode <select id="grid-mode"><option value="lexicographic">Strict priorities</option><option value="blended">Weighted blend</option></select></label>
+      <label>Gas capacity <input id="grid-gas-capacity" type="number" value="45" min="0" max="80" step="5"> MW</label>
+      <label>Carbon tolerance <input id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1"> t</label>
+      <label>Reliability weight <input id="grid-reliability-weight" type="number" value="50" min="0" step="10"></label>
+      <label>Carbon weight <input id="grid-carbon-weight" type="number" value="20" min="0" step="5"></label>
+    </div>
+    <div class="model-state" id="grid-state">Preparing the first dispatch policy…</div>
+    <div class="stat-grid">
+      <div class="stat-box"><span class="stat-label">UNSERVED ENERGY</span><span class="stat-val" id="grid-unserved">--</span></div>
+      <div class="stat-box"><span class="stat-label">EMISSIONS</span><span class="stat-val" id="grid-emissions">--</span></div>
+      <div class="stat-box"><span class="stat-label">OPERATING COST</span><span class="stat-val" id="grid-cost">--</span></div>
+    </div>
+    <div class="model-viz" id="grid-viz"><div class="viz-loading">Preparing dispatch chart…</div></div>
+    <div class="section-intro-note" id="grid-explanation">Strict priorities protect reliability regardless of the monetary and carbon scales.</div>
+    <div class="metadata-footer">Continuous dispatch LP • Three auxiliary linear objectives • Explicit blended/lexicographic mode • Per-objective tolerance</div>
+  </div>
+</section>
+
+<!-- ═══════════ TAB 6: CALLBACKS ═══════════ -->
+<section class="tab-panel" id="panel-callbacks">
+  <div class="example-card callback-lab">
+    <div class="tech-header-line"><span>CALLBACKS // OBSERVE AND CONTROL A LIVE SEARCH</span><span>HighsCallbackMap</span></div>
+    <div class="problem-header">
+      <h3>Watch branch-and-cut solve a hard conflict graph</h3>
+      <p>Hundreds of candidate projects have pairwise conflicts. Every project is a binary column, every conflict adds <code>xᵢ + xⱼ ≤ 1</code>, and the solver seeks the highest-impact compatible portfolio. Larger seeded instances are intended to keep searching for minutes, so improving solutions and bound convergence are visible instead of disappearing behind one blocking call.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a><a href="docs/interfaces/MipImprovingSolutionCallbackEvent.html"><code>mipImprovingSolution</code></a><a href="docs/interfaces/MipInterruptCallbackEvent.html"><code>mipInterrupt</code></a></p>
+    </div>
+    <div class="code-section">
+      <div class="code-header"><span>Core Solving Code</span><span>callbacks are synchronous</span></div>
+      <div class="code-editor-box"><textarea id="callbacks-core-code" spellcheck="false">model.run({
+  [highs.constants.callbackType.mipImprovingSolution](event) {
+    postMessage({ type: "incumbent", solution: event.data.mip_solution });
+  },
+  [highs.constants.callbackType.mipLogging](event) {
+    postMessage({ type: "metrics", gap: event.data.mip_gap });
+  },
+  [highs.constants.callbackType.mipInterrupt](event) {
+    if (event.data.running_time >= automaticCutoff) event.interrupt();
+  }
+});</textarea></div>
+    </div>
+    <div class="visual-inputs callback-controls">
+      <label>Challenge size <select id="callback-size"><option value="160">160 projects · quick</option><option value="260" selected>260 projects · hard</option><option value="360">360 projects · extreme</option></select></label>
+      <label>Conflict density <select id="callback-density"><option value="0.06">6% · sparse</option><option value="0.09" selected>9% · hard</option><option value="0.13">13% · dense</option></select></label>
+      <label>Callback cutoff <select id="callback-auto-stop"><option value="0">No automatic cutoff</option><option value="15">Interrupt after 15 seconds</option><option value="60">Interrupt after 60 seconds</option></select></label>
+      <div class="btn-row"><button class="btn" id="callback-start">Launch search</button><button class="btn callback-stop" id="callback-stop" disabled>Stop now</button></div>
+    </div>
+    <div class="model-state" id="callback-state" data-state="ready" aria-live="polite">Choose a challenge and launch the dedicated solver Worker.</div>
+    <div class="stat-grid callback-stats">
+      <div class="stat-box"><span class="stat-label">BEST IMPACT</span><span class="stat-val" id="callback-incumbent">--</span></div>
+      <div class="stat-box"><span class="stat-label">BEST BOUND</span><span class="stat-val" id="callback-bound">--</span></div>
+      <div class="stat-box"><span class="stat-label">MIP GAP</span><span class="stat-val" id="callback-gap">--</span></div>
+      <div class="stat-box"><span class="stat-label">SEARCH NODES</span><span class="stat-val" id="callback-nodes">--</span></div>
+      <div class="stat-box"><span class="stat-label">ELAPSED</span><span class="stat-val" id="callback-elapsed">--</span></div>
+    </div>
+    <div class="callback-stage">
+      <div><h4>Current compatible portfolio</h4><canvas id="callback-graph-viz" aria-label="Candidate projects with the current selected portfolio highlighted"></canvas></div>
+      <div><h4>Incumbent and bound convergence</h4><div id="callback-progress-viz" class="callback-progress-empty">Waiting for callback events…</div></div>
+    </div>
+    <div class="section-intro-note">“Stop now” terminates and recreates the dedicated Worker because synchronous Wasm cannot receive a new message during <code>run()</code>. The configured cutoff uses the callback API’s native <code>event.interrupt()</code> control.</div>
+    <div class="metadata-footer">Dedicated Web Worker • Streamed detached callback snapshots • Greedy MIP start • Native callback interruption • Manual hard stop</div>
+  </div>
+</section>
+
 <!-- ═══════════ TAB 5: RANGING ═══════════ -->
 <section class="tab-panel" id="panel-ranging">
   <div class="example-card">
@@ -583,7 +680,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Objective Cost &amp; Constraint Sensitivity</h3>
       <p>Use ranging after an LP solve to ask how far one objective coefficient or row bound can move while the current optimal simplex basis remains optimal. HiGHS reports independent up/down ranges for column costs and row or column bounds; these are local, one-at-a-time basis-stability intervals, not guarantees for simultaneous changes. Ranging requires an optimal LP basis and is not available for MIP or QP solutions.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#getranging"><code>Model.getRanging()</code></a><a href="docs/interfaces/RangingResult.html"><code>RangingResult</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getranging"><code>Model.getRanging()</code></a><a href="docs/interfaces/RangingResult.html"><code>RangingResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -684,7 +781,7 @@ End</textarea>
     <div class="problem-header">
       <h3>HiGHS Parameter Introspection</h3>
       <p>Use options to control stopping criteria, feasibility tolerances, presolve, algorithm selection, logging, and MIP search behavior for a persistent model. <code>options.describe()</code> returns the native type, current value, default, and numeric range so applications do not need to hard-code metadata. The WebAssembly API rejects thread/concurrency settings and options that write to native filesystem paths.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/OptionStore.html#describe"><code>OptionStore.describe()</code></a><a href="docs/interfaces/OptionStore.html#set"><code>OptionStore.set()</code></a><a href="docs/interfaces/OptionStore.html#reset"><code>OptionStore.reset()</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/OptionStore.html#describe"><code>OptionStore.describe()</code></a><a href="docs/interfaces/OptionStore.html#set"><code>OptionStore.set()</code></a><a href="docs/interfaces/OptionStore.html#reset"><code>OptionStore.reset()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <div class="code-section">
@@ -753,7 +850,7 @@ model.dispose();</textarea>
     <div class="problem-header">
       <h3>Explain why a model is infeasible</h3>
       <p>Use an irreducible infeasible subsystem (IIS) when a model has no feasible solution and you need a smaller set of rows and variable bounds to inspect. “Irreducible” means every returned member is necessary for that particular conflict: removing any one makes the subsystem feasible. It does not mean HiGHS found the conflict with the fewest possible members, and a model can contain several different IISs.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#getiis"><code>Model.getIis()</code></a><a href="docs/interfaces/IisResult.html"><code>IisResult</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getiis"><code>Model.getIis()</code></a><a href="docs/interfaces/IisResult.html"><code>IisResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->
@@ -844,7 +941,7 @@ End</textarea>
     <div class="problem-header">
       <h3>Import, inspect, and export models</h3>
       <p>Use in-memory model I/O to accept LP or MPS data from uploads, generated files, or another service, then solve or convert it without exposing a native filesystem path. LP is readable text; MPS preserves a more rigid interchange structure and is represented as bytes where required. Exported models are normalized representations of HiGHS’ internal model, so comments and original formatting are not preserved.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/EncodedModel.html"><code>EncodedModel</code></a><a href="docs/interfaces/Model.html#exportmodel"><code>Model.exportModel()</code></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/EncodedModel.html"><code>EncodedModel</code></a><a href="docs/interfaces/Model.html#exportmodel"><code>Model.exportModel()</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
     </div>
 
     <!-- Core Solving Code -->

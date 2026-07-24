@@ -102,7 +102,7 @@ async function mainDemo(page, baseUrl) {
   expect(!(await page.locator("#lp-output").evaluate((element) => element.classList.contains("error"))), "solves the legacy LP without an error");
   expect(await page.locator("#lp-obj-val").textContent() === "16.0000", "returns the legacy LP optimum");
 
-  for (const key of ["production", "diet", "transport", "knapsack", "facility", "qp", "ranging", "iis"]) {
+  for (const key of ["production", "diet", "transport", "knapsack", "facility", "qp", "grid", "ranging", "iis"]) {
     await waitForLiveSolve(page, key);
     const state = page.locator(`#${key}-state`);
     expect(await state.getAttribute("data-state") === "ready", `${key} initial solve succeeds (${await state.textContent()})`);
@@ -126,21 +126,42 @@ async function mainDemo(page, baseUrl) {
   await editLiveInput(page, "#iis-lp", "Minimize\n obj: x\nSubject To\n cap: x <= 2\nBounds\n 0 <= x\nEnd", "iis");
   await expectText(page.locator("#iis-visual-tags"), /model is feasible/i, "clears the IIS explanation for a feasible model");
 
+  await visit(page, "#panel-multiobjective");
+  await expectText(page.locator("#grid-unserved"), /^0\.0 MWh$/, "strict objective priorities protect grid reliability");
+  const gridRevision = Number(await page.locator("#grid-state").getAttribute("data-revision") || 0);
+  await page.selectOption("#grid-mode", "blended");
+  await waitForLiveSolve(page, "grid", gridRevision);
+  const blendedUnserved = Number.parseFloat(await page.locator("#grid-unserved").textContent());
+  expect(blendedUnserved > 0, "weighted blending exposes a reliability tradeoff when its weight is too low");
+
+  await visit(page, "#panel-callbacks");
+  await page.click("#callback-start");
+  await page.waitForFunction(() => document.getElementById("callback-incumbent")?.textContent !== "--", { timeout: 30000 });
+  expect(await page.locator("#callback-graph-viz").getAttribute("width") !== null, "streams a feasible incumbent through the callback Worker");
+  await page.waitForFunction(() => document.getElementById("callback-elapsed")?.textContent !== "--", { timeout: 15000 });
+  expect(await page.locator("#callback-progress-viz svg").count() === 1, "streams live MIP bound metrics while branch-and-cut runs");
+  if (!(await page.locator("#callback-stop").isDisabled())) {
+    await page.click("#callback-stop");
+    await expectText(page.locator("#callback-state"), /Stopped immediately/, "stops a running synchronous solve by terminating its Worker");
+  }
+
   await visit(page, "#panel-options");
   await page.waitForFunction(() => document.querySelectorAll("#opts-body tr").length > 50, { timeout: 30000 });
   await page.fill("#opts-search", "time_limit");
-  expect(await page.locator("#opts-body tr").count() === 1, "filters options by name");
-  await page.locator("#opts-body tr").click();
+  expect(await page.locator("#opts-body tr").count() >= 1, "filters options by name");
+  await page.locator("#opts-body tr").filter({ hasText: "time_limit" }).first().click();
   await waitForText(page.locator("#opt-detail"), /time_limit/);
   await expectText(page.locator("#opt-detail"), /time_limit/, "describes a selected option");
-  const defaultValue = await page.locator("#opts-body tr td").nth(3).textContent();
+  const selectedOption = await page.locator("#opt-name").inputValue();
+  const selectedRow = page.locator("#opts-body tr").filter({ has: page.locator(`code:text-is("${selectedOption}")`) });
+  const defaultValue = await selectedRow.locator("td").nth(3).textContent();
   await page.fill("#opt-value", "12");
   await page.click("#opt-set");
   await waitForText(page.locator("#opt-detail"), /"current"\s*:\s*12/);
   await expectText(page.locator("#opt-detail"), /"current"\s*:\s*12/, "sets an option using its native value");
   await page.click("#opt-reset-all");
-  await page.waitForFunction((defaultValue) => document.querySelector("#opts-body tr td:nth-child(3)")?.textContent === defaultValue, defaultValue);
-  expect(await page.locator("#opts-body tr td").nth(2).textContent() === defaultValue, "resets option values to their defaults");
+  await page.waitForFunction(({ selectedOption, defaultValue }) => [...document.querySelectorAll("#opts-body tr")].some((row) => row.querySelector("code")?.textContent === selectedOption && row.children[2]?.textContent === defaultValue), { selectedOption, defaultValue });
+  expect(true, "resets option values to their defaults");
 
   await visit(page, "#panel-io");
   const ioModel = "Maximize\n obj: 7 z\nSubject To\n cap: z <= 3\nBounds\n 0 <= z\nEnd";

@@ -238,6 +238,95 @@ async function mipSolve(data) {
   };
 }
 
+/* ── Extended API: Multiple Linear Objectives ── */
+
+async function multiObjectiveGrid(data) {
+  const highs = await runtimePromise;
+  if (model) {
+    model.dispose();
+    model = null;
+  }
+  model = highs.createModel();
+
+  const demand = [45, 50, 58, 72, 86, 95, 90, 80, 70, 62, 54, 48];
+  const cleanCapacity = [28, 35, 52, 60, 48, 30, 22, 18, 20, 25, 30, 34];
+  const sourceNames = ["Clean", "Gas", "Imports", "Unserved"];
+  const hours = demand.length;
+  const numCols = sourceNames.length * hours;
+  const costs = [12, 65, 105, 0];
+  const emissions = [0, 0.5, 0.18, 0];
+  const upper = sourceNames.flatMap((_, source) => demand.map((load, hour) => {
+    if (source === 0) return cleanCapacity[hour];
+    if (source === 1) return Number(data.gasCapacity);
+    if (source === 2) return 28;
+    return load;
+  }));
+  const starts = Array.from({ length: numCols + 1 }, (_, index) => index);
+  const indices = Array.from({ length: numCols }, (_, index) => index % hours);
+
+  model.passModel({
+    numCols,
+    numRows: hours,
+    sense: highs.constants.objectiveSense.minimize,
+    colCost: new Array(numCols).fill(0),
+    colLower: new Array(numCols).fill(0),
+    colUpper: upper,
+    rowLower: demand,
+    rowUpper: demand,
+    matrix: { format: "csc", numRows: hours, numCols, starts, indices, values: new Array(numCols).fill(1) },
+  });
+
+  const objective = (sourceValues) => sourceValues.flatMap((value) => new Array(hours).fill(value));
+  const reliability = objective([0, 0, 0, 1]);
+  const carbon = objective(emissions);
+  const operatingCost = objective(costs);
+  const lexicographic = data.mode === "lexicographic";
+  model.options.set({ output_flag: false, blend_multi_objectives: !lexicographic });
+  model.addLinearObjective({
+    coefficients: reliability,
+    weight: lexicographic ? 1 : Number(data.reliabilityWeight),
+    offset: 0,
+    absoluteTolerance: 0,
+    relativeTolerance: 0,
+    priority: 300,
+  });
+  model.addLinearObjective({
+    coefficients: carbon,
+    weight: lexicographic ? 1 : Number(data.carbonWeight),
+    offset: 0,
+    absoluteTolerance: Number(data.carbonTolerance),
+    relativeTolerance: 0,
+    priority: 200,
+  });
+  model.addLinearObjective({
+    coefficients: operatingCost,
+    weight: 1,
+    offset: 0,
+    absoluteTolerance: 0,
+    relativeTolerance: 0,
+    priority: 100,
+  });
+
+  const t0 = performance.now();
+  const run = model.run();
+  const elapsed = (performance.now() - t0).toFixed(1);
+  const primal = arrayFrom(model.getSolution().colValue);
+  const dot = (coefficients) => coefficients.reduce((sum, value, index) => sum + value * primal[index], 0);
+  return {
+    elapsed,
+    modelStatus: describeStatus(highs, run.modelStatus),
+    demand,
+    cleanCapacity,
+    sourceNames,
+    dispatch: sourceNames.map((_, source) => primal.slice(source * hours, (source + 1) * hours)),
+    objectives: {
+      unserved: dot(reliability),
+      emissions: dot(carbon),
+      cost: dot(operatingCost),
+    },
+  };
+}
+
 /* ── Extended API: Ranging ── */
 
 async function doRanging(data) {
@@ -445,6 +534,7 @@ const handlers = {
   buildSolve,
   qpSolve,
   mipSolve,
+  multiObjectiveGrid,
   doRanging,
   optionsList,
   optionsDescribe,

@@ -180,6 +180,102 @@ export function renderPortfolioViz(container, weights, variance, target) {
     svgText(allocation, { class: "viz-value", x: x + 18, y: y - 10 })));
 }
 
+export function renderGridDispatch(container, data) {
+  if (!container) return;
+  const colors = ["#e8b85d", "#d45e6a", "#7896bf", "#222629"];
+  const left = 52;
+  const top = 38;
+  const width = 690;
+  const height = 250;
+  const maxDemand = Math.max(...data.demand) * 1.08;
+  const x = (hour) => left + hour / (data.demand.length - 1) * width;
+  const y = (value) => top + height - value / maxDemand * height;
+  const areas = [];
+  let floor = new Array(data.demand.length).fill(0);
+  for (let source = 0; source < data.dispatch.length; source++) {
+    const ceiling = floor.map((value, hour) => value + data.dispatch[source][hour]);
+    const path = [
+      `M ${x(0)} ${y(floor[0])}`,
+      ...floor.slice(1).map((value, hour) => `L ${x(hour + 1)} ${y(value)}`),
+      ...ceiling.slice().reverse().map((value, reverseIndex) => `L ${x(ceiling.length - 1 - reverseIndex)} ${y(value)}`),
+      "Z",
+    ].join(" ");
+    areas.push(focusableMark("path", { d: path, fill: colors[source], opacity: source === 3 ? 0.92 : 0.78 }, `${data.sourceNames[source]} generation: ${displayNumber(data.dispatch[source].reduce((sum, value) => sum + value, 0))} MWh`));
+    floor = ceiling;
+  }
+  const demandPath = data.demand.map((value, hour) => `${hour ? "L" : "M"} ${x(hour)} ${y(value)}`).join(" ");
+  const ticks = data.demand.map((_, hour) => hour % 2 === 0 ? svgText(`${hour * 2}:00`, { class: "viz-label", x: x(hour), y: top + height + 24, "text-anchor": "middle" }) : null);
+  const legend = data.sourceNames.map((name, source) => svgElement("g", { transform: `translate(${left + source * 145} 328)` },
+    svgElement("rect", { width: 12, height: 12, rx: 3, fill: colors[source] }),
+    svgText(name, { class: "viz-label", x: 18, y: 10 })));
+  container.replaceChildren(visualization("0 0 780 360", "Twelve-period electricity dispatch compared with demand",
+    svgText("Dispatch stack · red/black area is unmet demand", { class: "viz-title", x: 20, y: 22 }),
+    [0.25, 0.5, 0.75, 1].map((ratio) => svgElement("line", { x1: left, x2: left + width, y1: y(maxDemand * ratio), y2: y(maxDemand * ratio), stroke: "#dce9e8" })),
+    areas,
+    svgElement("path", { d: demandPath, fill: "none", stroke: "#222629", "stroke-width": 3 }),
+    ticks, legend));
+}
+
+export function renderCallbackGraph(canvas, size, weights, selected = []) {
+  if (!canvas) return;
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const bounds = canvas.getBoundingClientRect();
+  const width = Math.max(320, bounds.width || 760);
+  const height = 360;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  canvas.style.height = `${height}px`;
+  const context = canvas.getContext("2d");
+  context.scale(ratio, ratio);
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#f7fbfa";
+  context.fillRect(0, 0, width, height);
+  const selectedSet = new Set(selected);
+  const columns = Math.ceil(Math.sqrt(size * width / height));
+  const rows = Math.ceil(size / columns);
+  const gapX = width / (columns + 1);
+  const gapY = height / (rows + 1);
+  for (let index = 0; index < size; index++) {
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const jitterX = ((index * 47) % 11 - 5) * 0.35;
+    const jitterY = ((index * 31) % 13 - 6) * 0.3;
+    const x = gapX * (column + 1) + jitterX;
+    const y = gapY * (row + 1) + jitterY;
+    const chosen = selectedSet.has(index);
+    const radius = chosen ? 3.5 + (weights?.[index] || 0) / 45 : 1.8;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = chosen ? "#d45e6a" : "#c6d9d7";
+    context.fill();
+    if (chosen) {
+      context.strokeStyle = "#fff";
+      context.lineWidth = 1.5;
+      context.stroke();
+    }
+  }
+}
+
+export function renderCallbackProgress(container, history) {
+  if (!container || !history.length) return;
+  const width = 740;
+  const height = 180;
+  const values = history.flatMap((point) => [point.incumbent, point.bound]).filter(Number.isFinite);
+  if (!values.length) return;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = Math.max(max - min, 1);
+  const x = (index) => 34 + index / Math.max(history.length - 1, 1) * (width - 54);
+  const y = (value) => 18 + (max - value) / span * (height - 44);
+  const pathFor = (key) => history.map((point, index) => Number.isFinite(point[key]) ? `${index ? "L" : "M"} ${x(index)} ${y(point[key])}` : "").join(" ");
+  container.replaceChildren(visualization(`0 0 ${width} ${height}`, "Live MIP incumbent and dual bound convergence",
+    [0, 0.5, 1].map((ratio) => svgElement("line", { x1: 34, x2: width - 20, y1: 18 + ratio * (height - 44), y2: 18 + ratio * (height - 44), stroke: "#dce9e8" })),
+    svgElement("path", { d: pathFor("bound"), fill: "none", stroke: "#7896bf", "stroke-width": 2 }),
+    svgElement("path", { d: pathFor("incumbent"), fill: "none", stroke: "#d45e6a", "stroke-width": 3 }),
+    svgText("best bound", { class: "viz-label", x: 38, y: height - 8 }),
+    svgText("incumbent", { class: "viz-label", x: 125, y: height - 8 })));
+}
+
 function clipPolygon(polygon, a, b, rhs) {
   const inside = ([x, y]) => a * x + b * y <= rhs + 1e-9;
   const result = [];

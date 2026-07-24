@@ -1306,6 +1306,7 @@
     .iis-proof-heading { display: grid; }
     .sparse-explorer-header { flex-direction: column; }
     .sparse-stage { padding: 1rem; }
+    .callback-stage { grid-template-columns: 1fr; }
   }
 
   /* Scroll-driven example document */
@@ -1397,6 +1398,24 @@
     background: linear-gradient(145deg, #f4f9f8, #fff);
   }
   .model-viz svg, .modern-viz-svg { display: block; width: 100%; height: auto; min-height: 240px; }
+  .grid-policy-controls, .callback-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 0.9rem;
+    align-items: end;
+  }
+  .grid-policy-controls label, .callback-controls label { display: grid; gap: 0.35rem; font: 0.66rem/1.3 var(--font-mono); }
+  .grid-policy-controls input, .grid-policy-controls select, .callback-controls select { width: 100%; }
+  .callback-controls .btn-row { grid-column: 1 / -1; margin: 0; }
+  .btn.callback-stop { border-color: #b44a55; background: #b44a55; }
+  .btn.callback-stop:hover { border-color: #8f3540; background: #8f3540; }
+  .callback-stats { grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); margin: 1rem 0; }
+  .callback-stage { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); gap: 1rem; margin: 1rem 0 1.5rem; }
+  .callback-stage > div { min-width: 0; overflow: hidden; border: 1px solid #cfe1e0; border-radius: 10px; background: #f7fbfa; }
+  .callback-stage h4 { margin: 0; padding: 0.8rem 1rem; border-bottom: 1px solid #dcebea; font-size: 0.72rem; }
+  #callback-graph-viz { display: block; width: 100%; height: 360px; }
+  #callback-progress-viz { display: grid; min-height: 360px; place-items: center; color: #718b89; font: 0.67rem var(--font-mono); }
+  #callback-progress-viz svg { width: 100%; height: auto; }
   .optimality-map svg, .sensitivity-chart svg { display: block; width: 100%; height: auto; }
   .optimality-map, .sensitivity-lens, .iis-proof { overflow: hidden; border: 1px solid #cfe1e0; border-radius: 10px; background: linear-gradient(145deg, #f4f9f8, #fff 70%); }
   .plot-grid { fill: none; stroke: #dce9e8; stroke-width: 1; }
