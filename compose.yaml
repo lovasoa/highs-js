@@ -25,9 +25,11 @@ services:
       - node-modules:/work/node_modules
       # Persist generated system libraries in a volume owned by `node`.
       - emscripten-user-cache:/emcache
-    # Default command runs when no command is passed to "docker compose run".
+    # Default command keeps the container running for devcontainer use.
+    # Pass a command to "docker compose run" to override, e.g.:
+    #   docker compose run --rm tests bash -c "npm ci && npm run build && npm test"
     # The entrypoint (entrypoint.sh) sources emsdk_env.sh automatically.
-    command: bash -c "npm ci && npm run build && npm test"
+    command: sleep infinity
 
 volumes:
   node-modules:
