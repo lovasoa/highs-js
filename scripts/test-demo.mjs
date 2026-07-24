@@ -22,7 +22,31 @@ const MIME = {
   ".wasm": "application/wasm",
 };
 
-for (const file of ["highs.js", "highs.wasm", "index.html", "demo.js", "worker.js", "callback-worker.js", "coi-serviceworker.js", "extended/index.html", "extended/demo.js", "extended/worker.js"]) {
+const mainDemoAssets = [
+  "index.html",
+  "css/base.css",
+  "css/examples.css",
+  "css/navigation.css",
+  "demo.js",
+  "live-examples.js",
+  "navigation.js",
+  "worker-client.js",
+  "ui.js",
+  "model-data.js",
+  "visualizations.js",
+  "panels/lp.js",
+  "panels/build.js",
+  "panels/mip.js",
+  "panels/qp.js",
+  "panels/multiobjective.js",
+  "panels/callbacks.js",
+  "panels/ranging.js",
+  "panels/options.js",
+  "panels/iis.js",
+  "panels/model-io.js",
+];
+
+for (const file of ["highs.js", "highs.wasm", "worker.js", "callback-worker.js", "coi-serviceworker.js", ...mainDemoAssets, "extended/index.html", "extended/demo.js", "extended/worker.js"]) {
   if (!existsSync(join(DEMO_DIR, file))) {
     throw new Error(`Missing demo/${file}. Run "npm run build:demo" first.`);
   }
@@ -109,6 +133,9 @@ async function mainDemo(page, baseUrl) {
   });
   await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 30000 });
 
+  const stylesheets = await page.evaluate(() => [...document.styleSheets].map((sheet) => new URL(sheet.href).pathname));
+  expect(stylesheets.slice(-3).join(",") === "/css/base.css,/css/examples.css,/css/navigation.css", "loads split stylesheets in cascade order");
+
   const wasm = await page.request.get(`${baseUrl}highs.wasm`);
   expect(wasm.ok() && wasm.headers()["content-type"] === "application/wasm", "loads the WebAssembly runtime with the wasm MIME type");
   expect(await page.evaluate(() => crossOriginIsolated && typeof SharedArrayBuffer === "function"), "enables cross-origin isolation for shared-memory callback interruption");
@@ -142,12 +169,45 @@ async function mainDemo(page, baseUrl) {
   await expectText(page.locator("#iis-visual-tags"), /model is feasible/i, "clears the IIS explanation for a feasible model");
 
   await visit(page, "#panel-multiobjective");
-  await expectText(page.locator("#grid-unserved"), /^0\.0 MWh$/, "strict objective priorities protect grid reliability");
-  const gridRevision = Number(await page.locator("#grid-state").getAttribute("data-revision") || 0);
+  const gridSignature = () => page.locator("#panel-multiobjective .callback-stats, #panel-multiobjective .stat-grid").first().evaluate(() => [
+    document.getElementById("grid-unserved").textContent,
+    document.getElementById("grid-emissions").textContent,
+    document.getElementById("grid-cost").textContent,
+  ].join("|"));
+  const changeGridInput = async (selector, value) => {
+    const revision = Number(await page.locator("#grid-state").getAttribute("data-revision") || 0);
+    await page.fill(selector, String(value));
+    await waitForLiveSolve(page, "grid", revision);
+    return gridSignature();
+  };
+  expect(await page.locator("#grid-story-strict").isVisible() && !(await page.locator("#grid-story-blended").isVisible()), "shows only strict-priority controls in strict mode");
+  const strictDefault = await gridSignature();
+  expect(await changeGridInput("#grid-gas-capacity", 30) !== strictDefault, "decreasing default gas capacity changes the strict-priority solution");
+  await changeGridInput("#grid-gas-capacity", 35);
+  expect(await changeGridInput("#grid-gas-capacity", 40) !== strictDefault, "increasing default gas capacity changes the strict-priority solution");
+  await changeGridInput("#grid-gas-capacity", 35);
+  expect(await changeGridInput("#grid-carbon-tolerance", 2) !== strictDefault, "decreasing default carbon tolerance changes the strict-priority solution");
+  await changeGridInput("#grid-carbon-tolerance", 3);
+  expect(await changeGridInput("#grid-carbon-tolerance", 4) !== strictDefault, "increasing default carbon tolerance changes the strict-priority solution");
+  await changeGridInput("#grid-carbon-tolerance", 3);
+
+  let gridRevision = Number(await page.locator("#grid-state").getAttribute("data-revision") || 0);
   await page.selectOption("#grid-mode", "blended");
   await waitForLiveSolve(page, "grid", gridRevision);
-  const blendedUnserved = Number.parseFloat(await page.locator("#grid-unserved").textContent());
-  expect(blendedUnserved > 0, "weighted blending exposes a reliability tradeoff when its weight is too low");
+  expect(await page.locator("#grid-story-blended").isVisible() && !(await page.locator("#grid-story-strict").isVisible()), "shows only weighted-blend controls in blended mode");
+  const blendedDefault = await gridSignature();
+  expect(await changeGridInput("#grid-gas-capacity", 30) !== blendedDefault, "decreasing default gas capacity changes the blended solution");
+  await changeGridInput("#grid-gas-capacity", 35);
+  expect(await changeGridInput("#grid-gas-capacity", 40) !== blendedDefault, "increasing default gas capacity changes the blended solution");
+  await changeGridInput("#grid-gas-capacity", 35);
+  expect(await changeGridInput("#grid-reliability-weight", 114) !== blendedDefault, "decreasing the default reliability weight changes the blended solution");
+  await changeGridInput("#grid-reliability-weight", 119);
+  expect(await changeGridInput("#grid-reliability-weight", 124) !== blendedDefault, "increasing the default reliability weight changes the blended solution");
+  await changeGridInput("#grid-reliability-weight", 119);
+  expect(await changeGridInput("#grid-carbon-weight", 75) !== blendedDefault, "decreasing the default carbon weight changes the blended solution");
+  await changeGridInput("#grid-carbon-weight", 100);
+  expect(await changeGridInput("#grid-carbon-weight", 125) !== blendedDefault, "increasing the default carbon weight changes the blended solution");
+  await changeGridInput("#grid-carbon-weight", 100);
 
   await visit(page, "#panel-callbacks");
   await page.click("#callback-start");

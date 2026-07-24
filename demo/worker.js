@@ -295,7 +295,7 @@ async function multiObjectiveGrid(data) {
     weight: lexicographic ? 1 : Number(data.carbonWeight),
     offset: 0,
     absoluteTolerance: Number(data.carbonTolerance),
-    relativeTolerance: 0,
+    relativeTolerance: lexicographic ? -1 : 0,
     priority: 200,
   });
   model.addLinearObjective({

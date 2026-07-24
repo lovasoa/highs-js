@@ -6,7 +6,9 @@
 <meta name="description" content="highs-js packages the open-source HiGHS linear, mixed-integer, and convex quadratic optimization solver for Node.js and browsers">
 <title>highs-js — HiGHS for JavaScript</title>
 <script src="coi-serviceworker.js"></script>
-<link rel="stylesheet" href="demo.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/examples.css">
+<link rel="stylesheet" href="css/navigation.css">
 </head>
 <body>
 
@@ -586,29 +588,53 @@ model.dispose();</textarea>
     </div>
     <div class="code-section">
       <div class="code-header"><span>Core Solving Code</span><span>three explicit policies</span></div>
-      <div class="code-editor-box"><textarea id="multiobjective-core-code" spellcheck="false">model.options.set("blend_multi_objectives", false);
+      <div class="code-editor-box"><textarea id="multiobjective-core-code" spellcheck="false">const ordered = policyMode === "lexicographic";
+model.options.set({
+  output_flag: false,
+  // false: solve by descending priority; true: minimize one weighted sum.
+  blend_multi_objectives: !ordered
+});
+
+// Once an auxiliary objective is added, the model's ordinary colCost is
+// ignored. Include every goal here, in current model-column order.
+model.addLinearObjective({
+  coefficients: unservedEnergy,
+  weight: ordered ? 1 : reliabilityWeight,
+  priority: 300, // Used only in ordered mode; larger priorities run first.
+  absoluteTolerance: 0,
+  relativeTolerance: 0, // Preserve the best reliability value exactly.
+  offset: 0
+});
 
 model.addLinearObjective({
-  coefficients: unservedEnergy, weight: 1, priority: 300,
-  absoluteTolerance: 0, relativeTolerance: 0, offset: 0
+  coefficients: carbon,
+  weight: ordered ? 1 : carbonWeight,
+  priority: 200,
+  absoluteTolerance: ordered ? carbonTolerance : 0,
+  // A negative tolerance disables it. Leaving this at 0 would be stricter
+  // than absoluteTolerance and would permit no carbon degradation at all.
+  relativeTolerance: ordered ? -1 : 0,
+  offset: 0
 });
+
 model.addLinearObjective({
-  coefficients: carbon, weight: 1, priority: 200,
-  absoluteTolerance: carbonTolerance, relativeTolerance: 0, offset: 0
-});
-model.addLinearObjective({
-  coefficients: operatingCost, weight: 1, priority: 100,
-  absoluteTolerance: 0, relativeTolerance: 0, offset: 0
+  coefficients: operatingCost,
+  weight: 1,
+  priority: 100,
+  absoluteTolerance: 0,
+  relativeTolerance: 0,
+  offset: 0
 });
 
 model.run();
-// Compute each policy metric from colValue. A lexicographic solve does
-// not have one meaningful combined objective value.</textarea></div>
+const { colValue } = model.getSolution();
+// Ordered solves have no meaningful combined objective value. Compute each
+// policy result from colValue and its saved coefficient vector instead.</textarea></div>
     </div>
     <div class="model-story" data-live-example="grid">
-      <p>During a heatwave, the grid can draw at most <input class="story-input" id="grid-gas-capacity" type="number" value="45" min="0" max="80" step="5" aria-label="Maximum gas generation"> MW from gas plants. The operator dispatches power using <select class="story-input story-select" id="grid-mode" aria-label="Objective policy"><option value="lexicographic">strict priorities</option><option value="blended">a weighted blend</option></select>.</p>
-      <p>With strict priorities, preventing blackouts comes first. The final cost optimization may accept at most <input class="story-input" id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1" aria-label="Permitted carbon degradation"> extra tonnes of carbon after finding the cleanest reliable plan.</p>
-      <p>With a weighted blend, one MWh of unmet demand counts as <input class="story-input" id="grid-reliability-weight" type="number" value="50" min="0" step="10" aria-label="Reliability objective weight"> points and one tonne of carbon counts as <input class="story-input" id="grid-carbon-weight" type="number" value="20" min="0" step="5" aria-label="Carbon objective weight"> points. A poor choice can make a blackout look cheaper than generation.</p>
+      <p>During a heatwave, the grid can draw at most <input class="story-input" id="grid-gas-capacity" type="number" value="35" min="0" max="80" step="5" aria-label="Maximum gas generation"> MW from gas plants. The operator dispatches power using <select class="story-input story-select" id="grid-mode" aria-label="Objective policy"><option value="lexicographic">strict priorities</option><option value="blended">a weighted blend</option></select>.</p>
+      <p id="grid-story-strict">Preventing blackouts comes first, then reducing carbon, then lowering cost. The final cost optimization may accept at most <input class="story-input" id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1" aria-label="Permitted carbon degradation"> extra tonnes of carbon after finding the cleanest reliable plan.</p>
+      <p id="grid-story-blended" hidden>All goals become one score: one MWh of unmet demand counts as <input class="story-input" id="grid-reliability-weight" type="number" value="119" min="0" step="5" aria-label="Reliability objective weight"> points and one tonne of carbon counts as <input class="story-input" id="grid-carbon-weight" type="number" value="100" min="0" step="25" aria-label="Carbon objective weight"> points. At these breakpoints, changing either weight changes which source is dispatched.</p>
     </div>
     <div class="model-state" id="grid-state">Preparing the first dispatch policy…</div>
     <div class="stat-grid">
