@@ -215,12 +215,32 @@ select:focus-visible, textarea:focus-visible {
   font: 0.72rem/1.75 var(--font-mono);
 }
 .hero-sample .comment { color: #718b89; }
+.hero-sample pre a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+.hero-sample pre a:hover {
+  text-decoration: underline;
+}
 .hero-sample .result {
   padding: 0.8rem 1rem;
   border-top: 1px solid #dcebea;
   background: #f1f8f7;
   color: #4e7775;
   font: 0.65rem/1 var(--font-mono);
+}
+.hero-sample-links {
+  padding: 0.55rem 1rem;
+  border-top: 1px solid #dcebea;
+  background: #f1f8f7;
+  font: 0.62rem/1 var(--font-mono);
+}
+.hero-sample-links a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+.hero-sample-links a:hover {
+  text-decoration: underline;
 }
 .browser-mark {
   background: linear-gradient(transparent 62%, #9ececc70 62%);

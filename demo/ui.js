@@ -91,6 +91,38 @@ export function enhanceSyntaxEditors() {
 
   document.querySelectorAll(".hero-sample pre").forEach((code) => {
     code.innerHTML = highlightCode(code.textContent, "javascript");
+    // Inject API reference links into the highlighted code
+    const linkMap = {
+      loadHighs: "docs/functions/default.html",
+      solve: "docs/types/LegacyHighs.html#solve",
+      ObjectiveValue: "docs/types/GenericHighsSolution.html#objectivevalue",
+    };
+    const walker = document.createTreeWalker(code, NodeFilter.SHOW_TEXT, null, false);
+    const replacements = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      for (const [ident, href] of Object.entries(linkMap)) {
+        let idx = 0;
+        while ((idx = node.textContent.indexOf(ident, idx)) !== -1) {
+          const charBefore = node.textContent[idx - 1];
+          const charAfter = node.textContent[idx + ident.length];
+          if ((!charBefore || /\W/.test(charBefore)) && (!charAfter || /\W/.test(charAfter))) {
+            replacements.push({ node, idx, ident, href });
+          }
+          idx += ident.length;
+        }
+      }
+    }
+    // Apply replacements in reverse order so earlier offsets stay valid
+    replacements.sort((a, b) => b.idx - a.idx);
+    for (const { node, idx, ident, href } of replacements) {
+      const after = node.splitText(idx + ident.length);
+      const mid = node.splitText(idx);
+      const anchor = document.createElement("a");
+      anchor.href = href;
+      mid.parentNode.replaceChild(anchor, mid);
+      anchor.appendChild(mid);
+    }
   });
 
   for (const id of ["lp-input", "ranging-lp", "iis-lp", "io-input"]) {
