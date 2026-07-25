@@ -2,6 +2,12 @@
 
 TypeScript declarations for the HiGHS WebAssembly runtime. Initialization is asynchronous; model operations and solves are synchronous. Browser applications should run non-trivial solves in a Web Worker.
 
+## Initialization
+
+The default export loads and instantiates the `highs.wasm` binary. By default the loader fetches it from the same location as the JavaScript module, which works in Node.js and in browsers that serve the `.wasm` file alongside the loader.
+
+Bundlers (webpack, Rollup, Vite, esbuild, etc.) do not always emit or resolve the `.wasm` asset automatically, and some rewrite asset URLs in ways that break the default lookup. When initialization fails with a fetch or compile error, pass <a href="#" data-api-link="interfaces/InitOptions.html"><code>InitOptions</code></a> to the loader, with <a href="#" data-api-link="interfaces/InitOptions.html#locatefile-1"><code>locateFile</code></a> &mdash; return the correct URL for `highs.wasm` (a CDN, a versioned assets directory, an imported asset URL, etc.).
+
 ## API surfaces
 
 | Surface | Entry point | Use when |
@@ -21,7 +27,7 @@ This capacitated facility-location model chooses which facilities to open and ro
 ```ts
 import loadHighs from "highs";
 
-const highs = await loadHighs();
+const highs = await loadHighs({ locateFile: (file) => `/assets/${file}` });
 const { minimize } = highs.constants.objectiveSense;
 const { continuous, integer } = highs.constants.variableType;
 
