@@ -1001,13 +1001,35 @@ export type LegacyHighsSolution = HighsSolution;
 /** Public alias for legacy loader asset-location options. */
 export type LegacyLoaderOptions = HighsLoaderOptions;
 
-/** Loader configuration. Inputs are read during asynchronous module initialization. */
+/**
+ * Loader configuration. Inputs are read during asynchronous module initialization.
+ *
+ * The Wasm binary (`highs.wasm`) is normally fetched from the same location as
+ * the JavaScript loader. Bundlers that do not recognize the `.wasm` asset, or
+ * that rewrite `import`/`fetch` URLs, can break this lookup; in those cases use
+ * {@link InitOptions.locateFile | `locateFile`} to return the correct URL, or
+ * supply the binary directly via {@link InitOptions.wasmBinary | `wasmBinary`} or
+ * {@link InitOptions.wasmModule | `wasmModule`}.
+ */
 export interface InitOptions extends LegacyLoaderOptions {
-  /** Returns the URL or environment path for an Emscripten asset, notably `highs.wasm`. */
+  /**
+   * Returns the URL or environment path for an Emscripten asset, notably
+   * `highs.wasm`. Override this when a bundler cannot resolve the Wasm asset
+   * alongside the loader, or when the binary is served from a different path
+   * (a CDN, a versioned assets directory, a `data:` URL, etc.).
+   */
   locateFile?(file: string): string;
-  /** Preloaded Wasm bytes; the loader does not take ownership of the supplied buffer. */
+  /**
+   * Preloaded Wasm bytes; the loader does not take ownership of the supplied
+   * buffer. Useful with bundlers that can `import` the binary as a URL or
+   * `Uint8Array` but cannot serve it at a fetchable URL.
+   */
   wasmBinary?: ArrayBuffer | ArrayBufferView;
-  /** Precompiled module, avoiding compilation of `wasmBinary` or the located file. */
+  /**
+   * Precompiled module, avoiding compilation of `wasmBinary` or the located
+   * file. Prefer this in long-lived processes that create many solver
+   * instances, since each `loadHighs()` call otherwise recompiles the binary.
+   */
   wasmModule?: WebAssembly.Module;
   /** Receives normal native output synchronously; output is suppressed when omitted. */
   print?: (message: string) => void;
@@ -1057,7 +1079,17 @@ export type Highs = LegacyHighs & {
   readonly raw: RawRuntimeApi;
 };
 
-/** Loads and instantiates the runtime asynchronously; solver calls thereafter block synchronously. */
+/**
+ * Loads and instantiates the Wasm runtime asynchronously; solver calls
+ * thereafter block synchronously.
+ *
+ * The loader fetches `highs.wasm` from the same location as the JavaScript
+ * module by default. Bundlers that cannot resolve the `.wasm` asset (or that
+ * rewrite asset URLs) will cause initialization to fail; in those cases pass
+ * {@link InitOptions} with `locateFile`, `wasmBinary`, or `wasmModule` to
+ * supply the binary explicitly. Browser applications should run non-trivial
+ * solves in a Web Worker.
+ */
 export default function highsLoader(options?: InitOptions): Promise<Highs>;
 
 /** Native call status: error, success, or success with warning. */
