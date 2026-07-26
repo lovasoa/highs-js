@@ -1,5 +1,9 @@
   /* Navigation tree: every destination uses the same component structure. */
   .tabs {
+    --nav-axis: 13px;
+    --nav-marker-size: calc(var(--nav-axis) * 2);
+    --nav-line: 1px;
+    --nav-active-line: 2px;
     position: sticky;
     top: 1.5rem;
     display: flex;
@@ -12,38 +16,38 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-scrollbar) transparent;
   }
-  .tabs::before {
-    content: "";
+  .nav-track {
     position: absolute;
     z-index: 2;
-    top: var(--nav-start, 1.75rem);
-    left: 12.5px;
-    width: 1px;
-    height: max(0px, calc(var(--nav-end, 100%) - var(--nav-start, 1.75rem)));
-    background: #8fcac7;
+    top: 0;
+    left: 0;
+    display: block;
+    overflow: visible;
+    pointer-events: none;
   }
-  .tabs::after {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    top: var(--nav-start, 1.75rem);
-    left: 12px;
-    width: 2px;
-    height: max(0px, calc(var(--nav-progress, 1.75rem) - var(--nav-start, 1.75rem)));
-    border-radius: 1px 1px 0 0;
-    background: #d45e6a;
-    transition: height 180ms ease;
+  .nav-track path {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .nav-track-base {
+    stroke: #8fcac7;
+    stroke-width: var(--nav-line);
+  }
+  .nav-track-active {
+    stroke: #d45e6a;
+    stroke-width: var(--nav-active-line);
   }
   .nav-group { display: grid; gap: 0; min-width: 0; }
   .nav-group + .nav-group { margin-top: 0.55rem; }
   .nav-group-label,
   .nav-item-root {
     display: grid;
-    grid-template-columns: 26px minmax(0, 1fr);
+    grid-template-columns: var(--nav-marker-size) minmax(0, 1fr);
     gap: 0.5rem;
     align-items: center;
   }
   .nav-group-label {
+    position: relative;
     min-height: 18px;
     margin: 0.55rem 0 0.1rem;
     color: #879293;
@@ -70,6 +74,7 @@
     text-align: left;
     transition: background-color 140ms ease, box-shadow 160ms ease, color 140ms ease, opacity 140ms ease;
   }
+  .tabs a:hover { opacity: 1; }
   .nav-item:hover { background: #edf6f5; }
   .nav-item[aria-current="location"] { background: transparent; }
   .nav-item:not([aria-current="location"]) .nav-copy { opacity: 0.68; }
@@ -79,8 +84,8 @@
     position: relative;
     z-index: 3;
     display: grid;
-    width: 26px;
-    height: 26px;
+    width: var(--nav-marker-size);
+    height: var(--nav-marker-size);
     place-items: center;
     border: 1px solid #9ececc;
     border-radius: 50%;
@@ -102,52 +107,13 @@
   .nav-branch { min-width: 0; }
   .nav-children {
     display: grid;
-    margin-left: 13px;
+    margin-left: var(--nav-axis);
   }
   .nav-item-child {
     display: block;
     min-height: 30px;
-    padding: 0.2rem 0.4rem 0.2rem 21px;
+    padding: 0.2rem 0.4rem 0.2rem calc(var(--nav-axis) + 8px);
   }
-  .nav-item-child::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 13px;
-    height: 1px;
-    background: #c7dfdd;
-  }
-  .nav-item-child[data-progress="complete"]::before { background: #d45e6a; }
-  .nav-item-child[aria-current="location"]::before {
-    z-index: 3;
-    top: calc(50% - 2px);
-    left: 6px;
-    width: 8px;
-    height: 2px;
-    border: 0;
-    border-radius: 0 2px 2px 0;
-    background: #d45e6a;
-    transform-origin: left center;
-    animation: nav-elbow-turn 100ms ease-out 260ms both;
-  }
-  .nav-item-child[aria-current="location"]::after {
-    content: "";
-    position: absolute;
-    z-index: 3;
-    top: 0;
-    left: -1px;
-    width: 8px;
-    height: 50%;
-    border: 0;
-    border-bottom: 2px solid #d45e6a;
-    border-left: 2px solid #d45e6a;
-    border-radius: 0 0 0 7px;
-    background: transparent;
-    animation: nav-elbow-drop 80ms linear 180ms both;
-  }
-  @keyframes nav-elbow-drop { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
-  @keyframes nav-elbow-turn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .nav-item-child .nav-copy strong { font-size: 0.68rem; font-weight: 600; }
   .nav-item-child .nav-copy small { font-size: 0.52rem; }
 
@@ -160,15 +126,9 @@
       max-height: none;
       overflow: visible;
     }
-    .tabs::before,
-    .tabs::after { display: none; }
+    .nav-track { display: none; }
   }
 
   @media (max-width: 640px) {
     .tabs { grid-template-columns: 1fr; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .nav-item-child[aria-current="location"]::before,
-    .nav-item-child[aria-current="location"]::after { animation-delay: 0ms; }
   }
