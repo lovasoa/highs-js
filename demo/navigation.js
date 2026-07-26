@@ -67,6 +67,20 @@ function renderTrack() {
   track.style.width = `${trackWidth}px`;
   track.style.height = `${trackHeight}px`;
 
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const gradient = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient");
+  gradient.id = "nav-track-active-gradient";
+  gradient.setAttribute("gradientUnits", "userSpaceOnUse");
+  gradient.setAttribute("r", 16);
+  for (const [offset, color] of [["0", "#ef9ba3"], ["0.55", "#df707b"], ["1", "#d45e6a"]]) {
+    const stop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    stop.setAttribute("offset", offset);
+    stop.setAttribute("stop-color", color);
+    gradient.append(stop);
+  }
+  defs.append(gradient);
+  track.append(defs);
+
   let route = `M ${axis} ${start}`;
   let returnPath = "";
   const checkpointPaths = [];
@@ -96,6 +110,18 @@ function renderTrack() {
   }
   addTrackPath("nav-track-base", route);
   const progressPath = addTrackPath("nav-track-active", route);
+  progressPath.style.stroke = "url(#nav-track-active-gradient)";
+  const drop = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  drop.classList.add("nav-track-drop");
+  drop.setAttribute("d", [
+    "M -1 -2",
+    "C -1 2.5 -1.8 5.2 -2.35 7.2",
+    "C -2.55 9.3 -1.35 11 0 11",
+    "C 1.35 11 2.55 9.3 2.35 7.2",
+    "C 1.8 5.2 1 2.5 1 -2",
+    "Z",
+  ].join(" "));
+  track.append(drop);
   const checkpointLengths = checkpointPaths.map((pathData) => {
     const measuringPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     measuringPath.setAttribute("d", pathData);
@@ -106,6 +132,8 @@ function renderTrack() {
   });
   trackLayout = {
     checkpointLengths,
+    drop,
+    gradient,
     path: progressPath,
     totalLength: progressPath.getTotalLength(),
   };
@@ -118,7 +146,7 @@ function updateProgress() {
   const targetPositions = navTargets.map((target) => (
     target.getBoundingClientRect().top + window.scrollY
   ));
-  const { checkpointLengths, path, totalLength } = trackLayout;
+  const { checkpointLengths, drop, gradient, path, totalLength } = trackLayout;
   let visibleLength = checkpointLengths[0];
 
   for (let index = 0; index < targetPositions.length - 1; index += 1) {
@@ -138,8 +166,22 @@ function updateProgress() {
   if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) {
     visibleLength = totalLength;
   }
-  path.style.strokeDasharray = `${Math.max(0, visibleLength)} ${totalLength}`;
+  visibleLength = Math.max(0, visibleLength);
+  path.style.strokeDasharray = `${visibleLength} ${totalLength}`;
   path.style.strokeDashoffset = "0";
+  const endpoint = path.getPointAtLength(visibleLength);
+  const previousPoint = path.getPointAtLength(Math.max(0, visibleLength - 1));
+  const tangentX = endpoint.x - previousPoint.x;
+  const tangentY = endpoint.y - previousPoint.y;
+  const tangentLength = Math.hypot(tangentX, tangentY) || 1;
+  const directionX = tangentX / tangentLength;
+  const directionY = tangentY / tangentLength;
+  const angle = Math.atan2(directionY, directionX) * 180 / Math.PI - 90;
+  gradient.setAttribute("cx", endpoint.x);
+  gradient.setAttribute("cy", endpoint.y);
+  gradient.setAttribute("fx", endpoint.x);
+  gradient.setAttribute("fy", endpoint.y);
+  drop.setAttribute("transform", `translate(${endpoint.x} ${endpoint.y}) rotate(${angle})`);
 }
 
 function setCurrentSection(id) {
