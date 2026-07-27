@@ -57,7 +57,8 @@ from the extended API migration and its typed-array result types.
 
 Use a persistent model when you solve more than once, modify a model, or need
 the broader solver API. The native `Highs_create()` handle lives until
-`dispose()`.
+`dispose()`. Read [model lifetime](#model-lifetime) before calling
+`createModel()`: garbage collection does not release its native memory.
 
 ```js
 const model = highs.createModel({
@@ -100,6 +101,47 @@ try {
 the instance and options; `clearSolver()` clears solver state; `clear()` resets
 the complete native instance state. `releaseMemory()` asks HiGHS to release
 reusable internal memory without destroying the model handle.
+
+### Model lifetime
+
+Each persistent model owns a `Highs_create()` allocation in Wasm memory.
+JavaScript garbage collection cannot release it. Losing the last JavaScript
+reference without disposing the model leaks that allocation, and repeatedly
+doing so can grow Wasm memory for the lifetime of the loaded runtime.
+
+For operation-scoped models, `withModel()` guarantees disposal after a
+synchronous callback returns or an asynchronous callback settles:
+
+```js
+const solution = await highs.withModel(modelData, async (model) => {
+  model.options.set("output_flag", false);
+  model.run();
+  return model.getSolution();
+});
+```
+
+The callback may return detached data, but must not retain or return the model
+itself because the model is disposed when `withModel()` finishes.
+
+TypeScript projects whose `lib` includes `ESNext.Disposable` can use explicit
+resource management:
+
+```ts
+using model = highs.createModel(modelData);
+model.run();
+```
+
+The runtime must provide `Symbol.dispose`, or install a polyfill before creating
+the model. Projects not using `ESNext.Disposable`, older runtimes, and long-lived
+models can continue to use `try`/`finally` with the idempotent `dispose()` method.
+The package declarations do not require `ESNext.Disposable` unless the consumer
+uses this syntax.
+
+Disposal invalidates the high-level model and its `raw`, `options`, and `info`
+views together. Every later native operation through one of those stale
+references throws `HighsDisposedError` in JavaScript before touching the freed
+Wasm allocation. Detached strings and typed arrays copied out before disposal
+remain safe to use.
 
 ### Sparse input
 

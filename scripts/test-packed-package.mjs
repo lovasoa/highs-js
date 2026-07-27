@@ -102,6 +102,7 @@ const problem = "Maximize\n obj: x\nSubject To\n c: x <= 2\nBounds\n 0 <= x\nEnd
   ]) {
     const highs = await loadHighs({ ...options, print() {}, printErr() {} });
     assert.equal(typeof highs.createModel, "function");
+    assert.equal(typeof highs.withModel, "function");
     assert.equal(highs.solve(problem).ObjectiveValue, 2);
   }
 })().catch((error) => {
@@ -122,6 +123,7 @@ import loadHighs from "highs";
 const highs = await loadHighs({ print() {}, printErr() {} });
 assert.equal(typeof highs.solve, "function");
 assert.equal(typeof highs.createModel, "function");
+assert.equal(typeof highs.withModel, "function");
 `,
   );
   run(process.execPath, [moduleTest], { cwd: temporaryDirectory });

@@ -20,7 +20,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && node tests/test.js && node --test tests/extended/*.test.cjs",
+    "test": "tsc && tsc -p tsconfig.runtime.json && tsc -p test-dts/tsconfig.json && tsc -p test-dts/tsconfig.disposable.json && node tests/test.js && node --test tests/extended/*.test.cjs",
     "test:package": "node scripts/test-packed-package.mjs",
     "test:demo": "playwright test",
     "build:demo": "node scripts/prepare-demo.mjs && npm run docs:api",

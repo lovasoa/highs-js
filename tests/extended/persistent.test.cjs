@@ -23,6 +23,98 @@ test("persistent models own and idempotently dispose a native instance", async (
   assert.throws(() => model.getDimensions(), /dispos/i);
 });
 
+test("models support conditional symbol disposal", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+  if (typeof Symbol.dispose !== "symbol") {
+    t.skip("Symbol.dispose is unavailable in this runtime");
+    return;
+  }
+
+  const model = highs.createModel(makeModel());
+  assert.equal(typeof model[Symbol.dispose], "function");
+  assert.equal(typeof model.raw[Symbol.dispose], "function");
+  model.raw[Symbol.dispose]();
+  model[Symbol.dispose]();
+  assert.equal(model.disposed, true);
+  assert.equal(model.raw.disposed, true);
+  for (const operation of [
+    () => model.getDimensions(),
+    () => model.raw.getDimensions(),
+    () => model.options.get("presolve"),
+    () => model.info.get("objective_function_value"),
+  ]) {
+    assert.throws(operation, (error) => {
+      assert.ok(error instanceof highs.errors.HighsDisposedError);
+      assert.equal(error.name, "HighsDisposedError");
+      assert.equal(error.operation, "dispose");
+      assert.match(error.message, /cannot use.*after disposal/i);
+      return true;
+    });
+  }
+
+  const raw = highs.raw.createModel();
+  assert.equal(typeof raw[Symbol.dispose], "function");
+  raw[Symbol.dispose]();
+  raw[Symbol.dispose]();
+  assert.equal(raw.disposed, true);
+});
+
+test("withModel disposes after synchronous success and failure", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  let completedModel;
+  const dimensions = highs.withModel(makeModel(), (model) => {
+    completedModel = model;
+    return model.getDimensions();
+  });
+  assert.equal(dimensions.numCols, 4);
+  assert.equal(completedModel.disposed, true);
+
+  const expected = new Error("operation failed");
+  let failedModel;
+  assert.throws(
+    () =>
+      highs.withModel((model) => {
+        failedModel = model;
+        throw expected;
+      }),
+    (error) => error === expected,
+  );
+  assert.equal(failedModel.disposed, true);
+});
+
+test("withModel retains models until asynchronous callbacks settle", async (t) => {
+  const highs = await loadRuntime();
+  if (!requireExtended(t, highs)) return;
+
+  let resolveOperation;
+  let completedModel;
+  const resultPromise = highs.withModel(makeModel(), async (model) => {
+    completedModel = model;
+    await new Promise((resolve) => {
+      resolveOperation = resolve;
+    });
+    return model.getDimensions().numRows;
+  });
+  assert.equal(completedModel.disposed, false);
+  resolveOperation();
+  assert.equal(await resultPromise, 2);
+  assert.equal(completedModel.disposed, true);
+
+  const expected = new Error("async operation failed");
+  let failedModel;
+  await assert.rejects(
+    highs.withModel(async (model) => {
+      failedModel = model;
+      throw expected;
+    }),
+    (error) => error === expected,
+  );
+  assert.equal(failedModel.disposed, true);
+});
+
 test("typed-array inputs are validated before changing native state", async (t) => {
   const highs = await loadRuntime();
   if (!requireExtended(t, highs)) return;

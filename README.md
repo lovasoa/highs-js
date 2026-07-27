@@ -97,13 +97,15 @@ Most programs need one of these three entry points.
 | Task | API |
 | --- | --- |
 | Solve one model already written in CPLEX LP format | `highs.solve(lpText, options)` |
-| Keep a model in memory, modify it, and solve it again | `highs.createModel(...)` |
+| Keep a model in memory, modify it, and solve it again | [`highs.createModel(...)`](#persistent-models) |
 | Call the stable HiGHS C API directly and retain numeric status codes | `highs.raw` |
 
 `highs.solve()` is the original compatibility API. It accepts CPLEX LP text and
 returns results keyed by variable name.
 
-A persistent `Model` owns one HiGHS instance until `dispose()`. Use it for
+A persistent `Model` owns one HiGHS instance until it is disposed. JavaScript
+garbage collection does not release that Wasm allocation; see
+[model lifetime](#model-lifetime) before using `highs.createModel()`. Use it for
 structured sparse input, repeated solves, model changes, callbacks, bases,
 ranging, IIS analysis, and other advanced features.
 
@@ -146,6 +148,41 @@ describes the algorithms in more depth.
 Create a model from LP text, MPS bytes, sparse arrays, or an empty instance. The
 following example keeps the production model in memory, changes one bound, and
 solves it again without reparsing the LP text.
+
+### Model lifetime
+
+Every model created by `highs.createModel()` owns native memory inside the Wasm
+runtime. Garbage collection does not call `Highs_destroy`, so abandoning a model
+without disposing it leaks that allocation. Repeated leaks can make Wasm memory
+grow for the rest of the runtime's lifetime.
+
+Prefer `withModel()` when the model only needs a lexical operation. It disposes
+after a synchronous callback returns or an asynchronous callback settles:
+
+```js
+const objective = highs.withModel(
+  { format: "lp", data: problem },
+  (model) => {
+    model.run();
+    return model.getObjectiveValue();
+  },
+);
+```
+
+TypeScript projects using `ESNext.Disposable` can use `using` when the runtime
+provides `Symbol.dispose` (or a polyfill installs it before model creation):
+
+```ts
+using model = highs.createModel({ format: "lp", data: problem });
+model.run();
+```
+
+For long-lived models and runtimes without `Symbol.dispose`, call the idempotent
+`model.dispose()` in `finally`. Do not retain a model passed to `withModel()`;
+it is disposed when the callback completes. Detached strings and typed arrays
+returned before disposal remain usable. Any later operation through a stale
+`model`, `model.raw`, `model.options`, or `model.info` reference throws a clear
+`HighsDisposedError` in JavaScript before the freed Wasm allocation is accessed.
 
 ```js
 const model = highs.createModel({ format: "lp", data: problem });

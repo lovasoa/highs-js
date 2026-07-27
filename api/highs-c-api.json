@@ -283,8 +283,8 @@
     }
   ],
   "overrides": {
-    "Highs_create": {"returnPolicy": "owned-handle", "js": ["raw.createModel", "createModel"], "reason": "Instance ownership is wrapped so destroy is guaranteed."},
-    "Highs_destroy": {"returnPolicy": "no-value", "js": ["RawModel.dispose", "Model.dispose"], "reason": "Never expose the native pointer or manual destroy."},
+    "Highs_create": {"returnPolicy": "owned-handle", "js": ["raw.createModel", "createModel", "withModel"], "reason": "Instance ownership is wrapped so destroy is guaranteed."},
+    "Highs_destroy": {"returnPolicy": "no-value", "js": ["RawModel.dispose", "RawModel[Symbol.dispose]", "Model.dispose", "Model[Symbol.dispose]", "withModel cleanup"], "reason": "Never expose the native pointer or manual destroy."},
     "Highs_version": {"rawName": "version", "js": ["RawRuntimeApi.version", "Highs.version"]},
     "Highs_versionMajor": {"rawName": "version", "js": ["RawRuntimeApi.version", "Highs.version.major"]},
     "Highs_versionMinor": {"rawName": "version", "js": ["RawRuntimeApi.version", "Highs.version.minor"]},

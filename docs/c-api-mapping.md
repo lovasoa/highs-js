@@ -27,8 +27,8 @@ the same C entry point.
 | `raw.lpCall()` | `Highs_lpCall` |
 | `raw.mipCall()` | `Highs_mipCall` |
 | `raw.qpCall()` | `Highs_qpCall` |
-| `createModel()` / `raw.createModel()` | `Highs_create` |
-| `dispose()` | `Highs_destroy` |
+| `createModel()` / `raw.createModel()` / `withModel()` | `Highs_create` |
+| `dispose()` / `[Symbol.dispose]()` / `withModel()` cleanup | `Highs_destroy` |
 | `clear()` | `Highs_clear` |
 | `clearModel()` | `Highs_clearModel` |
 | `clearSolver()` | `Highs_clearSolver` |
