@@ -42,6 +42,19 @@ try {
           (entry) => typeof entry?.filename === "string",
         );
   assert.equal(typeof packReport?.filename, "string");
+  assert.deepEqual(
+    packReport.files.map(({ path: filePath }) => filePath).sort(),
+    [
+      "LICENSE",
+      "README.md",
+      "build/highs.js",
+      "build/highs.mjs",
+      "build/highs.wasm",
+      "package.json",
+      "types.d.ts",
+    ],
+    "packed package contains unexpected files",
+  );
   const archive = path.join(temporaryDirectory, packReport.filename);
 
   run(
@@ -64,8 +77,7 @@ try {
     "build/highs.mjs",
     "build/highs.wasm",
     "types.d.ts",
-    "HiGHS/LICENSE.txt",
-    "HiGHS/THIRD_PARTY_NOTICES.md",
+    "LICENSE",
   ]) {
     assert.ok(
       fs.existsSync(path.join(installed, requiredFile)),
@@ -115,7 +127,7 @@ assert.equal(typeof highs.createModel, "function");
   run(process.execPath, [moduleTest], { cwd: temporaryDirectory });
 
   process.stdout.write(
-    `Packed package passed CommonJS, ESM, wasmBinary, wasmModule, and notice-file checks.\n`,
+    `Packed package passed content, CommonJS, ESM, wasmBinary, wasmModule, and license checks.\n`,
   );
 } finally {
   fs.rmSync(temporaryDirectory, { recursive: true, force: true });

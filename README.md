@@ -346,8 +346,8 @@ longer needed.
 - [Extended API reference](https://lovasoa.github.io/highs-js/docs/)
 - [Online one-shot demo](https://lovasoa.github.io/highs-js/)
 - [Persistent API Worker demo](https://lovasoa.github.io/highs-js/extended/)
-- [Migration guide](./docs/migration.md)
-- [JavaScript-to-C API mapping](./docs/c-api-mapping.md)
+- [Migration guide](https://lovasoa.github.io/highs-js/docs/migration/)
+- [JavaScript-to-C API mapping](https://lovasoa.github.io/highs-js/docs/c-api-mapping/)
 - [Canonical TypeScript declarations](./types.d.ts)
 - [Upstream HiGHS documentation](https://ergo-code.github.io/HiGHS/)
 

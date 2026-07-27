@@ -62,12 +62,6 @@
     "build/highs.js",
     "build/highs.mjs",
     "build/highs.wasm",
-    "package.json",
-    "types.d.ts",
-    "api/highs-c-api.generated.json",
-    "HiGHS/LICENSE.txt",
-    "HiGHS/THIRD_PARTY_NOTICES.md",
-    "docs",
-    "README.md"
+    "types.d.ts"
   ]
 }
