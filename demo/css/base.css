@@ -94,13 +94,13 @@ select:focus-visible, textarea:focus-visible {
 
 /* ── Header Navigation ── */
 .top-nav {
+  position: relative;
   max-width: 1120px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 2rem 1.1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 0;
   font-size: 0.78rem;
   font-weight: 600;
 }
@@ -109,34 +109,129 @@ select:focus-visible, textarea:focus-visible {
   position: absolute;
   left: 0;
   right: 0;
-  top: 4.85rem;
+  top: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #9ececc 18%, #9ececc 82%, transparent);
-  opacity: 0.55;
+  background: linear-gradient(90deg, transparent, #9ececc 24%, #9ececc 76%, transparent);
+  opacity: 0.38;
 }
 .top-nav-left a {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.8rem;
   color: var(--color-text);
   text-decoration: none;
-  font-size: 0.95rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 .brand-mark {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid #9ececc;
-  border-radius: 5px;
-  background: #fff;
-  color: var(--color-text);
-  font: 700 0.75rem/1 var(--font-mono);
+  width: 2.35rem;
+  height: 2.35rem;
+  overflow: visible;
+  fill: none;
 }
-.top-nav-right { gap: 1.7rem; }
-.top-nav-right a { color: var(--color-text-secondary); text-decoration: none; }
-.top-nav-right a:hover { color: #d90000; opacity: 1; }
+.brand-frame {
+  stroke: #8fbfbc;
+  stroke-width: 1;
+  stroke-linecap: square;
+}
+.brand-contour {
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.brand-contour-secondary {
+  stroke: #9ececc;
+  stroke-width: 1;
+}
+.brand-point {
+  fill: #b44a55;
+  stroke: var(--color-bg);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-point-breathe 4.8s ease-in-out infinite;
+}
+.brand-name {
+  display: grid;
+  gap: 0.18rem;
+  font-size: 0.94rem;
+  font-weight: 680;
+  line-height: 1;
+}
+.brand-name small {
+  color: #82908f;
+  font: 500 0.48rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.top-nav-left a:hover { opacity: 1; }
+.top-nav-left a:hover .brand-contour:not(.brand-contour-secondary) { stroke: #b44a55; }
+.top-nav-right {
+  position: relative;
+  display: grid;
+  width: min(47vw, 480px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-bottom: 0.9rem;
+}
+.top-nav-right a {
+  position: relative;
+  z-index: 1;
+  color: var(--color-text-secondary);
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 560;
+}
+.top-nav-right a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1.03rem;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #8fbfbc;
+  border-radius: 50%;
+  background: var(--color-bg);
+  transform: translateX(-50%);
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+.top-nav-right a:hover { color: var(--color-text); opacity: 1; }
+.top-nav-right a:hover::after {
+  border-color: #b44a55;
+  background: #b44a55;
+  transform: translateX(-50%) scale(1.25);
+}
+.top-nav-signal {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  overflow: visible;
+  pointer-events: none;
+}
+.top-nav-signal-base,
+.top-nav-signal-pulse {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.top-nav-signal-base { stroke: #b8d6d4; stroke-width: 1; }
+.top-nav-signal-pulse {
+  stroke: #b44a55;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-dasharray: 18 402;
+  animation: nav-signal-travel 9s linear infinite;
+}
+@keyframes nav-signal-travel {
+  from { stroke-dashoffset: 42; }
+  to { stroke-dashoffset: -378; }
+}
+@keyframes brand-point-breathe {
+  0%, 70%, 100% { opacity: 0.72; transform: scale(0.86); }
+  82% { opacity: 1; transform: scale(1.18); }
+}
 
 /* ── Hero Section ── */
 .hero {
@@ -1059,16 +1154,22 @@ input[type=number] { width: 110px; }
 
 @media (max-width: 640px) {
   .top-nav {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: center;
+    gap: 0.55rem;
   }
+  .brand-name small { display: none; }
+  .top-nav-right { width: min(57vw, 310px); }
+  .top-nav-right a { font: 500 clamp(0.5rem, 2vw, 0.58rem)/1 var(--font-mono); }
   .hero {
     padding: 2.5rem 1rem 1.5rem;
   }
   .container {
     padding: 0 1rem 3rem;
   }
+}
+
+@media (max-width: 400px) {
+  .brand-mark { width: 2rem; height: 2rem; }
+  .brand-name { font-size: 0.82rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
