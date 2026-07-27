@@ -36,7 +36,7 @@ test("streams, interrupts, resumes, and restarts a MIP search", async ({ page })
   await stop.click();
   await expect(state).toContainText(/status interrupted/i);
 
-  await page.getByRole("combobox", { name: "Number of cities" }).selectOption("30");
+  await page.getByRole("combobox", { name: "Number of cities" }).selectOption("20");
   await restart.click();
   await expect(page.locator("#callback-verdict-title")).toContainText(/Optimal tour proven/i);
   await expect(incumbent).toHaveText(await page.locator("#callback-bound").textContent());
