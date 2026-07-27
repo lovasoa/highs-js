@@ -1,0 +1,119 @@
+<section class="tab-panel" id="panel-build">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>BUILD // PERSISTENT MODEL &amp; CSC MATRIX</span>
+      <span>highs.createModel()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3 id="build-title"><a href="https://en.wikipedia.org/wiki/Production_planning" target="_blank" rel="noopener">Production Planning</a> Optimization</h3>
+      <p id="build-explain">Use a persistent model when an application builds <a href="https://en.wikipedia.org/wiki/Linear_programming" target="_blank" rel="noopener">linear programming</a> models from data, changes coefficients or bounds, or solves the same structure repeatedly. This production example maximizes revenue under capacity constraints and passes the constraint matrix in <a href="https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)" target="_blank" rel="noopener">compressed sparse column (CSC)</a> form.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs.createModel()</code></a><a href="docs/interfaces/Model.html#passmodel"><code>Model.passModel()</code></a><a href="docs/interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <div class="section-intro-note">The model lifecycle and CSC representation below apply to all three examples. Each model then has its own visualization and solve result.</div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/build-sparse-models/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="build-core-code" spellcheck="false">// A persistent model owns one native HiGHS instance. Reuse it for
+// coefficient changes and repeated solves; dispose it when finished.
+const model = highs.createModel();
+
+model.passModel({
+  numCols: colCost.length, numRows: rowLower.length,
+  // objectiveDirection is "minimize" or "maximize" in application data.
+  sense: highs.constants.objectiveSense[objectiveDirection],
+
+  // Each column has an objective coefficient and lower/upper bounds.
+  // Each row has lower/upper activity bounds; equal values mean equality.
+  colCost, colLower, colUpper, rowLower, rowUpper,
+
+  matrix: {
+    format: "csc", // Store A one column at a time.
+    numRows, numCols,
+    starts, // starts[j] is the first entry belonging to column j.
+    indices, // Row index for each nonzero matrix entry.
+    values   // Coefficient paired with each row index.
+  }
+});
+
+const run = model.run();
+if (run.modelStatus !== highs.constants.modelStatus.optimal) {
+  throw new Error(`Model status: ${run.modelStatus}`);
+}
+
+// colValue is the primal decision vector; colDual contains reduced costs.
+const { colValue, colDual } = model.getSolution();
+model.dispose();</textarea>
+      </div>
+    </div>
+
+    <article class="model-example" id="example-production">
+      <div class="model-example-heading"><span>01</span><div><h4>Production planning</h4><p>See how each product contributes to constrained resources and total revenue.</p></div></div>
+      <div class="model-story" data-live-example="production">
+        <p>A workshop makes chairs (<var>x</var>) and tables (<var>y</var>). A chair earns $<input class="story-input" id="production-chair-profit" type="number" value="45" min="0" step="1" aria-label="Profit per chair"> and a table earns $<input class="story-input" id="production-table-profit" type="number" value="80" min="0" step="1" aria-label="Profit per table">.</p>
+        <p>Each chair uses <input class="story-input" id="production-chair-labor" type="number" value="4" min="0" step="0.5" aria-label="Labor hours per chair"> labor hours and <input class="story-input" id="production-chair-wood" type="number" value="3" min="0" step="0.5" aria-label="Wood units per chair"> wood units. Each table uses <input class="story-input" id="production-table-labor" type="number" value="6" min="0" step="0.5" aria-label="Labor hours per table"> labor hours and <input class="story-input" id="production-table-wood" type="number" value="5" min="0" step="0.5" aria-label="Wood units per table"> wood units.</p>
+        <p>The workshop has <input class="story-input" id="production-labor-capacity" type="number" value="240" min="1" step="1" aria-label="Available labor hours"> labor hours and <input class="story-input" id="production-wood-capacity" type="number" value="180" min="1" step="1" aria-label="Available wood units"> wood units. The chart shows how the optimal mix consumes both resources and earns revenue.</p>
+      </div>
+      <div class="model-state" id="production-state">Preparing the first solution…</div>
+      <div class="sparse-explorer" id="build-matrix-explorer" aria-label="Interactive constraint matrix storage explanation"></div>
+      <div class="model-viz" id="production-viz"><div class="viz-loading">Preparing visualization…</div></div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val" id="build-status">READY</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">OBJECTIVE</span>
+          <span class="stat-val" id="build-obj-val">--</span>
+        </div>
+      </div>
+      <h4>Primal Assignment Allocation</h4>
+      <div class="progress-bar-group" id="build-visual-bars">
+        <div class="progress-item">
+          <div class="progress-label"><span>x0</span><span>--</span></div>
+          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
+        </div>
+      </div>
+    </div>
+      <div class="textual-solution">
+        <label>Structured production solution:</label>
+        <div class="output placeholder" id="build-output">Preparing the initial production plan…</div>
+      </div>
+      <div class="timing-bar" id="build-timing">Waiting for solver</div>
+    </article>
+
+    <article class="model-example" id="example-diet">
+      <div class="model-example-heading"><span>02</span><div><h4>Minimum-cost <a href="https://en.wikipedia.org/wiki/Diet_problem" target="_blank" rel="noopener">diet problem</a></h4><p>Nutrient bullet charts show requirements, excess, and each food's contribution.</p></div></div>
+      <div class="model-story" data-live-example="diet">
+        <p>I can buy portions of oats for $<input class="story-input" id="diet-oats-cost" type="number" value="3" min="0" step="0.1" aria-label="Oats cost">, tofu for $<input class="story-input" id="diet-tofu-cost" type="number" value="2.5" min="0" step="0.1" aria-label="Tofu cost">, and lentils for $<input class="story-input" id="diet-lentils-cost" type="number" value="1.5" min="0" step="0.1" aria-label="Lentils cost">.</p>
+        <p>The fixed nutrition table below maps each portion to calories, protein, and fiber. My day needs at least <input class="story-input" id="diet-calories" type="number" value="2000" min="1" step="50" aria-label="Required calories"> calories, <input class="story-input" id="diet-protein" type="number" value="50" min="1" step="1" aria-label="Required protein"> g protein, and <input class="story-input" id="diet-fiber" type="number" value="40" min="1" step="1" aria-label="Required fiber"> g fiber. The bars compare the cheapest diet with each minimum.</p>
+      </div>
+      <div class="model-state" id="diet-state">Preparing the first solution…</div>
+      <div class="model-viz" id="diet-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
+
+    <article class="model-example" id="example-transport">
+      <div class="model-example-heading"><span>03</span><div><h4><a href="https://en.wikipedia.org/wiki/Transportation_theory_(mathematics)" target="_blank" rel="noopener">Transportation problem</a></h4><p>Flow width represents shipments; route color represents unit cost.</p></div></div>
+      <div class="model-story" data-live-example="transport">
+        <p>Plant A can ship <input class="story-input" id="transport-supply-a" type="number" value="80" min="0" step="1" aria-label="Plant A supply"> units and Plant B can ship <input class="story-input" id="transport-supply-b" type="number" value="75" min="0" step="1" aria-label="Plant B supply"> units. Towns 1–4 need exactly <input class="story-input" id="transport-demand-1" type="number" value="45" min="0" step="1" aria-label="Town 1 demand">, <input class="story-input" id="transport-demand-2" type="number" value="20" min="0" step="1" aria-label="Town 2 demand">, <input class="story-input" id="transport-demand-3" type="number" value="30" min="0" step="1" aria-label="Town 3 demand">, and <input class="story-input" id="transport-demand-4" type="number" value="15" min="0" step="1" aria-label="Town 4 demand"> units.</p>
+        <p>Shipping from A costs $<input class="story-input" id="transport-a1" type="number" value="8" min="0" step="1" aria-label="A to town 1 cost">, $<input class="story-input" id="transport-a2" type="number" value="6" min="0" step="1" aria-label="A to town 2 cost">, $<input class="story-input" id="transport-a3" type="number" value="10" min="0" step="1" aria-label="A to town 3 cost">, and $<input class="story-input" id="transport-a4" type="number" value="9" min="0" step="1" aria-label="A to town 4 cost"> per unit. From B it costs $<input class="story-input" id="transport-b1" type="number" value="9" min="0" step="1" aria-label="B to town 1 cost">, $<input class="story-input" id="transport-b2" type="number" value="12" min="0" step="1" aria-label="B to town 2 cost">, $<input class="story-input" id="transport-b3" type="number" value="13" min="0" step="1" aria-label="B to town 3 cost">, and $<input class="story-input" id="transport-b4" type="number" value="7" min="0" step="1" aria-label="B to town 4 cost">. Thick routes carry more of the minimum-cost plan.</p>
+      </div>
+      <div class="model-state" id="transport-state">Preparing the first solution…</div>
+      <div class="model-viz" id="transport-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      Persistent Model API • Compressed Sparse Column (CSC) matrix • Explicit native lifetime
+    </div>
+  </div>
+</section>

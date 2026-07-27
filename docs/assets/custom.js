@@ -6,6 +6,7 @@ const exampleCode = document.querySelector("#facility-example + pre code");
 if (exampleCode) {
   const apiLinks = new Map([
     ["loadHighs", "functions/default.html"],
+    ["locateFile", "interfaces/InitOptions.html#locatefile-1"],
     ["createModel", "types/Highs.html"],
     ["set", "interfaces/OptionStore.html#set"],
     ["run", "interfaces/Model.html#run"],

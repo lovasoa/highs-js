@@ -15,7 +15,14 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="default"><span class="tsd-kind-call-signature">default</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/InitOptions.html" class="tsd-signature-type tsd-kind-interface">InitOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/Highs.html" class="tsd-signature-type tsd-kind-type-alias">Highs</a><span class="tsd-signature-symbol">&gt;</span><a href="#default" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Loads and instantiates the runtime asynchronously; solver calls thereafter block synchronously.</p>
+<div class="tsd-comment tsd-typography"><p>Loads and instantiates the Wasm runtime asynchronously; solver calls
+thereafter block synchronously.</p>
+<p>The loader fetches <code>highs.wasm</code> from the same location as the JavaScript
+module by default. Bundlers that cannot resolve the <code>.wasm</code> asset (or that
+rewrite asset URLs) will cause initialization to fail; in those cases pass
+<a href="../interfaces/InitOptions.html" class="tsd-kind-interface">InitOptions</a> with <code>locateFile</code>, <code>wasmBinary</code>, or <code>wasmModule</code> to
+supply the binary explicitly. Browser applications should run non-trivial
+solves in a Web Worker.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -23,7 +30,7 @@
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/InitOptions.html" class="tsd-signature-type tsd-kind-interface">InitOptions</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/Highs.html" class="tsd-signature-type tsd-kind-type-alias">Highs</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1061">types.d.ts:1061</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1131">types.d.ts:1131</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

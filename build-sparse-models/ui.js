@@ -1,4 +1,4 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { denseToCSC, getExample } from "../model-data.js";
 import { element, renderProgressBars, setOutput, setStatus, setTiming } from "../ui.js";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent } from "../live-examples.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const buildOutput = document.getElementById("build-output");
 const buildTiming = document.getElementById("build-timing");
 const buildObjVal = document.getElementById("build-obj-val");

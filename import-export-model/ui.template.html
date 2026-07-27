@@ -1,0 +1,90 @@
+<section class="tab-panel" id="panel-io">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>I/O // IN-MEMORY SERIALIZATION &amp; NORMALIZATION</span>
+      <span>exportModel("lp")</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Import, inspect, and export models</h3>
+      <p>Use in-memory model I/O to accept LP or <a href="https://en.wikipedia.org/wiki/MPS_(format)" target="_blank" rel="noopener">MPS</a> data from uploads, generated files, or another service, then solve or convert it without exposing a native filesystem path. LP is readable text; MPS preserves a more rigid interchange structure and is represented as bytes where required. Exported models are normalized representations of HiGHS’ internal model, so comments and original formatting are not preserved.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/EncodedModel.html"><code>EncodedModel</code></a><a href="docs/interfaces/Model.html#exportmodel"><code>Model.exportModel()</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/import-export-model/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="io-core-code" spellcheck="false">// Parse model data already held in JavaScript memory. For LP, data is a
+// string; MPS import/export may use Uint8Array to preserve exact bytes.
+const model = highs.createModel({ format: "lp", data: lpText });
+
+// Export serializes HiGHS' current internal model. It is suitable for model
+// exchange and debugging, but does not preserve comments or source layout.
+const normalizedLp = model.exportModel("lp");
+
+const run = model.run();
+if (run.modelStatus === highs.constants.modelStatus.optimal) {
+  const { colValue } = model.getSolution();
+  console.log(colValue);
+}
+model.dispose();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>CPLEX LP Input Text</h4>
+      <textarea class="editor-compact" id="io-input" spellcheck="false">Maximize
+ obj: 2 x + 3 y
+Subject To
+ r0: x + y &lt;= 10
+ r1: 2 x + y &lt;= 16
+Bounds
+ 0 &lt;= x
+ 0 &lt;= y
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="io-load">Load LP</button>
+        <button class="btn ghost" id="io-export">Export LP</button>
+        <button class="btn ghost" id="io-solve">Solve Model</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">VARIABLES</span>
+          <span class="stat-val" id="io-variable-count">2</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">CONSTRAINTS</span>
+          <span class="stat-val" id="io-constraint-count">2</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">PARSER STATUS</span>
+          <span class="stat-val" id="io-status-val">READY</span>
+        </div>
+      </div>
+      <div class="model-viz" id="io-viz"></div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Model I/O Output:</label>
+      <div class="output placeholder" id="io-output">Load a model to begin.</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="io-timing">Waiting for solver</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      In-memory LP/MPS parser and exporter • Normalized output • Source comments and formatting not preserved
+    </div>
+  </div>
+</section>

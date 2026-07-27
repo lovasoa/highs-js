@@ -1,7 +1,5 @@
   @media (max-width: 760px) {
     .top-nav { padding: 1rem; flex-direction: row; align-items: center; }
-    .top-nav::after { top: 4.1rem; }
-    .top-nav-right a:not(:last-child) { display: none; }
     .hero { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1rem 4.5rem; }
     .hero h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
     .hero-sample { max-width: 390px; }

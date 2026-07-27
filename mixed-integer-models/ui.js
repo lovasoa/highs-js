@@ -1,9 +1,10 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { buildFacilityPayload, getFacilityDefinition } from "../model-data.js";
 import { element, setOutput, setStatus, setTiming } from "../ui.js";
 import { renderFacilityViz, renderKnapsackViz } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent } from "../live-examples.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const mipOutput = document.getElementById("mip-output");
 const mipCapacity = document.getElementById("mip-capacity");
 const mipTiming = document.getElementById("mip-timing");

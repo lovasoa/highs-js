@@ -1,0 +1,90 @@
+<section class="tab-panel active" id="panel-lp">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>LP // ONE-SHOT CPLEX TEXT SOLVER</span>
+      <span>highs.solve()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Solve a model from LP text</h3>
+      <p>Use this entry point when a <a href="https://en.wikipedia.org/wiki/Linear_programming" target="_blank" rel="noopener">linear programming</a> model already exists in CPLEX LP format, or when generating readable model text is simpler than assembling sparse arrays. <code>solve()</code> parses and solves the text in one call, then returns a name-keyed result with the objective, column values, row values, duals, and basis statuses. It reparses the model on every call; use a persistent model for repeated solves or incremental changes.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs</code></a><a href="docs/types/LegacyHighs.html#solve"><code>LegacyHighs.solve()</code></a><a href="docs/types/LegacyHighsSolution.html"><code>LegacyHighsSolution</code></a></p>
+    </div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/solve-lp-text/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="lp-core-code" spellcheck="false">// lpText uses the human-readable CPLEX LP format. It can include
+// continuous, integer, and binary variables in one model.
+const result = highs.solve(lpText, { output_flag: false });
+
+// Always inspect Status before reading a solution: a model may be
+// infeasible, unbounded, or stopped by a configured limit.
+if (result.Status !== "Optimal") {
+  throw new Error(`Solve ended with status: ${result.Status}`);
+}
+
+// Columns is keyed by the variable names declared in the LP text.
+const objective = result.ObjectiveValue;
+const x = result.Columns.x.Primal;</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>Interactive CPLEX LP Text Model</h4>
+       <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
+ obj: 3 x + 2 y
+Subject To
+ material: 2 x + y &lt;= 9
+ labor: x + 2 y &lt;= 9
+Bounds
+ x &gt;= 0
+ y &gt;= 0
+End</textarea>
+      <div class="btn-row">
+        <button class="btn" id="lp-solve">Solve LP</button>
+        <button class="btn ghost" id="lp-reset">Reset Model</button>
+      </div>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val" id="lp-status">READY</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">OPTIMAL OBJECTIVE</span>
+          <span class="stat-val" id="lp-obj-val">15.0000</span>
+        </div>
+      </div>
+      <h4>Why this point is optimal</h4>
+      <div id="lp-visual-bars">
+        <div class="progress-item">
+          <div class="progress-label"><span>x0</span><span>--</span></div>
+          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Structured Result Object:</label>
+      <div class="output placeholder" id="lp-output">Loading HiGHS…</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="lp-timing">Waiting for solver</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      Compatibility solve() API • CPLEX LP parser • Name-keyed result object • Reparsed on each call
+    </div>
+  </div>
+</section>

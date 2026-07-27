@@ -26,7 +26,7 @@ of <code>Q</code>; do not pre-multiply them by <code>0.5</code>.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">HessianInput</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#dimension">dimension</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#format">format</a><span class="tsd-signature-symbol">:</span> <a href="../types/HessianFormat.html" class="tsd-signature-type tsd-kind-type-alias">HessianFormat</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#indices">indices</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#starts">starts</a><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#values">values</a><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1633">types.d.ts:1633</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1707">types.d.ts:1707</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -52,7 +52,7 @@ Hessian coordinate per decision variable. It must be a non-negative signed
 32-bit integer.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1650">types.d.ts:1650</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1724">types.d.ts:1724</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="format"><code class="tsd-tag">Readonly</code><span>format</span><a href="#format" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">format</span><span class="tsd-signature-symbol">:</span> <a href="../types/HessianFormat.html" class="tsd-signature-type tsd-kind-type-alias">HessianFormat</a></div>
@@ -64,7 +64,7 @@ off-diagonal value must be supplied in both symmetric coordinates and the
 resulting matrix must be symmetric.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1643">types.d.ts:1643</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1717">types.d.ts:1717</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="indices"><code class="tsd-tag">Readonly</code><span>indices</span><a href="#indices" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">indices</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
@@ -77,7 +77,7 @@ duplicate row index. The array length must equal <code>values.length</code> and 
 final <code>starts</code> entry.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1673">types.d.ts:1673</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1747">types.d.ts:1747</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="starts"><code class="tsd-tag">Readonly</code><span>starts</span><a href="#starts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">starts</span><span class="tsd-signature-symbol">:</span> <a href="../types/IndexInput.html" class="tsd-signature-type tsd-kind-type-alias">IndexInput</a></div>
@@ -91,7 +91,7 @@ For example, <code>[0, 2, 3]</code> means column 0 has two stored entries and co
 has one.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1662">types.d.ts:1662</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1736">types.d.ts:1736</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="values"><code class="tsd-tag">Readonly</code><span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">values</span><span class="tsd-signature-symbol">:</span> <a href="../types/NumberInput.html" class="tsd-signature-type tsd-kind-type-alias">NumberInput</a></div>
@@ -105,7 +105,7 @@ and the final <code>starts</code> entry. For triangular encoding of
 <code>indices: [0, 1, 1]</code>, and <code>values: [2, 1, 4]</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/e1ba628365b0ad3fc08ea56bd95ae620c0ab2feb/types.d.ts#L1685">types.d.ts:1685</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/lovasoa/highs-js/blob/4163bd706895ac4c6354c3031e00c93fff946f12/types.d.ts#L1759">types.d.ts:1759</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

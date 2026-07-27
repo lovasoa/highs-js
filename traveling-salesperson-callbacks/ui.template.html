@@ -1,0 +1,50 @@
+<section class="tab-panel" id="panel-callbacks">
+  <div class="example-card callback-lab">
+    <div class="tech-header-line"><span>CALLBACKS // OBSERVE AND CONTROL A LIVE SEARCH</span><span>HighsCallbackMap</span></div>
+    <div class="problem-header">
+      <h3>Live hooks to observe and steer the optimizer</h3>
+      <p>A dispatcher needs the shortest round trip visiting every city exactly once: the <a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem" target="_blank" rel="noopener">traveling salesperson problem</a>. Binary route choices and subtour-elimination constraints create a deliberately difficult <a href="https://en.wikipedia.org/wiki/Integer_programming" target="_blank" rel="noopener">mixed-integer program</a>. The solver starts with a poor crossing tour, then <a href="https://en.wikipedia.org/wiki/Callback_(computer_programming)" target="_blank" rel="noopener">callbacks</a> stream genuinely shorter incumbent routes for minutes instead of hiding the search behind one blocking call. A dedicated <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers" target="_blank" rel="noopener">Web Worker</a> keeps the search off the page's main thread.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a><a href="docs/interfaces/MipImprovingSolutionCallbackEvent.html"><code>mipImprovingSolution</code></a><a href="docs/interfaces/MipInterruptCallbackEvent.html"><code>mipInterrupt</code></a></p>
+    </div>
+    <div class="code-section">
+      <div class="code-header"><a href="https://github.com/lovasoa/highs-js/blob/main/demo/traveling-salesperson-callbacks/worker.js" target="_blank" rel="noopener">Solving code</a><span>callbacks are synchronous</span></div>
+      <div class="code-editor-box"><textarea id="callbacks-core-code" spellcheck="false">// message.stopBuffer is a SharedArrayBuffer created by the UI and sent
+// to this Worker before run(); writing 1 to it does not need our event loop.
+const workerStopFlag = new Int32Array(message.stopBuffer);
+model.run({
+  [highs.constants.callbackType.mipImprovingSolution](event) {
+    postMessage({ type: "incumbent", solution: event.data.mip_solution });
+  },
+  [highs.constants.callbackType.mipLogging](event) {
+    postMessage({ type: "metrics", gap: event.data.mip_gap });
+  },
+  [highs.constants.callbackType.mipInterrupt](event) {
+    if (Atomics.load(workerStopFlag, 0) !== 0) event.interrupt();
+  }
+});</textarea></div>
+    </div>
+    <div class="model-story callback-story">
+      <p>The dispatcher must visit <select class="story-input story-select" id="callback-size" aria-label="Number of cities"><option value="30">30 cities for a quick search</option><option value="60" selected>60 cities for a sustained search</option><option value="70">70 cities for an extreme search</option></select> and return to the depot. The initial route visits cities in their input order, intentionally leaving many crossings for HiGHS to remove.</p>
+      <p>Let <a href="https://en.wikipedia.org/wiki/Branch_and_cut" target="_blank" rel="noopener">branch-and-cut</a> continue until I stop it, or ask the native callback to <select class="story-input story-select" id="callback-auto-stop" aria-label="Automatic callback cutoff"><option value="0">keep searching</option><option value="15">interrupt after 15 seconds</option><option value="60">interrupt after 60 seconds</option><option value="120">interrupt after two minutes</option></select>. Every shorter feasible tour is posted back immediately. Stop and Resume retain the model; Restart from scratch rebuilds it.</p>
+      <div class="btn-row"><button class="btn" id="callback-start">Start search</button><button class="btn callback-stop" id="callback-stop" disabled>Stop now</button><button class="btn ghost" id="callback-restart" disabled>Restart from scratch</button></div>
+    </div>
+    <div class="model-state" id="callback-state" data-state="ready" aria-live="polite">Choose a challenge and launch the dedicated solver Worker.</div>
+    <div class="callback-verdict" id="callback-verdict" hidden aria-live="polite">
+      <strong id="callback-verdict-title">Search ready</strong>
+      <span id="callback-verdict-detail">Launch the solver to begin.</span>
+    </div>
+    <div class="stat-grid callback-stats">
+      <div class="stat-box" id="callback-incumbent-box"><span class="stat-label" id="callback-incumbent-label">SHORTEST TOUR</span><span class="stat-val" id="callback-incumbent">--</span></div>
+      <div class="stat-box" id="callback-bound-box"><span class="stat-label" id="callback-bound-label">LOWER BOUND</span><span class="stat-val" id="callback-bound">--</span></div>
+      <div class="stat-box"><span class="stat-label">MIP GAP</span><span class="stat-val" id="callback-gap">--</span></div>
+      <div class="stat-box"><span class="stat-label">SEARCH NODES</span><span class="stat-val" id="callback-nodes">--</span></div>
+      <div class="stat-box"><span class="stat-label">ELAPSED</span><span class="stat-val" id="callback-elapsed">--</span></div>
+    </div>
+    <div class="callback-stage">
+      <div><h4 id="callback-tour-title">Current shortest tour</h4><canvas id="callback-graph-viz" aria-label="Cities connected by the current shortest tour"></canvas></div>
+      <div><h4 id="callback-progress-title">Tour length and lower bound</h4><div id="callback-progress-viz" class="callback-progress-empty">Waiting for callback events…</div></div>
+    </div>
+    <div class="section-intro-note" id="callback-interrupt-note">Preparing the callback interruption channel…</div>
+    <div class="metadata-footer">60-city asymmetric route MIP • Dedicated Web Worker • Streamed detached callback snapshots • Native callback interruption • Manual hard stop</div>
+  </div>
+</section>

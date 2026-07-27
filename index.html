@@ -4,34 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="highs-js packages the open-source HiGHS linear, mixed-integer, and convex quadratic optimization solver for Node.js and browsers">
-<title>highs-js — HiGHS for JavaScript</title>
+<title>Linear Programming for JavaScript - HiGHS-JS</title>
 <script src="coi-serviceworker.js"></script>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/examples.css">
 <link rel="stylesheet" href="css/navigation.css">
 </head>
 <body>
-
-<!-- ═══════════ TOP NAVIGATION ═══════════ -->
 <nav class="top-nav">
   <div class="top-nav-left">
-    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener"><span class="brand-mark">H</span> highs-js</a>
+    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener" aria-label="highs-js on GitHub">
+      <svg class="brand-mark" viewBox="0 0 42 42" aria-hidden="true">
+        <path class="brand-frame" d="M5.5 36.5V5.5h31" />
+        <path class="brand-contour" d="M10 29.5 17 22l6 3 9-11" />
+        <path class="brand-contour brand-contour-secondary" d="m10 35 8-8.5 6 2.5 8-9" />
+        <circle class="brand-point" cx="23" cy="25" r="2.25" />
+      </svg>
+      <span class="brand-name">highs-js<small>optimization / wasm</small></span>
+    </a>
   </div>
   <div class="top-nav-right">
-    <a href="#capabilities">Capabilities</a>
-    <a href="#examples">Examples</a>
-    <a href="docs/">API reference</a>
-    <a href="https://www.npmjs.com/package/highs" target="_blank" rel="noopener">npm</a>
+    <svg class="top-nav-signal" viewBox="0 0 480 18" preserveAspectRatio="none" aria-hidden="true">
+      <path class="top-nav-signal-base" d="M30 9H450" />
+      <path class="top-nav-signal-pulse" pathLength="420" d="M30 9H450" />
+    </svg>
+    <a href="#capabilities"><span>Capabilities</span></a>
+    <a href="#examples"><span>Examples</span></a>
+    <a href="docs/"><span>API reference</span></a>
+    <a href="https://www.npmjs.com/package/highs" target="_blank" rel="noopener"><span>npm</span></a>
   </div>
 </nav>
 
-<!-- ═══════════ HERO ═══════════ -->
 <header class="hero">
   <div class="hero-copy">
-    <div class="hero-kicker">highs-js / JavaScript + WebAssembly</div>
-    <h1>HiGHS for JavaScript.</h1>
-    <p><strong>The open-source HiGHS optimization solver, packaged for Node.js and modern browsers.</strong> Build and solve linear, mixed-integer, and convex quadratic models from JavaScript.</p>
-    <div class="install-line">npm install highs <span>Node.js 18+</span></div>
+    <div class="hero-kicker">highs-js / TypeScript + WebAssembly</div>
+    <h1>Linear Optimizer for JavaScript.</h1>
+    <p><strong>The open-source <a href="https://github.com/ERGO-Code/HiGHS">HiGHS</a> optimization solver, packaged for Node.js and modern browsers.</strong> Build and solve linear, mixed-integer, and convex quadratic models from JavaScript and TypeScript.</p>
+    <div class="install-line">npm install highs@next <span>Node.js 18+</span></div>
   </div>
   <div class="hero-sample" aria-label="JavaScript API example">
     <div class="hero-sample-header"><span>quick start</span><code>ES module</code></div>
@@ -43,6 +52,7 @@ const highs = await loadHighs();
 const result = highs.solve(lpText);
 console.log(result.ObjectiveValue);</pre>
     <div class="result">LP · MIP · convex QP</div>
+    <div class="hero-sample-links"><a href="docs/interfaces/InitOptions.html#locatefile-1">Wasm loading</a></div>
   </div>
 </header>
 
@@ -55,17 +65,17 @@ console.log(result.ObjectiveValue);</pre>
   <div class="problem-types">
     <article class="problem-type">
       <code>LP</code>
-      <h3>Linear programs</h3>
+      <h3><a href="https://en.wikipedia.org/wiki/Linear_programming" target="_blank" rel="noopener">Linear programs</a></h3>
       <p>Continuous decisions with a linear objective and linear row bounds. HiGHS provides revised simplex, interior-point with crossover, and PDLP algorithms.</p>
     </article>
     <article class="problem-type">
       <code>MILP</code>
-      <h3>Mixed-integer programs</h3>
+      <h3><a href="https://en.wikipedia.org/wiki/Integer_programming" target="_blank" rel="noopener">Mixed-integer programs</a></h3>
       <p>Linear models with integer, binary, or semi-continuous columns. HiGHS uses branch-and-cut with presolve, heuristics, and gap-based stopping.</p>
     </article>
     <article class="problem-type">
       <code>QP</code>
-      <h3>Convex quadratic programs</h3>
+      <h3><a href="https://en.wikipedia.org/wiki/Quadratic_programming" target="_blank" rel="noopener">Convex quadratic programs</a></h3>
       <p>Continuous columns, linear constraints, and a convex quadratic objective supplied as a sparse Hessian. Non-convex QP and MIQP are outside HiGHS’ scope.</p>
     </article>
   </div>
@@ -92,968 +102,47 @@ console.log(result.ObjectiveValue);</pre>
 </aside>
 
 <hr class="section-divider">
-
 <h2 class="demo-heading" id="examples">Runnable API examples</h2>
 
 <div class="container">
-
-<!-- ═══════════ SCROLL NAVIGATION ═══════════ -->
-<nav class="tabs" id="tabs">
-  <div class="nav-group">
-    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Model lifecycle</strong></div>
-    <a class="nav-item nav-item-root" href="#panel-lp"><span class="nav-marker">01</span><span class="nav-copy"><strong>One-shot solve</strong><small>solve(lpText)</small></span></a>
-    <div class="nav-branch">
-      <a class="nav-item nav-item-root" href="#panel-build"><span class="nav-marker">02</span><span class="nav-copy"><strong>Persistent models</strong><small>createModel()</small></span></a>
-      <div class="nav-children">
-        <a class="nav-item nav-item-child" href="#example-production"><span class="nav-copy"><strong>Production planning</strong><small>maximize revenue</small></span></a>
-        <a class="nav-item nav-item-child" href="#example-diet"><span class="nav-copy"><strong>Diet problem</strong><small>minimize cost</small></span></a>
-        <a class="nav-item nav-item-child" href="#example-transport"><span class="nav-copy"><strong>Transportation</strong><small>route shipments</small></span></a>
-      </div>
-    </div>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Problem structure</strong></div>
-    <div class="nav-branch">
-      <a class="nav-item nav-item-root" href="#panel-mip"><span class="nav-marker">03</span><span class="nav-copy"><strong>Integer decisions</strong><small>integrality · MIP</small></span></a>
-      <div class="nav-children">
-        <a class="nav-item nav-item-child" href="#example-knapsack"><span class="nav-copy"><strong>0/1 knapsack</strong><small>binary selection</small></span></a>
-        <a class="nav-item nav-item-child" href="#example-facility"><span class="nav-copy"><strong>Facility location</strong><small>fixed-charge model</small></span></a>
-      </div>
-    </div>
-    <a class="nav-item nav-item-root" href="#panel-qp"><span class="nav-marker">04</span><span class="nav-copy"><strong>Quadratic objectives</strong><small>passHessian()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-multiobjective"><span class="nav-marker">05</span><span class="nav-copy"><strong>Decision priorities</strong><small>addLinearObjective()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-callbacks"><span class="nav-marker">06</span><span class="nav-copy"><strong>Live MIP search</strong><small>HighsCallbackMap</small></span></a>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label"><span aria-hidden="true"></span><strong>Inspect and exchange</strong></div>
-    <a class="nav-item nav-item-root" href="#panel-ranging"><span class="nav-marker">07</span><span class="nav-copy"><strong>Sensitivity</strong><small>getRanging()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-options"><span class="nav-marker">08</span><span class="nav-copy"><strong>Solver options</strong><small>options.describe()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-iis"><span class="nav-marker">09</span><span class="nav-copy"><strong>Infeasibility</strong><small>getIis()</small></span></a>
-    <a class="nav-item nav-item-root" href="#panel-io"><span class="nav-marker">10</span><span class="nav-copy"><strong>Model exchange</strong><small>LP · MPS · export</small></span></a>
-  </div>
-</nav>
-
-<!-- ═══════════ TAB 1: LP FORMAT ═══════════ -->
-<section class="tab-panel active" id="panel-lp">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>LP // ONE-SHOT CPLEX TEXT SOLVER</span>
-      <span>highs.solve()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>Solve a model from LP text</h3>
-      <p>Use this entry point when a model already exists in CPLEX LP format, or when generating readable model text is simpler than assembling sparse arrays. <code>solve()</code> parses and solves the text in one call, then returns a name-keyed result with the objective, column values, row values, duals, and basis statuses. It reparses the model on every call; use a persistent model for repeated solves or incremental changes.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs</code></a><a href="docs/types/LegacyHighs.html#solve"><code>LegacyHighs.solve()</code></a><a href="docs/types/LegacyHighsSolution.html"><code>LegacyHighsSolution</code></a></p>
-    </div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="lp-core-code" spellcheck="false">// lpText uses the human-readable CPLEX LP format. It can include
-// continuous, integer, and binary variables in one model.
-const result = highs.solve(lpText, { output_flag: false });
-
-// Always inspect Status before reading a solution: a model may be
-// infeasible, unbounded, or stopped by a configured limit.
-if (result.Status !== "Optimal") {
-  throw new Error(`Solve ended with status: ${result.Status}`);
-}
-
-// Columns is keyed by the variable names declared in the LP text.
-const objective = result.ObjectiveValue;
-const x = result.Columns.x.Primal;</textarea>
-      </div>
-    </div>
-
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>Interactive CPLEX LP Text Model</h4>
-       <textarea class="editor-tall" id="lp-input" spellcheck="false">Maximize
- obj: 3 x + 2 y
-Subject To
- material: 2 x + y &lt;= 9
- labor: x + 2 y &lt;= 9
-Bounds
- x &gt;= 0
- y &gt;= 0
-End</textarea>
-      <div class="btn-row">
-        <button class="btn" id="lp-solve">Solve LP</button>
-        <button class="btn ghost" id="lp-reset">Reset Model</button>
-      </div>
-    </div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">STATUS</span>
-          <span class="stat-val" id="lp-status">READY</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">OPTIMAL OBJECTIVE</span>
-          <span class="stat-val" id="lp-obj-val">15.0000</span>
-        </div>
-      </div>
-      <h4>Why this point is optimal</h4>
-      <div id="lp-visual-bars">
-        <div class="progress-item">
-          <div class="progress-label"><span>x0</span><span>--</span></div>
-          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
+  <nav class="tabs" id="tabs">
+    <div class="nav-group">
+      <div class="nav-group-label"><span aria-hidden="true"></span><strong>Model lifecycle</strong></div>
+      <a class="nav-item nav-item-root" href="#panel-lp"><span class="nav-marker">01</span><span class="nav-copy"><strong>One-shot solve</strong><small>solve(lpText)</small></span></a>
+      <div class="nav-branch">
+        <a class="nav-item nav-item-root" href="#panel-build"><span class="nav-marker">02</span><span class="nav-copy"><strong>Persistent models</strong><small>createModel()</small></span></a>
+        <div class="nav-children">
+          <a class="nav-item nav-item-child" href="#example-production"><span class="nav-copy"><strong>Production planning</strong><small>maximize revenue</small></span></a>
+          <a class="nav-item nav-item-child" href="#example-diet"><span class="nav-copy"><strong>Diet problem</strong><small>minimize cost</small></span></a>
+          <a class="nav-item nav-item-child" href="#example-transport"><span class="nav-copy"><strong>Transportation</strong><small>route shipments</small></span></a>
         </div>
       </div>
     </div>
-
-    <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Structured Result Object:</label>
-      <div class="output placeholder" id="lp-output">Loading HiGHS…</div>
-    </div>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="lp-timing">Waiting for solver</div>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      Compatibility solve() API • CPLEX LP parser • Name-keyed result object • Reparsed on each call
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 2: BUILD & SOLVE ═══════════ -->
-<section class="tab-panel" id="panel-build">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>BUILD // PERSISTENT MODEL &amp; CSC MATRIX</span>
-      <span>highs.createModel()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3 id="build-title">Production Planning Optimization</h3>
-      <p id="build-explain">Use a persistent model when an application builds models from data, changes coefficients or bounds, or solves the same structure repeatedly. This production example maximizes revenue under capacity constraints and passes the constraint matrix in compressed sparse column (CSC) form.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/types/Highs.html"><code>Highs.createModel()</code></a><a href="docs/interfaces/Model.html#passmodel"><code>Model.passModel()</code></a><a href="docs/interfaces/SparseMatrixInput.html"><code>SparseMatrixInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <div class="section-intro-note">The model lifecycle and CSC representation below apply to all three examples. Each model then has its own visualization and solve result.</div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="build-core-code" spellcheck="false">// A persistent model owns one native HiGHS instance. Reuse it for
-// coefficient changes and repeated solves; dispose it when finished.
-const model = highs.createModel();
-
-model.passModel({
-  numCols: colCost.length, numRows: rowLower.length,
-  // objectiveDirection is "minimize" or "maximize" in application data.
-  sense: highs.constants.objectiveSense[objectiveDirection],
-
-  // Each column has an objective coefficient and lower/upper bounds.
-  // Each row has lower/upper activity bounds; equal values mean equality.
-  colCost, colLower, colUpper, rowLower, rowUpper,
-
-  matrix: {
-    format: "csc", // Store A one column at a time.
-    numRows, numCols,
-    starts, // starts[j] is the first entry belonging to column j.
-    indices, // Row index for each nonzero matrix entry.
-    values   // Coefficient paired with each row index.
-  }
-});
-
-const run = model.run();
-if (run.modelStatus !== highs.constants.modelStatus.optimal) {
-  throw new Error(`Model status: ${run.modelStatus}`);
-}
-
-// colValue is the primal decision vector; colDual contains reduced costs.
-const { colValue, colDual } = model.getSolution();
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <article class="model-example" id="example-production">
-      <div class="model-example-heading"><span>01</span><div><h4>Production planning</h4><p>See how each product contributes to constrained resources and total revenue.</p></div></div>
-      <div class="model-story" data-live-example="production">
-        <p>A workshop makes chairs (<var>x</var>) and tables (<var>y</var>). A chair earns $<input class="story-input" id="production-chair-profit" type="number" value="45" min="0" step="1" aria-label="Profit per chair"> and a table earns $<input class="story-input" id="production-table-profit" type="number" value="80" min="0" step="1" aria-label="Profit per table">.</p>
-        <p>Each chair uses <input class="story-input" id="production-chair-labor" type="number" value="4" min="0" step="0.5" aria-label="Labor hours per chair"> labor hours and <input class="story-input" id="production-chair-wood" type="number" value="3" min="0" step="0.5" aria-label="Wood units per chair"> wood units. Each table uses <input class="story-input" id="production-table-labor" type="number" value="6" min="0" step="0.5" aria-label="Labor hours per table"> labor hours and <input class="story-input" id="production-table-wood" type="number" value="5" min="0" step="0.5" aria-label="Wood units per table"> wood units.</p>
-        <p>The workshop has <input class="story-input" id="production-labor-capacity" type="number" value="240" min="1" step="1" aria-label="Available labor hours"> labor hours and <input class="story-input" id="production-wood-capacity" type="number" value="180" min="1" step="1" aria-label="Available wood units"> wood units. The chart shows how the optimal mix consumes both resources and earns revenue.</p>
-      </div>
-      <div class="model-state" id="production-state">Preparing the first solution…</div>
-      <div class="sparse-explorer" id="build-matrix-explorer" aria-label="Interactive constraint matrix storage explanation"></div>
-      <div class="model-viz" id="production-viz"><div class="viz-loading">Preparing visualization…</div></div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">STATUS</span>
-          <span class="stat-val" id="build-status">READY</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">OBJECTIVE</span>
-          <span class="stat-val" id="build-obj-val">--</span>
+    <div class="nav-group">
+      <div class="nav-group-label"><span aria-hidden="true"></span><strong>Problem structure</strong></div>
+      <div class="nav-branch">
+        <a class="nav-item nav-item-root" href="#panel-mip"><span class="nav-marker">03</span><span class="nav-copy"><strong>Integer decisions</strong><small>integrality · MIP</small></span></a>
+        <div class="nav-children">
+          <a class="nav-item nav-item-child" href="#example-knapsack"><span class="nav-copy"><strong>0/1 knapsack</strong><small>binary selection</small></span></a>
+          <a class="nav-item nav-item-child" href="#example-facility"><span class="nav-copy"><strong>Facility location</strong><small>fixed-charge model</small></span></a>
         </div>
       </div>
-      <h4>Primal Assignment Allocation</h4>
-      <div class="progress-bar-group" id="build-visual-bars">
-        <div class="progress-item">
-          <div class="progress-label"><span>x0</span><span>--</span></div>
-          <div class="progress-track"><div class="progress-fill initial-empty"></div></div>
-        </div>
-      </div>
+      <a class="nav-item nav-item-root" href="#panel-qp"><span class="nav-marker">04</span><span class="nav-copy"><strong>Quadratic objectives</strong><small>passHessian()</small></span></a>
+      <a class="nav-item nav-item-root" href="#panel-multiobjective"><span class="nav-marker">05</span><span class="nav-copy"><strong>Decision priorities</strong><small>addLinearObjective()</small></span></a>
+      <a class="nav-item nav-item-root" href="#panel-callbacks"><span class="nav-marker">06</span><span class="nav-copy"><strong>Live MIP search</strong><small>HighsCallbackMap</small></span></a>
     </div>
-      <div class="textual-solution">
-        <label>Structured production solution:</label>
-        <div class="output placeholder" id="build-output">Preparing the initial production plan…</div>
-      </div>
-      <div class="timing-bar" id="build-timing">Waiting for solver</div>
-    </article>
-
-    <article class="model-example" id="example-diet">
-      <div class="model-example-heading"><span>02</span><div><h4>Minimum-cost diet</h4><p>Nutrient bullet charts show requirements, excess, and each food's contribution.</p></div></div>
-      <div class="model-story" data-live-example="diet">
-        <p>I can buy portions of oats for $<input class="story-input" id="diet-oats-cost" type="number" value="3" min="0" step="0.1" aria-label="Oats cost">, tofu for $<input class="story-input" id="diet-tofu-cost" type="number" value="2.5" min="0" step="0.1" aria-label="Tofu cost">, and lentils for $<input class="story-input" id="diet-lentils-cost" type="number" value="1.5" min="0" step="0.1" aria-label="Lentils cost">.</p>
-        <p>The fixed nutrition table below maps each portion to calories, protein, and fiber. My day needs at least <input class="story-input" id="diet-calories" type="number" value="2000" min="1" step="50" aria-label="Required calories"> calories, <input class="story-input" id="diet-protein" type="number" value="50" min="1" step="1" aria-label="Required protein"> g protein, and <input class="story-input" id="diet-fiber" type="number" value="40" min="1" step="1" aria-label="Required fiber"> g fiber. The bars compare the cheapest diet with each minimum.</p>
-      </div>
-      <div class="model-state" id="diet-state">Preparing the first solution…</div>
-      <div class="model-viz" id="diet-viz"><div class="viz-loading">Preparing visualization…</div></div>
-    </article>
-
-    <article class="model-example" id="example-transport">
-      <div class="model-example-heading"><span>03</span><div><h4>Transportation network</h4><p>Flow width represents shipments; route color represents unit cost.</p></div></div>
-      <div class="model-story" data-live-example="transport">
-        <p>Plant A can ship <input class="story-input" id="transport-supply-a" type="number" value="80" min="0" step="1" aria-label="Plant A supply"> units and Plant B can ship <input class="story-input" id="transport-supply-b" type="number" value="75" min="0" step="1" aria-label="Plant B supply"> units. Towns 1–4 need exactly <input class="story-input" id="transport-demand-1" type="number" value="45" min="0" step="1" aria-label="Town 1 demand">, <input class="story-input" id="transport-demand-2" type="number" value="20" min="0" step="1" aria-label="Town 2 demand">, <input class="story-input" id="transport-demand-3" type="number" value="30" min="0" step="1" aria-label="Town 3 demand">, and <input class="story-input" id="transport-demand-4" type="number" value="15" min="0" step="1" aria-label="Town 4 demand"> units.</p>
-        <p>Shipping from A costs $<input class="story-input" id="transport-a1" type="number" value="8" min="0" step="1" aria-label="A to town 1 cost">, $<input class="story-input" id="transport-a2" type="number" value="6" min="0" step="1" aria-label="A to town 2 cost">, $<input class="story-input" id="transport-a3" type="number" value="10" min="0" step="1" aria-label="A to town 3 cost">, and $<input class="story-input" id="transport-a4" type="number" value="9" min="0" step="1" aria-label="A to town 4 cost"> per unit. From B it costs $<input class="story-input" id="transport-b1" type="number" value="9" min="0" step="1" aria-label="B to town 1 cost">, $<input class="story-input" id="transport-b2" type="number" value="12" min="0" step="1" aria-label="B to town 2 cost">, $<input class="story-input" id="transport-b3" type="number" value="13" min="0" step="1" aria-label="B to town 3 cost">, and $<input class="story-input" id="transport-b4" type="number" value="7" min="0" step="1" aria-label="B to town 4 cost">. Thick routes carry more of the minimum-cost plan.</p>
-      </div>
-      <div class="model-state" id="transport-state">Preparing the first solution…</div>
-      <div class="model-viz" id="transport-viz"><div class="viz-loading">Preparing visualization…</div></div>
-    </article>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      Persistent Model API • Compressed Sparse Column (CSC) matrix • Explicit native lifetime
+    <div class="nav-group">
+      <div class="nav-group-label"><span aria-hidden="true"></span><strong>Inspect and exchange</strong></div>
+      <a class="nav-item nav-item-root" href="#panel-ranging"><span class="nav-marker">07</span><span class="nav-copy"><strong>Sensitivity</strong><small>getRanging()</small></span></a>
+      <a class="nav-item nav-item-root" href="#panel-options"><span class="nav-marker">08</span><span class="nav-copy"><strong>Solver options</strong><small>options.describe()</small></span></a>
+      <a class="nav-item nav-item-root" href="#panel-iis"><span class="nav-marker">09</span><span class="nav-copy"><strong>Infeasibility</strong><small>getIis()</small></span></a>
+      <a class="nav-item nav-item-root" href="#panel-io"><span class="nav-marker">10</span><span class="nav-copy"><strong>Model exchange</strong><small>LP · MPS · export</small></span></a>
     </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 3: MILP ═══════════ -->
-<section class="tab-panel" id="panel-mip">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>MILP // BINARY &amp; INTEGER VARIABLES</span>
-      <span>constants.variableType.integer</span>
-    </div>
-
-    <div class="section-intro-note">Both examples use the same integrality vector and branch-and-cut lifecycle. Their decision geometry is different, so each receives a purpose-built view.</div>
-
-    <div class="problem-header">
-      <h3 id="mip-title">0/1 Knapsack Discrete Optimization</h3>
-      <p id="mip-explain">Use integer or binary variables when decisions represent indivisible quantities, selections, or on/off choices. This knapsack model chooses items without exceeding capacity; HiGHS solves it as a mixed-integer linear program using branch-and-cut, and reports a bound-based MIP gap when optimality has not yet been proven.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/ModelData.html#integrality"><code>ModelData.integrality</code></a><a href="docs/interfaces/HighsConstants.html#variabletype"><code>HighsConstants.variableType</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="mip-core-code" spellcheck="false">// A MIP uses the same linear objective, bounds, and sparse matrix as
-// an LP. The integrality vector changes how each column is treated.
-const model = highs.createModel();
-
-// columnKinds contains names such as "integer" or "continuous". Looking
-// them up keeps native enum numbers out of model-building code.
-const integrality = columnKinds.map(
-  (kind) => highs.constants.variableType[kind]
-);
-
-model.passModel({
-  numCols, numRows,
-  sense: highs.constants.objectiveSense[objectiveDirection],
-  colCost, colLower, colUpper, rowLower, rowUpper,
-
-  // CSC layout: starts partitions nonzeros by column; indices contains
-  // row numbers; values contains the corresponding coefficients.
-  matrix: { format: "csc", numRows, numCols, starts, indices, values },
-
-  // Integer columns with bounds [0, 1] become binary decisions. Other
-  // columns can remain continuous in the same mixed-integer model.
-  integrality
-});
-
-const run = model.run(); // HiGHS uses its MIP branch-and-cut solver.
-const { colValue } = model.getSolution();
-
-// A feasible incumbent can exist before optimality is proven. Read mip_gap
-// from model.info when a time, node, or solution limit may stop the search.
-const mipGap = model.info.get("mip_gap");
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <!-- Interactive Visualization of Problem Inputs -->
-    <article class="model-example" id="example-knapsack">
-      <div class="model-example-heading"><span>01</span><div><h4>Choose what to carry</h4><p>Each item is binary: it is either in the bag or left behind.</p></div></div>
-      <div class="model-story" data-live-example="knapsack">
-        <p>I can carry <input class="story-input" id="mip-capacity" type="number" value="9" min="1" max="100" aria-label="Knapsack capacity"> kg. My knapsack can contain any combination of:</p>
-        <ul>
-          <li>my water bottle, worth $<input class="story-input mip-value" type="number" value="8" min="0" data-item="0" aria-label="Water bottle value"> and weighing <input class="story-input mip-weight" type="number" value="1" min="0.1" step="0.1" data-item="0" aria-label="Water bottle weight"> kg;</li>
-          <li>my camera, worth $<input class="story-input mip-value" type="number" value="14" min="0" data-item="1" aria-label="Camera value"> and weighing <input class="story-input mip-weight" type="number" value="4" min="0.1" step="0.1" data-item="1" aria-label="Camera weight"> kg;</li>
-          <li>my jacket, worth $<input class="story-input mip-value" type="number" value="10" min="0" data-item="2" aria-label="Jacket value"> and weighing <input class="story-input mip-weight" type="number" value="3" min="0.1" step="0.1" data-item="2" aria-label="Jacket weight"> kg;</li>
-          <li>my book, worth $<input class="story-input mip-value" type="number" value="7" min="0" data-item="3" aria-label="Book value"> and weighing <input class="story-input mip-weight" type="number" value="2" min="0.1" step="0.1" data-item="3" aria-label="Book weight"> kg;</li>
-          <li>my laptop, worth $<input class="story-input mip-value" type="number" value="20" min="0" data-item="4" aria-label="Laptop value"> and weighing <input class="story-input mip-weight" type="number" value="5" min="0.1" step="0.1" data-item="4" aria-label="Laptop weight"> kg.</li>
-        </ul>
-        <p>The solver chooses the most valuable combination that fits. Selected items are packed into the capacity bar below.</p>
-      </div>
-      <div class="model-state" id="knapsack-state">Preparing the first solution…</div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">STATUS</span>
-          <span class="stat-val" id="mip-status">READY</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">MIP GAP</span>
-          <span class="stat-val" id="mip-gap-stat">--</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label" id="mip-primary-label">TOTAL VALUE</span>
-          <span class="stat-val" id="mip-val-stat">--</span>
-        </div>
-      </div>
-
-      <!-- Capacity Packing Bar -->
-      <div class="capacity-packing" id="mip-packing-box">
-        <div class="capacity-header-row">
-          <span id="mip-packing-title">KNAPSACK WEIGHT DISTRIBUTION</span>
-          <span id="mip-weight-stat">-- / 15 kg</span>
-        </div>
-        <div class="packing-track" id="mip-packing-track">
-          <div class="pack-block initial-full">Preparing the initial packing…</div>
-        </div>
-      </div>
-
-      <div class="visual-grid" id="mip-visual-grid"></div>
-    </div>
-      <div class="textual-solution">
-        <label>Structured knapsack solution:</label>
-        <div class="output placeholder" id="mip-output">Preparing the initial packing…</div>
-      </div>
-      <div class="timing-bar" id="mip-timing">Waiting for solver</div>
-    </article>
-
-    <article class="model-example" id="example-facility">
-      <div class="model-example-heading"><span>02</span><div><h4>Capacitated facility location</h4><p>Opening decisions, customer assignments, capacity use, and route costs in one matrix.</p></div></div>
-      <div class="model-story" data-live-example="facility">
-        <p>Warehouse A costs $<input class="story-input" id="facility-fixed-a" type="number" value="500" min="0" step="10" aria-label="Warehouse A opening cost"> to open and can ship <input class="story-input" id="facility-capacity-a" type="number" value="200" min="0" step="10" aria-label="Warehouse A capacity"> units. Warehouse B costs $<input class="story-input" id="facility-fixed-b" type="number" value="300" min="0" step="10" aria-label="Warehouse B opening cost"> and can ship <input class="story-input" id="facility-capacity-b" type="number" value="200" min="0" step="10" aria-label="Warehouse B capacity"> units.</p>
-        <p>Customers A, B, and C need <input class="story-input" id="facility-demand-a" type="number" value="80" min="0" step="5" aria-label="Customer A demand">, <input class="story-input" id="facility-demand-b" type="number" value="60" min="0" step="5" aria-label="Customer B demand">, and <input class="story-input" id="facility-demand-c" type="number" value="40" min="0" step="5" aria-label="Customer C demand"> units. Shipping from Warehouse A costs $<input class="story-input" id="facility-a1" type="number" value="2" min="0" aria-label="Warehouse A to customer A cost"> / $<input class="story-input" id="facility-a2" type="number" value="4" min="0" aria-label="Warehouse A to customer B cost"> / $<input class="story-input" id="facility-a3" type="number" value="5" min="0" aria-label="Warehouse A to customer C cost"> per unit; from B it costs $<input class="story-input" id="facility-b1" type="number" value="3" min="0" aria-label="Warehouse B to customer A cost"> / $<input class="story-input" id="facility-b2" type="number" value="1" min="0" aria-label="Warehouse B to customer B cost"> / $<input class="story-input" id="facility-b3" type="number" value="3" min="0" aria-label="Warehouse B to customer C cost">. The solution shows which warehouses justify their fixed cost and where each shipment goes.</p>
-      </div>
-      <div class="model-state" id="facility-state">Preparing the first solution…</div>
-      <div class="model-viz" id="facility-viz"><div class="viz-loading">Preparing visualization…</div></div>
-    </article>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      HiGHS branch-and-cut MIP solver • Binary/integer columns • Incumbent and bound-based MIP gap
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 4: QP (QUADRATIC PROGRAMMING) ═══════════ -->
-<section class="tab-panel" id="panel-qp">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>QP // QUADRATIC OBJECTIVE &amp; HESSIAN MATRIX</span>
-      <span>passHessian()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>Markowitz Portfolio Risk Minimization</h3>
-      <p>Use a convex quadratic program when cost or risk depends on interactions between continuous decisions, such as portfolio covariance or least-squares penalties. This model minimizes portfolio variance while meeting a target return. HiGHS evaluates <code>½xᵀQx + cᵀx</code>, so <code>Q</code> is twice the covariance matrix here. The Hessian must have the correct semidefinite sign for the objective sense; HiGHS does not solve non-convex QP or mixed-integer QP.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#passhessian"><code>Model.passHessian()</code></a><a href="docs/interfaces/HessianInput.html"><code>HessianInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <div class="sparse-explorer" id="qp-matrix-explorer" aria-label="Interactive Hessian storage explanation"></div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="qp-core-code" spellcheck="false">// First pass the linear part of the model. r0 fixes the total
-// allocation at 1; r1 requires the requested minimum return.
-const model = highs.createModel();
-model.passModel({
-  numCols: 3, numRows: 2,
-  sense: highs.constants.objectiveSense.minimize,
-  colCost: [0, 0, 0],
-  colLower: [0, 0, 0], colUpper: [1, 1, 1],
-  rowLower: [1.0, 0.08], rowUpper: [1.0, Infinity],
-  matrix: {
-    format: "csc",
-    // Every asset appears in both rows, so each column has two entries.
-    starts: [0, 2, 4, 6],
-    indices: [0, 1, 0, 1, 0, 1], // budget row, return row
-    values: [1, .12, 1, .08, 1, .04]
-  }
-});
-
-// HiGHS stores one triangle of symmetric Q in column-wise form.
-// starts[j] locates Hessian column j; indices gives its row numbers.
-// Because the objective is 1/2 x'Qx, these values are 2 * covariance.
-model.passHessian({
-  format: "triangular", dimension: 3,
-  starts: [0, 2, 3, 4],
-  indices: [0, 1, 1, 2],
-  values: [0.08, 0.02, 0.04, 0.01]
-});
-
-model.run();
-const { colValue } = model.getSolution(); // Optimal portfolio weights.
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <div class="model-story" data-live-example="qp">
-      <p>I want the lowest-risk mix of Tech, Energy, and government bonds that returns at least <input class="story-input" id="qp-target-return" type="number" value="8" step="0.5" min="1" max="20" aria-label="Target annual return">% per year. Their expected returns are <input class="story-input" id="qp-return-tech" type="number" value="12" step="0.5" aria-label="Tech expected return">%, <input class="story-input" id="qp-return-energy" type="number" value="8" step="0.5" aria-label="Energy expected return">%, and <input class="story-input" id="qp-return-bonds" type="number" value="4" step="0.5" aria-label="Bonds expected return">%.</p>
-      <p>The covariance matrix in the code describes their risk and co-movement. The point in the triangle is the minimum-variance allocation meeting my target; moving a return changes the feasible mix immediately.</p>
-    </div>
-    <div class="model-state" id="qp-state">Preparing the first solution…</div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">STATUS</span>
-          <span class="stat-val" id="qp-status">READY</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">MINIMIZED VARIANCE</span>
-          <span class="stat-val" id="qp-risk-stat">--</span>
-        </div>
-      </div>
-
-      <h4>Optimal Portfolio Allocation Breakdown</h4>
-      <div class="capacity-packing">
-        <div class="capacity-header-row">
-          <span>CAPITAL ALLOCATION (100% TOTAL)</span>
-          <span id="qp-allocation-text">Tech: -- | Energy: -- | Bonds: --</span>
-        </div>
-        <div class="packing-track" id="qp-allocation-track">
-          <div class="pack-block initial-full">Preparing the initial allocation…</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Optimal Asset Weights Array:</label>
-      <div class="output placeholder" id="qp-output">Preparing the initial portfolio…</div>
-    </div>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="qp-timing">Waiting for solver</div>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      Convex QP • Objective ½xᵀQx + cᵀx • Triangular sparse Hessian • No MIQP
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 5: MULTIPLE OBJECTIVES ═══════════ -->
-<section class="tab-panel" id="panel-multiobjective">
-  <div class="example-card">
-    <div class="tech-header-line"><span>MULTI-OBJECTIVE // POLICY BEFORE ARITHMETIC</span><span>addLinearObjective()</span></div>
-    <div class="problem-header">
-      <h3>Multiple ordered objectives</h3>
-      <p>A heatwave dispatch model must meet electricity demand using renewable generation, gas, and imports. Three linear objectives represent policy: first prevent unserved demand, then reduce carbon, then lower operating cost. Compare strict priorities with a weighted blend to see why a single combined score can silently trade away reliability when quantities use different units.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#addlinearobjective"><code>Model.addLinearObjective()</code></a><a href="docs/interfaces/LinearObjectiveInput.html"><code>LinearObjectiveInput</code></a><a href="docs/interfaces/OptionStore.html#set"><code>blend_multi_objectives</code></a></p>
-    </div>
-    <div class="code-section">
-      <div class="code-header"><span>Core Solving Code</span><span>three explicit policies</span></div>
-      <div class="code-editor-box"><textarea id="multiobjective-core-code" spellcheck="false">const ordered = policyMode === "lexicographic";
-model.options.set({
-  output_flag: false,
-  // false: solve by descending priority; true: minimize one weighted sum.
-  blend_multi_objectives: !ordered
-});
-
-// Once an auxiliary objective is added, the model's ordinary colCost is
-// ignored. Include every goal here, in current model-column order.
-model.addLinearObjective({
-  coefficients: unservedEnergy,
-  weight: ordered ? 1 : reliabilityWeight,
-  priority: 300, // Used only in ordered mode; larger priorities run first.
-  absoluteTolerance: 0,
-  relativeTolerance: 0, // Preserve the best reliability value exactly.
-  offset: 0
-});
-
-model.addLinearObjective({
-  coefficients: carbon,
-  weight: ordered ? 1 : carbonWeight,
-  priority: 200,
-  absoluteTolerance: ordered ? carbonTolerance : 0,
-  // A negative tolerance disables it. Leaving this at 0 would be stricter
-  // than absoluteTolerance and would permit no carbon degradation at all.
-  relativeTolerance: ordered ? -1 : 0,
-  offset: 0
-});
-
-model.addLinearObjective({
-  coefficients: operatingCost,
-  weight: 1,
-  priority: 100,
-  absoluteTolerance: 0,
-  relativeTolerance: 0,
-  offset: 0
-});
-
-model.run();
-const { colValue } = model.getSolution();
-// Ordered solves have no meaningful combined objective value. Compute each
-// policy result from colValue and its saved coefficient vector instead.</textarea></div>
-    </div>
-    <div class="model-story" data-live-example="grid">
-      <p>During a heatwave, the grid can draw at most <input class="story-input" id="grid-gas-capacity" type="number" value="35" min="0" max="80" step="5" aria-label="Maximum gas generation"> MW from gas plants. The operator dispatches power using <select class="story-input story-select" id="grid-mode" aria-label="Objective policy"><option value="lexicographic">strict priorities</option><option value="blended">a weighted blend</option></select>.</p>
-      <p id="grid-story-strict">Preventing blackouts comes first, then reducing carbon, then lowering cost. The final cost optimization may accept at most <input class="story-input" id="grid-carbon-tolerance" type="number" value="3" min="0" max="20" step="1" aria-label="Permitted carbon degradation"> extra tonnes of carbon after finding the cleanest reliable plan.</p>
-      <p id="grid-story-blended" hidden>All goals become one score: one MWh of unmet demand counts as <input class="story-input" id="grid-reliability-weight" type="number" value="119" min="0" step="5" aria-label="Reliability objective weight"> points and one tonne of carbon counts as <input class="story-input" id="grid-carbon-weight" type="number" value="100" min="0" step="25" aria-label="Carbon objective weight"> points. At these breakpoints, changing either weight changes which source is dispatched.</p>
-    </div>
-    <div class="model-state" id="grid-state">Preparing the first dispatch policy…</div>
-    <div class="stat-grid">
-      <div class="stat-box"><span class="stat-label">UNSERVED ENERGY</span><span class="stat-val" id="grid-unserved">--</span></div>
-      <div class="stat-box"><span class="stat-label">EMISSIONS</span><span class="stat-val" id="grid-emissions">--</span></div>
-      <div class="stat-box"><span class="stat-label">OPERATING COST</span><span class="stat-val" id="grid-cost">--</span></div>
-    </div>
-    <div class="model-viz" id="grid-viz"><div class="viz-loading">Preparing dispatch chart…</div></div>
-    <div class="section-intro-note" id="grid-explanation">Strict priorities protect reliability regardless of the monetary and carbon scales.</div>
-    <div class="metadata-footer">Continuous dispatch LP • Three auxiliary linear objectives • Explicit blended/lexicographic mode • Per-objective tolerance</div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 6: CALLBACKS ═══════════ -->
-<section class="tab-panel" id="panel-callbacks">
-  <div class="example-card callback-lab">
-    <div class="tech-header-line"><span>CALLBACKS // OBSERVE AND CONTROL A LIVE SEARCH</span><span>HighsCallbackMap</span></div>
-    <div class="problem-header">
-      <h3>Live hooks to observe and steer the optimizer</h3>
-      <p>A dispatcher needs the shortest round trip visiting every city exactly once. Binary route choices and subtour-elimination constraints create a deliberately difficult traveling-salesperson MIP. The solver starts with a poor crossing tour, then streams genuinely shorter incumbent routes for minutes instead of hiding the search behind one blocking call.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a><a href="docs/interfaces/MipImprovingSolutionCallbackEvent.html"><code>mipImprovingSolution</code></a><a href="docs/interfaces/MipInterruptCallbackEvent.html"><code>mipInterrupt</code></a></p>
-    </div>
-    <div class="code-section">
-      <div class="code-header"><span>Core Solving Code</span><span>callbacks are synchronous</span></div>
-      <div class="code-editor-box"><textarea id="callbacks-core-code" spellcheck="false">// message.stopBuffer is a SharedArrayBuffer created by the UI and sent
-// to this Worker before run(); writing 1 to it does not need our event loop.
-const workerStopFlag = new Int32Array(message.stopBuffer);
-model.run({
-  [highs.constants.callbackType.mipImprovingSolution](event) {
-    postMessage({ type: "incumbent", solution: event.data.mip_solution });
-  },
-  [highs.constants.callbackType.mipLogging](event) {
-    postMessage({ type: "metrics", gap: event.data.mip_gap });
-  },
-  [highs.constants.callbackType.mipInterrupt](event) {
-    if (Atomics.load(workerStopFlag, 0) !== 0) event.interrupt();
-  }
-});</textarea></div>
-    </div>
-    <div class="model-story callback-story">
-      <p>The dispatcher must visit <select class="story-input story-select" id="callback-size" aria-label="Number of cities"><option value="30">30 cities for a quick search</option><option value="60" selected>60 cities for a sustained search</option><option value="70">70 cities for an extreme search</option></select> and return to the depot. The initial route visits cities in their input order, intentionally leaving many crossings for HiGHS to remove.</p>
-      <p>Let branch-and-cut continue until I stop it, or ask the native callback to <select class="story-input story-select" id="callback-auto-stop" aria-label="Automatic callback cutoff"><option value="0">keep searching</option><option value="15">interrupt after 15 seconds</option><option value="60">interrupt after 60 seconds</option><option value="120">interrupt after two minutes</option></select>. Every shorter feasible tour is posted back immediately. Stop and Resume retain the model; Restart from scratch rebuilds it.</p>
-      <div class="btn-row"><button class="btn" id="callback-start">Start search</button><button class="btn callback-stop" id="callback-stop" disabled>Stop now</button><button class="btn ghost" id="callback-restart" disabled>Restart from scratch</button></div>
-    </div>
-    <div class="model-state" id="callback-state" data-state="ready" aria-live="polite">Choose a challenge and launch the dedicated solver Worker.</div>
-    <div class="callback-verdict" id="callback-verdict" hidden aria-live="polite">
-      <strong id="callback-verdict-title">Search ready</strong>
-      <span id="callback-verdict-detail">Launch the solver to begin.</span>
-    </div>
-    <div class="stat-grid callback-stats">
-      <div class="stat-box" id="callback-incumbent-box"><span class="stat-label" id="callback-incumbent-label">SHORTEST TOUR</span><span class="stat-val" id="callback-incumbent">--</span></div>
-      <div class="stat-box" id="callback-bound-box"><span class="stat-label" id="callback-bound-label">LOWER BOUND</span><span class="stat-val" id="callback-bound">--</span></div>
-      <div class="stat-box"><span class="stat-label">MIP GAP</span><span class="stat-val" id="callback-gap">--</span></div>
-      <div class="stat-box"><span class="stat-label">SEARCH NODES</span><span class="stat-val" id="callback-nodes">--</span></div>
-      <div class="stat-box"><span class="stat-label">ELAPSED</span><span class="stat-val" id="callback-elapsed">--</span></div>
-    </div>
-    <div class="callback-stage">
-      <div><h4 id="callback-tour-title">Current shortest tour</h4><canvas id="callback-graph-viz" aria-label="Cities connected by the current shortest tour"></canvas></div>
-      <div><h4 id="callback-progress-title">Tour length and lower bound</h4><div id="callback-progress-viz" class="callback-progress-empty">Waiting for callback events…</div></div>
-    </div>
-    <div class="section-intro-note" id="callback-interrupt-note">Preparing the callback interruption channel…</div>
-    <div class="metadata-footer">60-city asymmetric route MIP • Dedicated Web Worker • Streamed detached callback snapshots • Native callback interruption • Manual hard stop</div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 5: RANGING ═══════════ -->
-<section class="tab-panel" id="panel-ranging">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>RANGING // POST-OPTIMAL SENSITIVITY ANALYSIS</span>
-      <span>getRanging()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>Objective Cost &amp; Constraint Sensitivity</h3>
-      <p>Use ranging after an LP solve to ask how far one objective coefficient or row bound can move while the current optimal simplex basis remains optimal. HiGHS reports independent up/down ranges for column costs and row or column bounds; these are local, one-at-a-time basis-stability intervals, not guarantees for simultaneous changes. Ranging requires an optimal LP basis and is not available for MIP or QP solutions.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getranging"><code>Model.getRanging()</code></a><a href="docs/interfaces/RangingResult.html"><code>RangingResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="ranging-core-code" spellcheck="false">// Ranging is defined for an optimal LP simplex basis. Check the run
-// status before requesting it; MIP and QP solutions are not supported.
-const model = highs.createModel({ format: "lp", data: lpText });
-const run = model.run();
-if (run.modelStatus !== highs.constants.modelStatus.optimal) {
-  throw new Error("Ranging requires an optimal LP solution");
-}
-
-const ranging = model.getRanging();
-
-// Each record has value, objective, inVariable, and outVariable arrays.
-// This interval changes x's cost alone and keeps the same optimal basis.
-const xCostInterval = [
-  ranging.colCostDown.value[0],
-  ranging.colCostUp.value[0]
-];
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>LP Model Definition</h4>
-      <textarea class="editor-medium" id="ranging-lp" spellcheck="false">Maximize
- obj: 3 x + 2 y
-Subject To
- total: x + y &lt;= 6
- material: 2 x + y &lt;= 8
- balance: -x + y &lt;= 1
- y_limit: y &lt;= 2
-Bounds
- 0 &lt;= x
- 0 &lt;= y
-End</textarea>
-      <p class="model-state" id="ranging-state">Preparing the initial sensitivity analysis…</p>
-    </div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">STATUS</span>
-          <span class="stat-val" id="ranging-status">READY</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">BASIS STABILITY</span>
-          <span class="stat-val" id="ranging-stability">--</span>
-        </div>
-      </div>
-
-      <h4>Hover a number to ask “what if?”</h4>
-      <div id="ranging-visual-bars">
-        <div class="interval-scale">
-          <div class="interval-scale-header">
-            <span>x Cost Stability Range</span>
-            <span>[1.0000 ⟷ 4.0000]</span>
-          </div>
-          <div class="interval-scale-track">
-            <div class="interval-scale-fill initial-interval"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Textual Solution -->
-    <details class="api-response textual-solution">
-      <summary>Exact API response</summary>
-      <div class="output placeholder" id="ranging-output">Preparing the initial sensitivity analysis…</div>
-    </details>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="ranging-timing">Waiting for solver</div>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      Optimal LP basis required • One coefficient or bound changes at a time • No MIP/QP ranging
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 6: OPTIONS & HOOKS ═══════════ -->
-<section class="tab-panel" id="panel-options">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>OPTIONS // SOLVER TUNING &amp; CALLBACK HOOKS</span>
-      <span>options.describe()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>HiGHS Parameter Introspection</h3>
-      <p>Use options to control stopping criteria, feasibility tolerances, presolve, algorithm selection, logging, and MIP search behavior for a persistent model. <code>options.describe()</code> returns the native type, current value, default, and numeric range so applications do not need to hard-code metadata. The WebAssembly API rejects thread/concurrency settings and options that write to native filesystem paths.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/OptionStore.html#describe"><code>OptionStore.describe()</code></a><a href="docs/interfaces/OptionStore.html#set"><code>OptionStore.set()</code></a><a href="docs/interfaces/OptionStore.html#reset"><code>OptionStore.reset()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="options-core-code" spellcheck="false">const model = highs.createModel();
-
-// Describe an option before presenting or changing it. The descriptor
-// includes its native type, current/default values, and numeric limits.
-const tolerance = model.options.describe("primal_feasibility_tolerance");
-console.log(tolerance.minimum, tolerance.maximum);
-
-// Option values are validated by name and native type. Settings belong to
-// this model instance and affect subsequent presolve/run calls.
-model.options.set("presolve", "on");
-model.options.set("time_limit", 30.0);
-
-// Restore every option on this model to the HiGHS defaults.
-model.options.reset();
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <div class="visual-inputs">
-      <div class="opts-filter">
-        <input type="text" id="opts-search" placeholder="Filter options…">
-        <span class="opts-count" id="opts-count"></span>
-      </div>
-      <div class="opts-table-wrap">
-        <table class="opts-table">
-          <thead><tr><th>Name</th><th>Type</th><th>Current</th><th>Default</th></tr></thead>
-          <tbody id="opts-body"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="visual-solution">
-      <h4>Option Inspector &amp; Setter</h4>
-      <div class="form-row">
-        <label>Name: <input type="text" id="opt-name" placeholder="e.g. presolve"></label>
-        <button class="btn ghost" id="opt-get">Describe</button>
-      </div>
-      <div class="form-row">
-        <label>New Value: <input type="text" id="opt-value" placeholder="e.g. off"></label>
-        <button class="btn" id="opt-set">Set Option</button>
-      </div>
-      <div class="output opt-detail" id="opt-detail">Select an option above or type a name to inspect.</div>
-      <button class="btn ghost opt-reset" id="opt-reset-all">Reset All Options</button>
-    </div>
-    <div class="metadata-footer">
-      Native HiGHS option metadata • Per-model settings • Thread and filesystem options rejected in Wasm
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 7: IIS ═══════════ -->
-<section class="tab-panel" id="panel-iis">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>IIS // INFEASIBILITY CONFLICT DIAGNOSTICS</span>
-      <span>getIis()</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>Explain why a model is infeasible</h3>
-      <p>Use an irreducible infeasible subsystem (IIS) when a model has no feasible solution and you need a smaller set of rows and variable bounds to inspect. “Irreducible” means every returned member is necessary for that particular conflict: removing any one makes the subsystem feasible. It does not mean HiGHS found the conflict with the fewest possible members, and a model can contain several different IISs.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getiis"><code>Model.getIis()</code></a><a href="docs/interfaces/IisResult.html"><code>IisResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="iis-core-code" spellcheck="false">// Solve first and confirm infeasibility. Calling getIis() on a feasible
-// model has no useful conflict to return.
-const model = highs.createModel({ format: "lp", data: lpText });
-model.options.set("iis_strategy", 8); // Ask HiGHS to reduce to a true IIS.
-const run = model.run();
-if (run.modelStatus !== highs.constants.modelStatus.infeasible) {
-  throw new Error("IIS analysis requires an infeasible model");
-}
-
-// HiGHS computes one irreducible conflict, not necessarily the globally
-// smallest one. Indices refer to columns and rows in the loaded model.
-const iis = model.getIis();
-const { colIndex, rowIndex, colBound, rowBound } = iis;
-
-// colBound/rowBound identify which lower, upper, or boxed bound participates.
-// Use highs.constants.iis to interpret those status values.
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>Infeasible Model Inputs</h4>
-      <textarea class="editor-compact" id="iis-lp" spellcheck="false">Minimize
- obj: x + y
-Subject To
- demand_limit: x + y &lt;= 5
-Bounds
- 10 &lt;= x
- 10 &lt;= y
-End</textarea>
-      <p class="model-state" id="iis-state">Preparing the initial conflict analysis…</p>
-    </div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">FEASIBILITY STATUS</span>
-          <span class="stat-val" id="iis-status">READY</span>
-        </div>
-      </div>
-      <h4>Why these requirements cannot coexist</h4>
-      <div id="iis-visual-tags">
-        <div class="iis-empty-state">
-          <div class="iis-preview-lines" aria-hidden="true"><span></span><span></span><span></span></div>
-          <div>
-            <strong>No conflict analysis yet</strong>
-            <p>Preparing one irreducible conflict among the model's rows and bounds.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Textual Solution -->
-    <details class="api-response textual-solution">
-      <summary>Exact API response</summary>
-      <div class="output placeholder" id="iis-output">Preparing the initial conflict analysis…</div>
-    </details>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="iis-timing">Waiting for solver</div>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      One irreducible conflict • Not guaranteed minimum-cardinality • Bound status identifies lower/upper participation
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════ TAB 8: MODEL I/O ═══════════ -->
-<section class="tab-panel" id="panel-io">
-  <div class="example-card">
-    <div class="tech-header-line">
-      <span>I/O // IN-MEMORY SERIALIZATION &amp; NORMALIZATION</span>
-      <span>exportModel("lp")</span>
-    </div>
-
-    <div class="problem-header">
-      <h3>Import, inspect, and export models</h3>
-      <p>Use in-memory model I/O to accept LP or MPS data from uploads, generated files, or another service, then solve or convert it without exposing a native filesystem path. LP is readable text; MPS preserves a more rigid interchange structure and is represented as bytes where required. Exported models are normalized representations of HiGHS’ internal model, so comments and original formatting are not preserved.</p>
-      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/EncodedModel.html"><code>EncodedModel</code></a><a href="docs/interfaces/Model.html#exportmodel"><code>Model.exportModel()</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
-    </div>
-
-    <!-- Core Solving Code -->
-    <div class="code-section">
-      <div class="code-header">
-        <span>Core Solving Code</span>
-        <span>annotated example</span>
-      </div>
-      <div class="code-editor-box">
-        <textarea id="io-core-code" spellcheck="false">// Parse model data already held in JavaScript memory. For LP, data is a
-// string; MPS import/export may use Uint8Array to preserve exact bytes.
-const model = highs.createModel({ format: "lp", data: lpText });
-
-// Export serializes HiGHS' current internal model. It is suitable for model
-// exchange and debugging, but does not preserve comments or source layout.
-const normalizedLp = model.exportModel("lp");
-
-const run = model.run();
-if (run.modelStatus === highs.constants.modelStatus.optimal) {
-  const { colValue } = model.getSolution();
-  console.log(colValue);
-}
-model.dispose();</textarea>
-      </div>
-    </div>
-
-    <!-- Interactive Visualization of Problem Inputs -->
-    <div class="visual-inputs">
-      <h4>CPLEX LP Input Text</h4>
-      <textarea class="editor-compact" id="io-input" spellcheck="false">Maximize
- obj: 2 x + 3 y
-Subject To
- r0: x + y &lt;= 10
- r1: 2 x + y &lt;= 16
-Bounds
- 0 &lt;= x
- 0 &lt;= y
-End</textarea>
-      <div class="btn-row">
-        <button class="btn" id="io-load">Load LP</button>
-        <button class="btn ghost" id="io-export">Export LP</button>
-        <button class="btn ghost" id="io-solve">Solve Model</button>
-      </div>
-    </div>
-
-    <!-- Visual Solution -->
-    <div class="visual-solution">
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">VARIABLES</span>
-          <span class="stat-val" id="io-variable-count">2</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">CONSTRAINTS</span>
-          <span class="stat-val" id="io-constraint-count">2</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">PARSER STATUS</span>
-          <span class="stat-val" id="io-status-val">READY</span>
-        </div>
-      </div>
-      <div class="model-viz" id="io-viz"></div>
-    </div>
-
-    <!-- Textual Solution -->
-    <div class="textual-solution">
-      <label>Model I/O Output:</label>
-      <div class="output placeholder" id="io-output">Load a model to begin.</div>
-    </div>
-
-    <!-- Time to Solve -->
-    <div class="timing-bar" id="io-timing">Waiting for solver</div>
-
-    <!-- Metadata -->
-    <div class="metadata-footer">
-      In-memory LP/MPS parser and exporter • Normalized output • Source comments and formatting not preserved
-    </div>
-  </div>
-</section>
-
-</div><!-- /container -->
+  </nav>
+  <main id="example-panels" aria-live="polite">
+    <p class="model-state">Loading runnable examples…</p>
+  </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
