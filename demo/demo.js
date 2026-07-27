@@ -1,20 +1,44 @@
-import "./navigation.js";
 import { enhanceSyntaxEditors } from "./ui.js";
 import {
   bindLiveExampleInputs,
   registerLiveExamples,
   runLiveSolve,
 } from "./live-examples.js";
-import { initializeLpPanel } from "./panels/lp.js";
-import { initializeBuildPanel, solveBuildModel, solveStaticBuildExample } from "./panels/build.js";
-import { solveFacilityModel, solveMipModel } from "./panels/mip.js";
-import { initializeQpPanel, solveQpModel } from "./panels/qp.js";
-import { initializeMultiobjectivePanel, solveGridModel } from "./panels/multiobjective.js";
-import { initializeCallbacksPanel } from "./panels/callbacks.js";
-import { initializeRangingPanel, solveRangingModel } from "./panels/ranging.js";
-import { initializeOptionsPanel, loadOptions } from "./panels/options.js";
-import { initializeIisPanel, solveIisModel } from "./panels/iis.js";
-import { initializeModelIoPanel } from "./panels/model-io.js";
+
+const examples = [
+  "solve-lp-text",
+  "build-sparse-models",
+  "mixed-integer-models",
+  "portfolio-quadratic-program",
+  "grid-multiple-objectives",
+  "traveling-salesperson-callbacks",
+  "lp-sensitivity-analysis",
+  "inspect-solver-options",
+  "diagnose-infeasibility",
+  "import-export-model",
+];
+
+const templates = await Promise.all(examples.map(async (name) => {
+  const response = await fetch(`${name}/ui.template.html`);
+  if (!response.ok) throw new Error(`Could not load the ${name} example (${response.status}).`);
+  return response.text();
+}));
+document.getElementById("example-panels").innerHTML = templates.join("\n");
+
+const [
+  { initializeLpPanel },
+  { initializeBuildPanel, solveBuildModel, solveStaticBuildExample },
+  { solveFacilityModel, solveMipModel },
+  { initializeQpPanel, solveQpModel },
+  { initializeMultiobjectivePanel, solveGridModel },
+  { initializeCallbacksPanel },
+  { initializeRangingPanel, solveRangingModel },
+  { initializeOptionsPanel, loadOptions },
+  { initializeIisPanel, solveIisModel },
+  { initializeModelIoPanel },
+] = await Promise.all(examples.map((name) => import(`./${name}/ui.js`)));
+
+await import("./navigation.js");
 
 enhanceSyntaxEditors();
 initializeBuildPanel();
@@ -44,3 +68,6 @@ for (const key of ["production", "diet", "transport", "knapsack", "facility", "q
   await runLiveSolve(key);
 }
 await loadOptions();
+
+// Template insertion happens after the browser's initial hash scroll.
+document.getElementById(location.hash.slice(1))?.scrollIntoView();

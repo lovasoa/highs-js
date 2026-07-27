@@ -1,0 +1,67 @@
+<section class="tab-panel" id="panel-options">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>OPTIONS // SOLVER TUNING &amp; CALLBACK HOOKS</span>
+      <span>options.describe()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>HiGHS Parameter Introspection</h3>
+      <p>Use options to control stopping criteria, feasibility tolerances, <a href="https://doi.org/10.1287/ijoc.2018.0857" target="_blank" rel="noopener">presolve</a>, algorithm selection, logging, and MIP search behavior for a persistent model. <code>options.describe()</code> returns the native type, current value, default, and numeric range so applications do not need to hard-code metadata. The WebAssembly API rejects thread/concurrency settings and options that write to native filesystem paths.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/OptionStore.html#describe"><code>OptionStore.describe()</code></a><a href="docs/interfaces/OptionStore.html#set"><code>OptionStore.set()</code></a><a href="docs/interfaces/OptionStore.html#reset"><code>OptionStore.reset()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/inspect-solver-options/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="options-core-code" spellcheck="false">const model = highs.createModel();
+
+// Describe an option before presenting or changing it. The descriptor
+// includes its native type, current/default values, and numeric limits.
+const tolerance = model.options.describe("primal_feasibility_tolerance");
+console.log(tolerance.minimum, tolerance.maximum);
+
+// Option values are validated by name and native type. Settings belong to
+// this model instance and affect subsequent presolve/run calls.
+model.options.set("presolve", "on");
+model.options.set("time_limit", 30.0);
+
+// Restore every option on this model to the HiGHS defaults.
+model.options.reset();
+model.dispose();</textarea>
+      </div>
+    </div>
+
+    <div class="visual-inputs">
+      <div class="opts-filter">
+        <input type="text" id="opts-search" placeholder="Filter options…">
+        <span class="opts-count" id="opts-count"></span>
+      </div>
+      <div class="opts-table-wrap">
+        <table class="opts-table">
+          <thead><tr><th>Name</th><th>Type</th><th>Current</th><th>Default</th></tr></thead>
+          <tbody id="opts-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="visual-solution">
+      <h4>Option Inspector &amp; Setter</h4>
+      <div class="form-row">
+        <label>Name: <input type="text" id="opt-name" placeholder="e.g. presolve"></label>
+        <button class="btn ghost" id="opt-get">Describe</button>
+      </div>
+      <div class="form-row">
+        <label>New Value: <input type="text" id="opt-value" placeholder="e.g. off"></label>
+        <button class="btn" id="opt-set">Set Option</button>
+      </div>
+      <div class="output opt-detail" id="opt-detail">Select an option above or type a name to inspect.</div>
+      <button class="btn ghost opt-reset" id="opt-reset-all">Reset All Options</button>
+    </div>
+    <div class="metadata-footer">
+      Native HiGHS option metadata • Per-model settings • Thread and filesystem options rejected in Wasm
+    </div>
+  </div>
+</section>

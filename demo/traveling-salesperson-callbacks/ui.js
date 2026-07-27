@@ -42,10 +42,7 @@ function setCallbackControls(state) {
     paused: ["Resume search", "Stop now", "Restart from scratch"],
     finished: ["Optimal found", "Stop now", "Restart from scratch"],
   };
-  const [startLabel, stopLabel, restartLabel] = labels[state];
-  start.textContent = startLabel;
-  stop.textContent = stopLabel;
-  restart.textContent = restartLabel;
+  [start.textContent, stop.textContent, restart.textContent] = labels[state];
   start.disabled = !["initial", "paused"].includes(state);
   stop.disabled = state !== "running";
   restart.disabled = !["running", "paused", "finished"].includes(state);
@@ -94,7 +91,10 @@ function resetCallbackDisplay() {
 
 function ensureCallbackWorker() {
   if (callbackWorker) return;
-  callbackWorker = new Worker(`callback-worker.js?api=extended-1&fresh=${Date.now()}`);
+  const workerUrl = new URL("./worker.js", import.meta.url);
+  workerUrl.searchParams.set("api", "extended-1");
+  workerUrl.searchParams.set("fresh", Date.now());
+  callbackWorker = new Worker(workerUrl);
   const state = document.getElementById("callback-state");
   callbackWorker.addEventListener("message", ({ data }) => {
     if (data.type === "phase") {
@@ -189,11 +189,7 @@ function runCallbackSearch() {
   state.textContent = "Starting the retained model…";
   setCallbackVerdict("running", "Search in progress", "The shortest tour is only an incumbent until it meets the proven lower bound.");
   setCallbackControls("running");
-  callbackWorker.postMessage({
-    action: "run",
-    autoStopSeconds: Number(document.getElementById("callback-auto-stop")?.value),
-    stopBuffer: callbackStopFlag?.buffer,
-  });
+  callbackWorker.postMessage({ action: "run", autoStopSeconds: Number(document.getElementById("callback-auto-stop")?.value), stopBuffer: callbackStopFlag?.buffer });
 }
 
 function resetCallbackSearch(startAfterReset, restarting = false) {
@@ -215,9 +211,7 @@ function requestCallbackInterrupt(restart) {
     Atomics.store(callbackStopFlag, 0, 1);
     Atomics.notify(callbackStopFlag, 0);
     setCallbackControls(restart ? "restarting" : "stopping");
-    state.textContent = restart
-      ? "Stopping the current run before rebuilding from scratch…"
-      : "Interruption requested; waiting for the next MIP callback checkpoint…";
+    state.textContent = restart ? "Stopping the current run before rebuilding from scratch…" : "Interruption requested; waiting for the next MIP callback checkpoint…";
     setCallbackVerdict("paused", restart ? "Restart pending" : "Stopping search", "Waiting for HiGHS to reach a MIP interruption checkpoint.");
     return;
   }
@@ -238,15 +232,7 @@ export function initializeCallbacksPanel() {
   if (note) note.innerHTML = sharedCallbackStop
     ? `“Stop now” writes to a <code>SharedArrayBuffer</code>. The blocked solver Worker reads that atomic flag inside <code>mipInterrupt</code> and calls <code>event.interrupt()</code>. Resume runs the same native model with its incumbent; only “Restart from scratch” disposes and rebuilds it.`
     : `Cross-origin isolation is unavailable, so “Stop now” falls back to terminating the dedicated Worker. On HTTPS, <code>coi-serviceworker</code> normally enables shared-memory callback interruption after its first automatic reload.`;
-  document.getElementById("callback-start")?.addEventListener("click", () => {
-    if (callbackModelReady) runCallbackSearch();
-    else resetCallbackSearch(true);
-  });
-  document.getElementById("callback-stop")?.addEventListener("click", () => {
-    if (callbackRunning) requestCallbackInterrupt(false);
-  });
-  document.getElementById("callback-restart")?.addEventListener("click", () => {
-    if (callbackRunning) requestCallbackInterrupt(true);
-    else resetCallbackSearch(true, true);
-  });
+  document.getElementById("callback-start")?.addEventListener("click", () => callbackModelReady ? runCallbackSearch() : resetCallbackSearch(true));
+  document.getElementById("callback-stop")?.addEventListener("click", () => { if (callbackRunning) requestCallbackInterrupt(false); });
+  document.getElementById("callback-restart")?.addEventListener("click", () => callbackRunning ? requestCallbackInterrupt(true) : resetCallbackSearch(true, true));
 }

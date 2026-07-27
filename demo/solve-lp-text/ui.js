@@ -1,7 +1,8 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { setJson, setOutput, setStatus, setTiming } from "../ui.js";
 import { parseLpModel, renderOptimalityMap } from "../visualizations.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const lpInput = document.getElementById("lp-input");
 const lpOutput = document.getElementById("lp-output");
 const lpTiming = document.getElementById("lp-timing");

@@ -331,6 +331,8 @@ select:focus-visible, textarea:focus-visible {
   align-items: start;
 }
 
+#example-panels { min-width: 0; }
+
 /* ── Example Card Component ── */
 .example-card {
   padding: clamp(1.5rem, 3.5vw, 3.25rem);
@@ -549,6 +551,14 @@ select:focus-visible, textarea:focus-visible {
   text-transform: uppercase;
   color: var(--color-text-secondary);
 }
+
+.code-header a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.code-header a:hover { color: var(--color-link); }
 
 .code-editor-box {
   padding: 1.3rem 1.4rem;

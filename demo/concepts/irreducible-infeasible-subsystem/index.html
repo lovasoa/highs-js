@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A practical guide to irreducible infeasible subsystems, model conflicts, and interpreting highs-js getIis results.">
+<title>Irreducible Infeasible Subsystems - highs-js</title>
+<link rel="stylesheet" href="../../css/base.css">
+<link rel="stylesheet" href="../../css/examples.css">
+<style>
+  .concept-shell { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+  .concept-nav { position: relative; }
+  .concept-nav .top-nav-right { display: flex; align-items: center; }
+  .concept-hero { padding: clamp(4.5rem, 10vw, 8rem) 0 clamp(3rem, 7vw, 5.5rem); border-bottom: 1px solid #cfe1e0; }
+  .concept-kicker { margin-bottom: 1.25rem; color: var(--color-link); font: 700 0.68rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+  .concept-hero h1 { max-width: 850px; font-size: clamp(2.7rem, 7vw, 5.6rem); font-weight: 560; line-height: 0.98; letter-spacing: -0.065em; }
+  .concept-deck { max-width: 720px; margin-top: 1.75rem; color: var(--color-text-secondary); font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.7; }
+  .concept-deck strong { color: var(--color-text); }
+  .concept-layout { display: grid; grid-template-columns: 220px minmax(0, 740px); justify-content: space-between; gap: clamp(3rem, 8vw, 8rem); padding: clamp(3.5rem, 8vw, 7rem) 0; }
+  .concept-toc { position: sticky; top: 1.5rem; align-self: start; padding-left: 1rem; border-left: 1px solid var(--color-table); }
+  .concept-toc strong { display: block; margin-bottom: 0.75rem; color: var(--color-text-secondary); font: 700 0.62rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .concept-toc ol { display: grid; gap: 0.45rem; list-style: none; }
+  .concept-toc a { color: var(--color-text-secondary); font-size: 0.75rem; text-decoration: none; }
+  .concept-toc a:hover { color: var(--color-link); opacity: 1; }
+  .concept-article { min-width: 0; }
+  .concept-section { padding-bottom: clamp(3rem, 7vw, 5.5rem); scroll-margin-top: 2rem; }
+  .concept-section + .concept-section { padding-top: clamp(3rem, 7vw, 5.5rem); border-top: 1px solid #dcebea; }
+  .section-number { display: block; margin-bottom: 0.75rem; color: var(--color-link); font: 700 0.65rem/1 var(--font-mono); letter-spacing: 0.08em; }
+  .concept-section h2 { max-width: 680px; margin-bottom: 1.25rem; font-size: clamp(1.75rem, 4vw, 2.6rem); font-weight: 560; line-height: 1.12; letter-spacing: -0.045em; }
+  .concept-section h3 { margin: 2.1rem 0 0.65rem; font-size: 1.05rem; line-height: 1.35; }
+  .concept-section p { margin: 0.8rem 0; color: #4e595c; line-height: 1.78; }
+  .concept-section ul, .concept-section ol { display: grid; gap: 0.65rem; margin: 1rem 0; padding-left: 1.35rem; color: #4e595c; }
+  .concept-section li { padding-left: 0.2rem; line-height: 1.65; }
+  .definition { margin: 1.75rem 0; padding: 1.4rem 1.5rem; border: solid #9ececc; border-width: 1px 1px 1px 5px; border-radius: 8px; background: #fff; }
+  .definition strong { display: block; margin-bottom: 0.4rem; color: var(--color-text); font: 700 0.69rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+  .definition p { margin: 0; color: var(--color-text); }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 1.75rem 0; overflow: hidden; border: 1px solid #cfe1e0; border-radius: 9px; background: #cfe1e0; }
+  .comparison > div { padding: 1.3rem; background: #fff; }
+  .comparison h3 { margin: 0 0 0.5rem; color: var(--color-text); font: 700 0.72rem/1 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }
+  .comparison p { margin: 0; font-size: 0.88rem; }
+  .math-example { margin: 1.75rem 0; overflow: hidden; border: 1px solid #e3b7bc; border-radius: 10px; background: #fff; }
+  .math-example header { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 1rem; border-bottom: 1px solid #efd5d8; background: #fff7f7; color: #8f3540; font: 700 0.65rem/1.3 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }
+  .contradiction { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #efd5d8; }
+  .contradiction code { display: grid; min-height: 92px; padding: 1.25rem 0.75rem; place-items: center; background: #fff; color: var(--color-text); font-size: clamp(0.8rem, 2vw, 1rem); text-align: center; }
+  .math-example > p { margin: 0; padding: 1rem 1.15rem; color: #68464a; font-size: 0.86rem; }
+  .bounds-table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; font-size: 0.86rem; }
+  .bounds-table th, .bounds-table td { padding: 0.8rem 0.75rem; border-bottom: 1px solid #dcebea; text-align: left; vertical-align: top; }
+  .bounds-table th { color: var(--color-text-secondary); font: 700 0.64rem/1.4 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }
+  .bounds-table code { color: #8f3540; font-size: 0.78rem; }
+  .result-map { margin: 1.5rem 0; border: 1px solid #cfe1e0; border-radius: 9px; background: #fff; }
+  .result-map div { display: grid; grid-template-columns: minmax(135px, 0.34fr) 1fr; gap: 1.2rem; padding: 0.9rem 1rem; }
+  .result-map div + div { border-top: 1px solid #e4efee; }
+  .result-map dt { color: #8f3540; font: 700 0.75rem/1.5 var(--font-mono); }
+  .result-map dd { color: #4e595c; font-size: 0.86rem; line-height: 1.6; }
+  .workflow { counter-reset: workflow; padding-left: 0 !important; list-style: none; }
+  .workflow li { position: relative; min-height: 4rem; padding: 0 0 1.3rem 3.7rem; counter-increment: workflow; }
+  .workflow li::before { position: absolute; top: 0; left: 0; display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid #9ececc; border-radius: 50%; background: #fff; color: var(--color-link); content: counter(workflow, decimal-leading-zero); font: 700 0.65rem/1 var(--font-mono); }
+  .workflow strong { color: var(--color-text); }
+  .caution { margin: 1.5rem 0; padding: 1.2rem 1.3rem; border-left: 4px solid #d45e6a; background: #fff3f4; color: #68464a; }
+  .next-links { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.75rem; }
+  .next-links a { display: block; padding: 1.2rem; border: 1px solid #cfe1e0; border-radius: 8px; background: #fff; text-decoration: none; }
+  .next-links a:hover { border-color: #e27680; opacity: 1; }
+  .next-links strong { display: block; margin-bottom: 0.3rem; color: var(--color-text); }
+  .next-links span { color: var(--color-text-secondary); font-size: 0.8rem; }
+  .concept-footer { padding: 2rem 0 3rem; border-top: 1px solid #cfe1e0; color: var(--color-text-secondary); font: 0.7rem/1.6 var(--font-mono); }
+  @media (max-width: 760px) {
+    .concept-nav .top-nav-right a:first-child { display: block; }
+    .concept-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .concept-toc { position: static; }
+    .comparison, .next-links { grid-template-columns: 1fr; }
+    .contradiction { grid-template-columns: 1fr; }
+    .result-map div { grid-template-columns: 1fr; gap: 0.25rem; }
+    .bounds-table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<nav class="top-nav concept-nav" aria-label="Primary navigation">
+  <div class="top-nav-left">
+    <a href="../../"><span class="brand-mark">H</span> highs-js</a>
+  </div>
+  <div class="top-nav-right">
+    <a href="../../#panel-iis">Live IIS demo</a>
+    <a href="../../docs/interfaces/IisResult.html">API reference</a>
+    <a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</nav>
+
+<header class="concept-shell concept-hero">
+  <p class="concept-kicker">Concept 01 / Model diagnosis</p>
+  <h1>Find the contradiction, not just the failure.</h1>
+  <p class="concept-deck">An <strong>irreducible infeasible subsystem</strong> turns &ldquo;no solution exists&rdquo; into a focused set of constraints and bounds that cannot all hold. It is evidence for debugging, not an instruction to delete a requirement.</p>
+</header>
+
+<div class="concept-shell concept-layout">
+  <nav class="concept-toc" aria-label="On this page">
+    <strong>On this page</strong>
+    <ol>
+      <li><a href="#feasibility">Feasibility first</a></li>
+      <li><a href="#definition">What an IIS is</a></li>
+      <li><a href="#members">Rows and bounds</a></li>
+      <li><a href="#result">Reading getIis()</a></li>
+      <li><a href="#workflow">Debugging workflow</a></li>
+      <li><a href="#limits">Limits and next steps</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <article class="concept-article">
+      <section class="concept-section" id="feasibility">
+        <span class="section-number">01</span>
+        <h2>Feasibility comes before optimality</h2>
+        <p>A model is <strong>feasible</strong> if at least one assignment of all decision variables satisfies every row constraint and every variable bound, within the solver's feasibility tolerances. The objective chooses among feasible assignments; it cannot make an impossible constraint set feasible.</p>
+        <p>An <strong>infeasible</strong> status is a proof that no such assignment exists. Before requesting an IIS, distinguish that proof from statuses such as unbounded-or-infeasible, interrupted, or a time limit. Those outcomes do not establish the premise that an IIS analysis needs.</p>
+        <aside class="caution" aria-label="Feasibility distinction"><strong>Practical distinction:</strong> an unbounded model has feasible points but no finite optimum in the objective direction. An infeasible model has no feasible point at all.</aside>
+      </section>
+
+      <section class="concept-section" id="definition">
+        <span class="section-number">02</span>
+        <h2>A small certificate of conflict</h2>
+        <div class="definition">
+          <strong>Formal definition</strong>
+          <p>Given a finite set of row constraints and variable bounds, an IIS is a subset that is infeasible and becomes feasible when any single member of that subset is removed.</p>
+        </div>
+        <p>The definition is local to the returned subset. Constraints outside it may still participate in another contradiction, and solving one IIS does not prove the entire repaired model feasible.</p>
+
+        <div class="comparison">
+          <div>
+            <h3>Irreducible</h3>
+            <p>No member is redundant <em>within this conflict</em>. Remove any one member and this subsystem becomes feasible.</p>
+          </div>
+          <div>
+            <h3>Minimum-cardinality</h3>
+            <p>No IIS anywhere in the model contains fewer members. An IIS routine does not generally promise this stronger property.</p>
+          </div>
+        </div>
+
+        <h3>A three-member contradiction</h3>
+        <p>Suppose <code>x</code> and <code>y</code> are otherwise unrestricted. These three requirements cannot coexist:</p>
+        <figure class="math-example">
+          <header><span>Tiny IIS</span><span>3 members</span></header>
+          <div class="contradiction">
+            <code>x &ge; 4</code>
+            <code>y &ge; 4</code>
+            <code>x + y &le; 5</code>
+          </div>
+          <p>The lower bounds force <code>x + y &ge; 8</code>, contradicting the row upper bound of 5. Remove any one of the three and a feasible assignment exists, so the set is irreducible.</p>
+        </figure>
+
+        <h3>One model can have many IISs</h3>
+        <p>Independent data errors can create disjoint IISs; overlapping constraints can create many alternatives. The IIS returned on one run is therefore <strong>one explanation</strong>, not necessarily the only explanation or the one a domain expert will find easiest to repair.</p>
+      </section>
+
+      <section class="concept-section" id="members">
+        <span class="section-number">03</span>
+        <h2>Rows and variable bounds are both requirements</h2>
+        <p>A row applies a linear expression bound such as <code>5 &le; 2x + y &le; 9</code>. A column bound applies directly to one variable, such as <code>0 &le; x &le; 4</code>. Either side can be the member that creates a conflict.</p>
+        <table class="bounds-table">
+          <thead>
+            <tr><th>Status</th><th>Meaning in the retained item</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>boundLower</code></td><td>The lower side participates.</td><td><code>x &ge; 4</code> or <code>2x + y &ge; 5</code></td></tr>
+            <tr><td><code>boundUpper</code></td><td>The upper side participates.</td><td><code>x &le; 4</code> or <code>2x + y &le; 9</code></td></tr>
+            <tr><td><code>boundBoxed</code></td><td>Both finite sides are retained.</td><td><code>1 &le; x &le; 4</code></td></tr>
+            <tr><td><code>boundFree</code></td><td>No finite active bound is identified; do not interpret it as a lower or upper bound.</td><td>An otherwise free retained item</td></tr>
+          </tbody>
+        </table>
+        <p>&ldquo;Column&rdquo; does not mean &ldquo;objective coefficient.&rdquo; The objective is irrelevant to feasibility. A column entry identifies a model variable and the bound classification associated with it.</p>
+      </section>
+
+      <section class="concept-section" id="result">
+        <span class="section-number">04</span>
+        <h2>Read <code>getIis()</code> as aligned arrays</h2>
+        <p><code>Model.getIis()</code> returns detached typed arrays. Compact arrays describe retained items; status arrays describe every row or column in model order.</p>
+        <dl class="result-map">
+          <div><dt>colIndex</dt><dd>Zero-based model column indices retained in the compact result.</dd></div>
+          <div><dt>colBound</dt><dd>Parallel to <code>colIndex</code>. Entry <code>colBound[i]</code> classifies the bound for model column <code>colIndex[i]</code>.</dd></div>
+          <div><dt>rowIndex</dt><dd>Zero-based model row indices retained in the compact result.</dd></div>
+          <div><dt>rowBound</dt><dd>Parallel to <code>rowIndex</code>. Entry <code>rowBound[i]</code> classifies the bound for model row <code>rowIndex[i]</code>.</dd></div>
+          <div><dt>colStatus</dt><dd>One entry per model column: compare with <code>notInConflict</code>, <code>maybeInConflict</code>, or <code>inConflict</code>.</dd></div>
+          <div><dt>rowStatus</dt><dd>One entry per model row, using the same membership constants.</dd></div>
+        </dl>
+        <p>Compare numeric codes with <code>highs.constants.iis</code>, not hard-coded numbers. Resolve indices against the same loaded model using names and snapshots such as <code>getColName()</code>, <code>getRowName()</code>, <code>getCols()</code>, and <code>getRows()</code>. Preserve that context before calling <code>dispose()</code>.</p>
+        <aside class="caution" aria-label="Result interpretation warning"><strong>Do not zip rows with columns.</strong> The row and column compact arrays are separate axes and can have different lengths. Only each index array and its corresponding bound array are parallel.</aside>
+        <p>An empty compact result means no subsystem was found; it does not by itself prove feasibility. A limited computation may also leave <code>maybeInConflict</code> statuses and may not have established irreducibility.</p>
+      </section>
+
+      <section class="concept-section" id="workflow">
+        <span class="section-number">05</span>
+        <h2>A debugging workflow that preserves intent</h2>
+        <ol class="workflow">
+          <li><strong>Confirm the status.</strong> Solve first and proceed only after the model status proves infeasibility.</li>
+          <li><strong>Freeze the evidence.</strong> Record the model version, input data, row and column names, units, bounds, and solver tolerances used for the failing run.</li>
+          <li><strong>Compute and map the IIS.</strong> Translate every returned index and bound code back to a human-readable model requirement. Inspect both row bounds and variable bounds.</li>
+          <li><strong>Check formulation before policy.</strong> Look for sign reversals, unit mismatches, stale joins, swapped lower and upper bounds, accidental defaults, rounding, and duplicated requirements.</li>
+          <li><strong>Ask which requirement may move.</strong> A domain owner should decide whether a member is wrong or relaxable. The solver identifies conflict, not business priority.</li>
+          <li><strong>Change one assumption and solve again.</strong> Verify the intended repair on the full model. If it remains infeasible, compute another IIS and continue.</li>
+        </ol>
+        <p>To search for alternative IISs, temporarily relax or exclude one member of the current IIS and rerun conflict analysis. This is an exploration technique, not permission to remove that member from production.</p>
+      </section>
+
+      <section class="concept-section" id="limits">
+        <span class="section-number">06</span>
+        <h2>What an IIS cannot tell you</h2>
+        <ul>
+          <li>It does not select the correct business requirement to relax.</li>
+          <li>It does not guarantee the fewest-member conflict or enumerate every IIS.</li>
+          <li>It does not quantify the smallest useful relaxation; use a feasibility relaxation or a purpose-built repair model for that question.</li>
+          <li>It does not make poor scaling harmless. Near-conflicts can change classification when data scale and feasibility tolerances change.</li>
+          <li>It does not replace validation of generated model names, indices, units, and source records.</li>
+        </ul>
+        <p>For a foundational treatment, see John W. Chinneck and Erik W. Dravnieks, <a href="https://doi.org/10.1287/ijoc.3.2.157" target="_blank" rel="noopener">&ldquo;Locating Minimal Infeasible Constraint Sets in Linear Programs&rdquo;</a>, <cite>ORSA Journal on Computing</cite> (1991).</p>
+        <div class="next-links">
+          <a href="../../#panel-iis"><strong>Try the live IIS demo</strong><span>Edit a contradiction and inspect the returned conflict.</span></a>
+          <a href="../../docs/interfaces/Model.html#getiis"><strong>Open the project API docs</strong><span>Read <code>Model.getIis()</code> and the linked <code>IisResult</code> contract.</span></a>
+        </div>
+      </section>
+    </article>
+  </main>
+</div>
+
+<footer class="concept-footer">
+  <div class="concept-shell">highs-js concept guide / Irreducible infeasible subsystems</div>
+</footer>
+</body>
+</html>
