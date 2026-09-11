@@ -63,35 +63,6 @@ select:focus-visible, textarea:focus-visible {
   outline-offset: 3px;
 }
 
-/* ── Prerelease Banner ── */
-.prerelease-banner {
-  max-width: 1056px;
-  margin: 0 auto;
-  padding: 1rem 1.25rem;
-  border: 1px solid #cfe1e0;
-  border-radius: var(--radius);
-  background: #fff;
-  color: var(--color-text-secondary);
-  text-align: left;
-  font-size: 0.78rem;
-  line-height: 1.6;
-}
-.prerelease-banner strong { color: var(--color-text); }
-.prerelease-banner code {
-  background: #edf6f5;
-  color: var(--color-text);
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-.prerelease-banner a {
-  float: right;
-  color: var(--color-link);
-  text-decoration: none;
-}
-.prerelease-banner a:hover { color: #d90000; }
-
 /* ── Header Navigation ── */
 .top-nav {
   position: relative;
