@@ -36,6 +36,7 @@
     "Method",
     "TypeAlias"
   ],
+  "intentionallyNotDocumented": ["SymbolDisposable.__type.dispose"],
   "treatValidationWarningsAsErrors": true,
   "githubPages": true,
   "hideGenerator": true

@@ -1,0 +1,91 @@
+<section class="tab-panel" id="panel-iis">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>IIS // INFEASIBILITY CONFLICT DIAGNOSTICS</span>
+      <span>getIis()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Explain why a model is infeasible</h3>
+      <p>Use an irreducible infeasible subsystem (IIS) when a model has no feasible solution and you need a smaller set of rows and variable bounds to inspect. “Irreducible” means every returned member is necessary for that particular conflict: removing any one makes the subsystem feasible. It does not mean HiGHS found the conflict with the fewest possible members, and a model can contain several different IISs.</p>
+      <p class="api-reference-links"><span>Concept guide</span><a href="concepts/irreducible-infeasible-subsystem/"><strong>Understand and debug an IIS</strong></a></p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getiis"><code>Model.getIis()</code></a><a href="docs/interfaces/IisResult.html"><code>IisResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/diagnose-infeasibility/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="iis-core-code" spellcheck="false">// Solve first and confirm infeasibility. Calling getIis() on a feasible
+// model has no useful conflict to return.
+const model = highs.createModel({ format: "lp", data: lpText });
+try {
+  // Value 14 requests from-LP, irreducible, column-priority analysis.
+  model.options.set("iis_strategy", highs.constants.iis.strategyColPriority);
+  const run = model.run();
+  if (run.modelStatus !== highs.constants.modelStatus.infeasible) {
+    throw new Error("IIS analysis requires an infeasible model");
+  }
+
+  // HiGHS computes one irreducible conflict, not necessarily the globally
+  // smallest one. Indices refer to columns and rows in the loaded model.
+  const { colIndex, rowIndex, colBound, rowBound } = model.getIis();
+  // Bound arrays identify lower, upper, or boxed participation.
+} finally {
+  model.dispose();
+}</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>Infeasible Model Inputs</h4>
+      <textarea class="editor-compact" id="iis-lp" spellcheck="false">Minimize
+ obj: x + y
+Subject To
+ demand_limit: x + y &lt;= 5
+Bounds
+ 10 &lt;= x
+ 10 &lt;= y
+End</textarea>
+      <p class="model-state" id="iis-state">Preparing the initial conflict analysis…</p>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">FEASIBILITY STATUS</span>
+          <span class="stat-val" id="iis-status">READY</span>
+        </div>
+      </div>
+      <h4>Why these requirements cannot coexist</h4>
+      <div id="iis-visual-tags">
+        <div class="iis-empty-state">
+          <div class="iis-preview-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <strong>No conflict analysis yet</strong>
+            <p>Preparing one irreducible conflict among the model's rows and bounds.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <details class="api-response textual-solution">
+      <summary>Exact API response</summary>
+      <div class="output placeholder" id="iis-output">Preparing the initial conflict analysis…</div>
+    </details>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="iis-timing">Waiting for solver</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      <a href="concepts/irreducible-infeasible-subsystem/">IIS concept guide</a> • One irreducible conflict • Not guaranteed minimum-cardinality • Bound status identifies lower/upper participation
+    </div>
+  </div>
+</section>

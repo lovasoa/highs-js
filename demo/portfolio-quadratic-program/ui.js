@@ -1,9 +1,10 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { denseToCSC, readNumber } from "../model-data.js";
 import { setOutput, setStatus, setTiming } from "../ui.js";
 import { createSparseExplorer, hessianExplorerConfig, renderPortfolioViz } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent } from "../live-examples.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const qpOutput = document.getElementById("qp-output");
 const qpTargetReturn = document.getElementById("qp-target-return");
 const qpTiming = document.getElementById("qp-timing");

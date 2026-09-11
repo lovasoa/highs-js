@@ -1,0 +1,102 @@
+<section class="tab-panel" id="panel-qp">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>QP // QUADRATIC OBJECTIVE &amp; HESSIAN MATRIX</span>
+      <span>passHessian()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Markowitz Portfolio Risk Minimization</a></h3>
+      <p>Use a convex <a href="https://en.wikipedia.org/wiki/Quadratic_programming" target="_blank" rel="noopener">quadratic program</a> when cost or risk depends on interactions between continuous decisions, such as portfolio covariance or least-squares penalties. This model minimizes portfolio variance while meeting a target return. HiGHS evaluates <code>½xᵀQx + cᵀx</code>, so <code>Q</code> is twice the covariance matrix here. The Hessian must have the correct <a href="https://en.wikipedia.org/wiki/Definite_matrix" target="_blank" rel="noopener">semidefinite sign</a> for the objective sense; HiGHS does not solve non-convex QP or mixed-integer QP.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#passhessian"><code>Model.passHessian()</code></a><a href="docs/interfaces/HessianInput.html"><code>HessianInput</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <div class="sparse-explorer" id="qp-matrix-explorer" aria-label="Interactive Hessian storage explanation"></div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/portfolio-quadratic-program/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="qp-core-code" spellcheck="false">// First pass the linear part of the model. r0 fixes the total
+// allocation at 1; r1 requires the requested minimum return.
+const model = highs.createModel();
+model.passModel({
+  numCols: 3, numRows: 2,
+  sense: highs.constants.objectiveSense.minimize,
+  colCost: [0, 0, 0],
+  colLower: [0, 0, 0], colUpper: [1, 1, 1],
+  rowLower: [1.0, 0.08], rowUpper: [1.0, Infinity],
+  matrix: {
+    format: "csc",
+    // Every asset appears in both rows, so each column has two entries.
+    starts: [0, 2, 4, 6],
+    indices: [0, 1, 0, 1, 0, 1], // budget row, return row
+    values: [1, .12, 1, .08, 1, .04]
+  }
+});
+
+// HiGHS stores one triangle of symmetric Q in column-wise form.
+// starts[j] locates Hessian column j; indices gives its row numbers.
+// Because the objective is 1/2 x'Qx, these values are 2 * covariance.
+model.passHessian({
+  format: "triangular", dimension: 3,
+  starts: [0, 2, 3, 4],
+  indices: [0, 1, 1, 2],
+  values: [0.08, 0.02, 0.04, 0.01]
+});
+
+model.run();
+const { colValue } = model.getSolution(); // Optimal portfolio weights.
+model.dispose();</textarea>
+      </div>
+    </div>
+
+    <div class="model-story" data-live-example="qp">
+      <p>I want the lowest-risk mix of Tech, Energy, and government bonds that returns at least <input class="story-input" id="qp-target-return" type="number" value="8" step="0.5" min="1" max="20" aria-label="Target annual return">% per year. Their expected returns are <input class="story-input" id="qp-return-tech" type="number" value="12" step="0.5" aria-label="Tech expected return">%, <input class="story-input" id="qp-return-energy" type="number" value="8" step="0.5" aria-label="Energy expected return">%, and <input class="story-input" id="qp-return-bonds" type="number" value="4" step="0.5" aria-label="Bonds expected return">%.</p>
+      <p>The covariance matrix in the code describes their risk and co-movement. The point in the triangle is the minimum-variance allocation meeting my target; moving a return changes the feasible mix immediately.</p>
+    </div>
+    <div class="model-state" id="qp-state">Preparing the first solution…</div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val" id="qp-status">READY</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MINIMIZED VARIANCE</span>
+          <span class="stat-val" id="qp-risk-stat">--</span>
+        </div>
+      </div>
+
+      <h4>Optimal Portfolio Allocation Breakdown</h4>
+      <div class="capacity-packing">
+        <div class="capacity-header-row">
+          <span>CAPITAL ALLOCATION (100% TOTAL)</span>
+          <span id="qp-allocation-text">Tech: -- | Energy: -- | Bonds: --</span>
+        </div>
+        <div class="packing-track" id="qp-allocation-track">
+          <div class="pack-block initial-full">Preparing the initial allocation…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <div class="textual-solution">
+      <label>Optimal Asset Weights Array:</label>
+      <div class="output placeholder" id="qp-output">Preparing the initial portfolio…</div>
+    </div>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="qp-timing">Waiting for solver</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      Convex QP • Objective ½xᵀQx + cᵀx • Triangular sparse Hessian • No MIQP
+    </div>
+  </div>
+</section>

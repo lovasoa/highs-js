@@ -20,6 +20,7 @@ test("CommonJS package export initializes the runtime", async () => {
   assert.equal(typeof loader, "function");
   const highs = await loader({ print: () => {}, printErr: () => {} });
   assert.equal(typeof highs.solve, "function");
+  assert.equal(typeof highs.withModel, "function");
 });
 
 test("native ESM package export initializes the same public API", async (t) => {
@@ -36,4 +37,5 @@ test("native ESM package export initializes the same public API", async (t) => {
   const highs = await imported.default({ print: () => {}, printErr: () => {} });
   assert.equal(typeof highs.solve, "function");
   assert.equal(typeof highs.createModel, "function");
+  assert.equal(typeof highs.withModel, "function");
 });

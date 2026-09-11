@@ -56,11 +56,6 @@
   ],
   "omit": [
     {
-      "proposal": "Disposable and Symbol.dispose requirements",
-      "alternative": "Every owning object has dispose(); implementations may additionally define Symbol.dispose when available.",
-      "reason": "Requiring esnext.disposable needlessly raises the consumer TypeScript lib target."
-    },
-    {
       "proposal": "algebraic Variable, Constraint, LinearExpression and QuadraticExpression handles",
       "alternative": "Use sparse ModelData plus add/change/pass methods.",
       "reason": "These are C++-style objects with no stable C handles; implementing them would require a second JS model graph or native shim with substantial memory and invalidation cost."
@@ -127,7 +122,7 @@
     }
   ],
   "keepWithShapeChanges": [
-    {"proposal": "persistent Model", "backing": "Highs_create / Highs_destroy"},
+    {"proposal": "persistent Model lifecycle with dispose(), conditional Symbol.dispose, and withModel()", "backing": "Highs_create / Highs_destroy"},
     {"proposal": "LP, MIP and QP bulk input", "backing": "Highs_passLp / Highs_passMip / Highs_passModel / Highs_passHessian"},
     {"proposal": "model mutation and sparse selection", "backing": "Highs_add*, Highs_change*, Highs_get*ByRange/Set/Mask, Highs_delete*, Highs_scale*"},
     {"proposal": "solution, basis, rays, ranging, IIS, crossover and feasibility relaxation", "backing": "matching stable C functions"},

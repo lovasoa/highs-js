@@ -47,6 +47,13 @@ async function exerciseContract() {
   const model = highs.createModel(modelData);
   const raw = highs.raw.createModel();
 
+  const scopedColumns: number = highs.withModel(modelData, (scoped) =>
+    scoped.getDimensions().numCols
+  );
+  const scopedRows: number = await highs.withModel(async (scoped) =>
+    scoped.getDimensions().numRows
+  );
+
   for (const selection of selections) model.getCols(selection);
   const detached: Float64Array = model.getModel().colCost;
   // Bulk C extraction does not include model names.
@@ -73,6 +80,8 @@ async function exerciseContract() {
   void sense;
   void offset;
   void int64AwareInfo;
+  void scopedColumns;
+  void scopedRows;
 
   model.readModel({ format: "lp", data: "Minimize\nEnd" });
   model.options.set("output_flag", false);

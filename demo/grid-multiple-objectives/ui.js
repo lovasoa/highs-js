@@ -1,7 +1,9 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { readNumber } from "../model-data.js";
 import { renderGridDispatch } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent } from "../live-examples.js";
+
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 
 export async function solveGridModel() {
   const revision = beginLiveSolve("grid");

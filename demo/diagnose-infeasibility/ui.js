@@ -1,8 +1,9 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { element, setJson, setOutput, setStatus, setTiming } from "../ui.js";
 import { parseLpModel, renderIisPlot } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent, scheduleLiveSolve } from "../live-examples.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const output = document.getElementById("iis-output");
 const input = document.getElementById("iis-lp");
 const timing = document.getElementById("iis-timing");

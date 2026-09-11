@@ -1,7 +1,8 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { setOutput, setTiming } from "../ui.js";
 import { parseLpModel, renderIoViz } from "../visualizations.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const output = document.getElementById("io-output");
 const input = document.getElementById("io-input");
 const timing = document.getElementById("io-timing");

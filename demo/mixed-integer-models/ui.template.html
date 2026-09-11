@@ -1,0 +1,125 @@
+<section class="tab-panel" id="panel-mip">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>MILP // BINARY &amp; INTEGER VARIABLES</span>
+      <span>constants.variableType.integer</span>
+    </div>
+
+    <div class="section-intro-note">Both examples use the same integrality vector and <a href="https://en.wikipedia.org/wiki/Branch_and_cut" target="_blank" rel="noopener">branch-and-cut</a> lifecycle. Their decision geometry is different, so each receives a purpose-built view.</div>
+
+    <div class="problem-header">
+      <h3 id="mip-title">0/1 <a href="https://en.wikipedia.org/wiki/Knapsack_problem" target="_blank" rel="noopener">Knapsack</a> Discrete Optimization</h3>
+      <p id="mip-explain">Use integer or binary variables when decisions represent indivisible quantities, selections, or on/off choices. This knapsack model chooses items without exceeding capacity; HiGHS solves it as a <a href="https://en.wikipedia.org/wiki/Integer_programming" target="_blank" rel="noopener">mixed-integer linear program</a> using branch-and-cut, and reports a bound-based MIP gap when optimality has not yet been proven.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/ModelData.html#integrality"><code>ModelData.integrality</code></a><a href="docs/interfaces/HighsConstants.html#variabletype"><code>HighsConstants.variableType</code></a><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getsolution"><code>Model.getSolution()</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/mixed-integer-models/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="mip-core-code" spellcheck="false">// A MIP uses the same linear objective, bounds, and sparse matrix as
+// an LP. The integrality vector changes how each column is treated.
+const model = highs.createModel();
+
+// columnKinds contains names such as "integer" or "continuous". Looking
+// them up keeps native enum numbers out of model-building code.
+const integrality = columnKinds.map(
+  (kind) => highs.constants.variableType[kind]
+);
+
+model.passModel({
+  numCols, numRows,
+  sense: highs.constants.objectiveSense[objectiveDirection],
+  colCost, colLower, colUpper, rowLower, rowUpper,
+
+  // CSC layout: starts partitions nonzeros by column; indices contains
+  // row numbers; values contains the corresponding coefficients.
+  matrix: { format: "csc", numRows, numCols, starts, indices, values },
+
+  // Integer columns with bounds [0, 1] become binary decisions. Other
+  // columns can remain continuous in the same mixed-integer model.
+  integrality
+});
+
+const run = model.run(); // HiGHS uses its MIP branch-and-cut solver.
+const { colValue } = model.getSolution();
+
+// A feasible incumbent can exist before optimality is proven. Read mip_gap
+// from model.info when a time, node, or solution limit may stop the search.
+const mipGap = model.info.get("mip_gap");
+model.dispose();</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <article class="model-example" id="example-knapsack">
+      <div class="model-example-heading"><span>01</span><div><h4>Choose what to carry</h4><p>Each item is binary: it is either in the bag or left behind.</p></div></div>
+      <div class="model-story" data-live-example="knapsack">
+        <p>I can carry <input class="story-input" id="mip-capacity" type="number" value="9" min="1" max="100" aria-label="Knapsack capacity"> kg. My knapsack can contain any combination of:</p>
+        <ul>
+          <li>my water bottle, worth $<input class="story-input mip-value" type="number" value="8" min="0" data-item="0" aria-label="Water bottle value"> and weighing <input class="story-input mip-weight" type="number" value="1" min="0.1" step="0.1" data-item="0" aria-label="Water bottle weight"> kg;</li>
+          <li>my camera, worth $<input class="story-input mip-value" type="number" value="14" min="0" data-item="1" aria-label="Camera value"> and weighing <input class="story-input mip-weight" type="number" value="4" min="0.1" step="0.1" data-item="1" aria-label="Camera weight"> kg;</li>
+          <li>my jacket, worth $<input class="story-input mip-value" type="number" value="10" min="0" data-item="2" aria-label="Jacket value"> and weighing <input class="story-input mip-weight" type="number" value="3" min="0.1" step="0.1" data-item="2" aria-label="Jacket weight"> kg;</li>
+          <li>my book, worth $<input class="story-input mip-value" type="number" value="7" min="0" data-item="3" aria-label="Book value"> and weighing <input class="story-input mip-weight" type="number" value="2" min="0.1" step="0.1" data-item="3" aria-label="Book weight"> kg;</li>
+          <li>my laptop, worth $<input class="story-input mip-value" type="number" value="20" min="0" data-item="4" aria-label="Laptop value"> and weighing <input class="story-input mip-weight" type="number" value="5" min="0.1" step="0.1" data-item="4" aria-label="Laptop weight"> kg.</li>
+        </ul>
+        <p>The solver chooses the most valuable combination that fits. Selected items are packed into the capacity bar below.</p>
+      </div>
+      <div class="model-state" id="knapsack-state">Preparing the first solution…</div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val" id="mip-status">READY</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MIP GAP</span>
+          <span class="stat-val" id="mip-gap-stat">--</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label" id="mip-primary-label">TOTAL VALUE</span>
+          <span class="stat-val" id="mip-val-stat">--</span>
+        </div>
+      </div>
+
+      <!-- Capacity Packing Bar -->
+      <div class="capacity-packing" id="mip-packing-box">
+        <div class="capacity-header-row">
+          <span id="mip-packing-title">KNAPSACK WEIGHT DISTRIBUTION</span>
+          <span id="mip-weight-stat">-- / 15 kg</span>
+        </div>
+        <div class="packing-track" id="mip-packing-track">
+          <div class="pack-block initial-full">Preparing the initial packing…</div>
+        </div>
+      </div>
+
+      <div class="visual-grid" id="mip-visual-grid"></div>
+    </div>
+      <div class="textual-solution">
+        <label>Structured knapsack solution:</label>
+        <div class="output placeholder" id="mip-output">Preparing the initial packing…</div>
+      </div>
+      <div class="timing-bar" id="mip-timing">Waiting for solver</div>
+    </article>
+
+    <article class="model-example" id="example-facility">
+      <div class="model-example-heading"><span>02</span><div><h4>Capacitated <a href="https://en.wikipedia.org/wiki/Optimal_facility_location" target="_blank" rel="noopener">facility location</a></h4><p>Opening decisions, customer assignments, capacity use, and route costs in one matrix.</p></div></div>
+      <div class="model-story" data-live-example="facility">
+        <p>Warehouse A costs $<input class="story-input" id="facility-fixed-a" type="number" value="500" min="0" step="10" aria-label="Warehouse A opening cost"> to open and can ship <input class="story-input" id="facility-capacity-a" type="number" value="200" min="0" step="10" aria-label="Warehouse A capacity"> units. Warehouse B costs $<input class="story-input" id="facility-fixed-b" type="number" value="300" min="0" step="10" aria-label="Warehouse B opening cost"> and can ship <input class="story-input" id="facility-capacity-b" type="number" value="200" min="0" step="10" aria-label="Warehouse B capacity"> units.</p>
+        <p>Customers A, B, and C need <input class="story-input" id="facility-demand-a" type="number" value="80" min="0" step="5" aria-label="Customer A demand">, <input class="story-input" id="facility-demand-b" type="number" value="60" min="0" step="5" aria-label="Customer B demand">, and <input class="story-input" id="facility-demand-c" type="number" value="40" min="0" step="5" aria-label="Customer C demand"> units. Shipping from Warehouse A costs $<input class="story-input" id="facility-a1" type="number" value="2" min="0" aria-label="Warehouse A to customer A cost"> / $<input class="story-input" id="facility-a2" type="number" value="4" min="0" aria-label="Warehouse A to customer B cost"> / $<input class="story-input" id="facility-a3" type="number" value="5" min="0" aria-label="Warehouse A to customer C cost"> per unit; from B it costs $<input class="story-input" id="facility-b1" type="number" value="3" min="0" aria-label="Warehouse B to customer A cost"> / $<input class="story-input" id="facility-b2" type="number" value="1" min="0" aria-label="Warehouse B to customer B cost"> / $<input class="story-input" id="facility-b3" type="number" value="3" min="0" aria-label="Warehouse B to customer C cost">. The solution shows which warehouses justify their fixed cost and where each shipment goes.</p>
+      </div>
+      <div class="model-state" id="facility-state">Preparing the first solution…</div>
+      <div class="model-viz" id="facility-viz"><div class="viz-loading">Preparing visualization…</div></div>
+    </article>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      HiGHS branch-and-cut MIP solver • Binary/integer columns • Incumbent and bound-based MIP gap
+    </div>
+  </div>
+</section>

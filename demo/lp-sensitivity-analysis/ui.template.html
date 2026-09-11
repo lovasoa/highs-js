@@ -1,0 +1,103 @@
+<section class="tab-panel" id="panel-ranging">
+  <div class="example-card">
+    <div class="tech-header-line">
+      <span>RANGING // POST-OPTIMAL SENSITIVITY ANALYSIS</span>
+      <span>getRanging()</span>
+    </div>
+
+    <div class="problem-header">
+      <h3>Objective Cost &amp; Constraint Sensitivity</h3>
+      <p>Use <a href="https://en.wikipedia.org/wiki/Sensitivity_analysis" target="_blank" rel="noopener">sensitivity analysis</a> after solving a <a href="https://en.wikipedia.org/wiki/Linear_programming" target="_blank" rel="noopener">linear program (LP)</a> to ask how far one objective coefficient or row bound can move while the current optimal <a href="https://en.wikipedia.org/wiki/Simplex_algorithm" target="_blank" rel="noopener">simplex basis</a> remains optimal. HiGHS reports independent up/down ranges for column costs and row or column bounds; these are local, one-at-a-time basis-stability intervals, not guarantees for simultaneous changes. Ranging requires an optimal LP basis and is not available for MIP or QP solutions.</p>
+      <p class="api-reference-links"><span>API reference</span><a href="docs/interfaces/Model.html#run"><code>Model.run()</code></a><a href="docs/interfaces/Model.html#getranging"><code>Model.getRanging()</code></a><a href="docs/interfaces/RangingResult.html"><code>RangingResult</code></a><a href="docs/interfaces/Model.html#dispose"><code>Model.dispose()</code></a></p>
+    </div>
+
+    <!-- Solving code -->
+    <div class="code-section">
+      <div class="code-header">
+        <a href="https://github.com/lovasoa/highs-js/blob/main/demo/lp-sensitivity-analysis/worker.js" target="_blank" rel="noopener">Solving code</a>
+        <span>annotated example</span>
+      </div>
+      <div class="code-editor-box">
+        <textarea id="ranging-core-code" spellcheck="false">// Ranging is defined for an optimal LP simplex basis. Check the run
+// status before requesting it; MIP and QP solutions are not supported.
+const model = highs.createModel({ format: "lp", data: lpText });
+try {
+  const run = model.run();
+  const basisValidity = model.info.get("basis_validity");
+  if (run.modelStatus !== highs.constants.modelStatus.optimal ||
+      basisValidity !== highs.constants.basisValidity.valid) {
+    throw new Error("Ranging requires an optimal LP simplex basis");
+  }
+
+  const ranging = model.getRanging();
+  // Values are absolute endpoints, not deltas. Variable identifiers use
+  // columns followed by rows in one augmented index space; -1 means none.
+  const xCostInterval = [
+    ranging.colCostDown.value[0],
+    ranging.colCostUp.value[0]
+  ];
+} finally {
+  model.dispose();
+}</textarea>
+      </div>
+    </div>
+
+    <!-- Interactive Visualization of Problem Inputs -->
+    <div class="visual-inputs">
+      <h4>LP Model Definition</h4>
+      <textarea class="editor-medium" id="ranging-lp" spellcheck="false">Maximize
+ obj: 3 x + 2 y
+Subject To
+ total: x + y &lt;= 6
+ material: 2 x + y &lt;= 8
+ balance: -x + y &lt;= 1
+ y_limit: y &lt;= 2
+Bounds
+ 0 &lt;= x
+ 0 &lt;= y
+End</textarea>
+      <p class="model-state" id="ranging-state">Preparing the initial sensitivity analysis…</p>
+    </div>
+
+    <!-- Visual Solution -->
+    <div class="visual-solution">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-label">STATUS</span>
+          <span class="stat-val" id="ranging-status">READY</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">BASIS STABILITY</span>
+          <span class="stat-val" id="ranging-stability">--</span>
+        </div>
+      </div>
+
+      <h4>Hover a number to ask “what if?”</h4>
+      <div id="ranging-visual-bars">
+        <div class="interval-scale">
+          <div class="interval-scale-header">
+            <span>x Cost Stability Range</span>
+            <span>[1.0000 ⟷ 4.0000]</span>
+          </div>
+          <div class="interval-scale-track">
+            <div class="interval-scale-fill initial-interval"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textual Solution -->
+    <details class="api-response textual-solution">
+      <summary>Exact API response</summary>
+      <div class="output placeholder" id="ranging-output">Preparing the initial sensitivity analysis…</div>
+    </details>
+
+    <!-- Time to Solve -->
+    <div class="timing-bar" id="ranging-timing">Waiting for solver</div>
+
+    <!-- Metadata -->
+    <div class="metadata-footer">
+      Optimal LP basis required • One coefficient or bound changes at a time • No MIP/QP ranging
+    </div>
+  </div>
+</section>

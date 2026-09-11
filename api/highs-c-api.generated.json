@@ -752,7 +752,8 @@
       "rawName": "create",
       "js": [
         "raw.createModel",
-        "createModel"
+        "createModel",
+        "withModel"
       ],
       "wasmExport": true,
       "returnPolicy": "owned-handle",
@@ -771,7 +772,10 @@
       "rawName": "destroy",
       "js": [
         "RawModel.dispose",
-        "Model.dispose"
+        "RawModel[Symbol.dispose]",
+        "Model.dispose",
+        "Model[Symbol.dispose]",
+        "withModel cleanup"
       ],
       "wasmExport": true,
       "returnPolicy": "no-value",

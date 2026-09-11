@@ -1051,6 +1051,19 @@ export interface HighsVersion {
   readonly gitHash: string;
 }
 
+/**
+ * Adds synchronous explicit-resource-management support when the consumer's
+ * TypeScript library defines `Symbol.dispose`. It adds no members otherwise.
+ */
+export type SymbolDisposable<T> = T & {
+  /** Disposes the resource at the end of a TypeScript `using` scope. */
+  readonly [Key in typeof Symbol extends {
+    readonly dispose: infer DisposeSymbol extends symbol;
+  }
+    ? DisposeSymbol
+    : never]: () => void;
+};
+
 /** Loaded runtime combining the compatibility solver with persistent and raw APIs. */
 export type Highs = LegacyHighs & {
   /** Immutable version metadata for the loaded Wasm build. */
@@ -1070,10 +1083,35 @@ export type Highs = LegacyHighs & {
 
   /**
    * Creates a persistent native instance and optionally loads copied structured
-   * data or parses in-memory LP/MPS content. The caller must eventually call
-   * `dispose()`; garbage collection does not release the native instance.
+   * data or parses in-memory LP/MPS content. Garbage collection does not release
+   * its native memory, so the caller must use {@link Highs | `Highs.withModel()`},
+   * `using`, or eventually call {@link Model.dispose | `dispose()`}. Failing to
+   * do so leaks Wasm memory for the lifetime of the runtime.
    */
-  createModel(source?: ModelData | EncodedModel): Model;
+  createModel(source?: ModelData | EncodedModel): SymbolDisposable<Model>;
+
+  /**
+   * Creates a model for the duration of `operation` and disposes it after the
+   * returned value, or after a returned Promise-like value settles. Do not
+   * retain or return the model itself: it is disposed when this method finishes.
+   */
+  withModel<Result>(
+    operation: (model: SymbolDisposable<Model>) => PromiseLike<Result>,
+  ): Promise<Result>;
+  /** Synchronous `withModel()` overload. */
+  withModel<Result>(
+    operation: (model: SymbolDisposable<Model>) => Result,
+  ): Result;
+  /** Creates a populated scoped model and awaits a Promise-like operation result. */
+  withModel<Result>(
+    source: ModelData | EncodedModel,
+    operation: (model: SymbolDisposable<Model>) => PromiseLike<Result>,
+  ): Promise<Result>;
+  /** Creates a populated scoped model and returns a synchronous operation result. */
+  withModel<Result>(
+    source: ModelData | EncodedModel,
+    operation: (model: SymbolDisposable<Model>) => Result,
+  ): Result;
 
   /** Status-preserving APIs corresponding closely to the stable C API. */
   readonly raw: RawRuntimeApi;
@@ -1142,7 +1180,11 @@ export interface HighsError extends Error {
   readonly operation: string;
 }
 
-/** Error thrown when any non-idempotent operation uses a disposed model. */
+/**
+ * JavaScript error thrown before native entry when an operation uses a disposed
+ * model. Stale `Model`, `raw`, `options`, and `info` references cannot access the
+ * freed Wasm allocation.
+ */
 export interface HighsDisposedError extends HighsError {}
 /** Error thrown before native entry when JavaScript input violates a wrapper invariant. */
 export interface HighsValidationError extends HighsError {}
@@ -2614,14 +2656,16 @@ export type HighsCallbackMap = {
 /**
  * Persistent model owning one native HiGHS instance. Methods are synchronous,
  * copy inputs, and throw on validation/native errors unless explicitly noted.
- * The caller must eventually call `dispose()`; garbage collection does not free
- * the native instance. Returned strings and typed arrays are detached and remain
+ * The caller must eventually dispose the model; garbage collection does not free
+ * the native instance and undisposed models leak Wasm memory. Prefer
+ * {@link Highs | `Highs.withModel()`}, `using`, or `try`/`finally` with
+ * {@link Model.dispose | `dispose()`}. Returned strings and typed arrays remain
  * usable after disposal. Value-returning methods record a native warning in
  * `lastCall` when they do not return metadata directly.
  */
 export interface Model {
   /** Status-preserving view of the same native instance; disposing either view disposes both. */
-  readonly raw: RawModelApi;
+  readonly raw: SymbolDisposable<RawModelApi>;
   /** Option facade scoped to this instance. */
   readonly options: OptionStore;
   /** Solve-information facade scoped to this instance. */
@@ -2890,8 +2934,8 @@ export interface RawRuntimeApi {
   mipCall(model: ModelData): RawResult<MipSolveOutput>;
   /** Solves a copied QP; Hessian is required, while names and integrality are ignored. */
   qpCall(model: ModelData): RawResult<SolveOutput>;
-  /** Allocates a persistent raw instance; the caller must eventually call `dispose()`. */
-  createModel(): RawModelApi;
+  /** Allocates a persistent raw instance; the caller must eventually dispose it. */
+  createModel(): SymbolDisposable<RawModelApi>;
 }
 
 /**

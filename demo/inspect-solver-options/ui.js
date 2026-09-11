@@ -1,6 +1,7 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { element, setJson, setOutput } from "../ui.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const optsBody = document.getElementById("opts-body");
 const optsSearch = document.getElementById("opts-search");
 const optsCount = document.getElementById("opts-count");

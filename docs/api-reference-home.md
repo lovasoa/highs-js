@@ -13,7 +13,7 @@ Bundlers (webpack, Rollup, Vite, esbuild, etc.) do not always emit or resolve th
 | Surface | Entry point | Use when |
 | --- | --- | --- |
 | Legacy one-shot API | <a href="#" data-api-link="types/LegacyHighs.html"><code>highs.solve()</code></a> | The model already exists as CPLEX LP text and no solver state must persist. |
-| Persistent API | <a href="#" data-api-link="interfaces/Model.html"><code>highs.createModel()</code> / <code>Model</code></a> | Building typed models, changing data, solving repeatedly, callbacks, basis access, ranging, IIS, or model I/O. |
+| Persistent API | <a href="#" data-api-link="types/Highs.html"><code>highs.createModel()</code></a> / <a href="#" data-api-link="interfaces/Model.html"><code>Model</code></a> | Building typed models, changing data, solving repeatedly, callbacks, basis access, ranging, IIS, or model I/O. Models own Wasm memory that garbage collection does not release; use <a href="#" data-api-link="types/Highs.html"><code>withModel()</code></a> or <a href="#" data-api-link="interfaces/Model.html#dispose"><code>dispose()</code></a>. |
 | Raw API | <a href="#" data-api-link="interfaces/RawRuntimeApi.html"><code>highs.raw</code></a> | Native HiGHS status codes are required instead of exceptions. Inputs are still validated and copied. |
 
 Search covers every exported method, property, type, constant, and enum. Start with <a href="#" data-api-link="types/Highs.html"><code>Highs</code></a>, <a href="#" data-api-link="interfaces/Model.html"><code>Model</code></a>, and <a href="#" data-api-link="interfaces/ModelData.html"><code>ModelData</code></a>.
@@ -104,7 +104,7 @@ try {
 | Solver configuration | <a href="#" data-api-link="interfaces/OptionStore.html"><code>OptionStore.set()</code></a> | Option names are exact HiGHS snake_case names; the persistent wrapper rejects unsupported thread and path options. |
 | Progress callbacks | <a href="#" data-api-link="types/HighsCallbackMap.html"><code>HighsCallbackMap</code></a> | Callbacks run synchronously inside `run()`; callback controls expire when the handler returns. |
 | Repeated scenarios | <a href="#" data-api-link="interfaces/Model.html#changecolcost"><code>Model.changeColCost()</code></a> | Mutate the existing native model and solve again without rebuilding the sparse matrix. |
-| Ownership | <a href="#" data-api-link="interfaces/Model.html#dispose"><code>Model.dispose()</code></a> | Persistent models own native memory and should be disposed in `finally`. |
+| Ownership | <a href="#" data-api-link="types/Highs.html"><code>Highs.withModel()</code></a> / <a href="#" data-api-link="interfaces/Model.html#dispose"><code>Model.dispose()</code></a> | Persistent models own native memory that garbage collection does not release. Scoped, `using`, or `finally` disposal prevents Wasm leaks. |
 
 ## Reference map
 

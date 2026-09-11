@@ -1,8 +1,9 @@
-import { send } from "../worker-client.js";
+import { createWorkerClient } from "../worker-client.js";
 import { setJson, setOutput, setStatus, setTiming } from "../ui.js";
 import { parseLpModel, renderRangingViz } from "../visualizations.js";
 import { beginLiveSolve, finishLiveSolve, isLiveSolveCurrent, scheduleLiveSolve } from "../live-examples.js";
 
+const { send } = createWorkerClient(new URL("./worker.js", import.meta.url));
 const output = document.getElementById("ranging-output");
 const input = document.getElementById("ranging-lp");
 const timing = document.getElementById("ranging-timing");

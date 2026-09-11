@@ -33,7 +33,10 @@
 
   class HighsDisposedError extends HighsError {
     constructor() {
-      super("This HiGHS model has been disposed", "dispose");
+      super(
+        "Cannot use this HiGHS model after disposal; create a new model or keep the work inside highs.withModel()",
+        "dispose"
+      );
       this.name = "HighsDisposedError";
     }
   }
@@ -3091,7 +3094,7 @@
   function createRawModel() {
     const pointer = numericFunction("Highs_create", 0)();
     if (!pointer) throw new Error("Highs_create failed");
-    const raw = new RawModel(pointer);
+    const raw = addSymbolDispose(new RawModel(pointer));
     // These are defense-in-depth. A HIGHS_NO_DEFAULT_THREADS build may reject
     // one or both options, which is harmless because no scheduler exists.
     stringFunction("Highs_setIntOptionValue", 1, 1)(pointer, "threads", 1);
@@ -3104,7 +3107,7 @@
   }
 
   function createPersistentModel(source) {
-    const model = new PersistentModel(createRawModel());
+    const model = addSymbolDispose(new PersistentModel(createRawModel()));
     try {
       if (source) {
         if (source.format === "lp" || source.format === "mps")
@@ -3112,6 +3115,51 @@
         else model.passModel(source);
       }
       return model;
+    } catch (error) {
+      model.dispose();
+      throw error;
+    }
+  }
+
+  function addSymbolDispose(model) {
+    const disposeSymbol = (
+      Symbol as typeof Symbol & { readonly dispose?: symbol }
+    ).dispose;
+    if (disposeSymbol !== undefined) {
+      Object.defineProperty(model, disposeSymbol, {
+        configurable: true,
+        writable: true,
+        value: model.dispose,
+      });
+    }
+    return model;
+  }
+
+  function isPromiseLike(value) {
+    return (
+      value !== null &&
+      (typeof value === "object" || typeof value === "function") &&
+      typeof value.then === "function"
+    );
+  }
+
+  function withPersistentModel(sourceOrOperation, maybeOperation = undefined) {
+    const hasSource = typeof sourceOrOperation !== "function";
+    const source = hasSource ? sourceOrOperation : undefined;
+    const operation = hasSource ? maybeOperation : sourceOrOperation;
+    if (typeof operation !== "function")
+      throw validationError("withModel requires a callback");
+
+    const model = createPersistentModel(source);
+    try {
+      const result = operation(model);
+      if (isPromiseLike(result)) {
+        return Promise.resolve(result).finally(function () {
+          model.dispose();
+        });
+      }
+      model.dispose();
+      return result;
     } catch (error) {
       model.dispose();
       throw error;
@@ -3320,6 +3368,7 @@
     HighsUnsupportedOptionError,
   });
   Module["createModel"] = createPersistentModel;
+  Module["withModel"] = withPersistentModel;
   Module["raw"] = Object.freeze({
     version: function () {
       return version;
