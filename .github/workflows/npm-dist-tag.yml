@@ -1,0 +1,47 @@
+name: Manage npm dist-tags
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to point the dist-tag at (e.g. 1.15.3)
+        required: true
+        type: string
+      tag:
+        description: dist-tag to update
+        required: true
+        default: next
+        type: string
+      remove:
+        description: Remove the dist-tag instead of pointing it at a version
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  dist-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - id: versions
+        name: Read canonical toolchain versions
+        run: |
+          . ./.env
+          echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "${{ steps.versions.outputs.node }}"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+      - name: Update dist-tag
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ "${{ inputs.remove }}" = "true" ]; then
+            npm dist-tag rm highs "${{ inputs.tag }}"
+          else
+            npm dist-tag add "highs@${{ inputs.version }}" "${{ inputs.tag }}"
+          fi
