@@ -283,7 +283,7 @@ async function resetModel(data) {
   const runtime = await runtimeForReset(generation);
   if (!runtime) return;
 
-  const size = Math.max(30, Math.min(75, Number(data.size) || 60));
+  const size = Math.max(20, Math.min(75, Number(data.size) || 60));
   const built = buildTspProblem(size, runtime.constants);
   self.postMessage({
     type: "phase",

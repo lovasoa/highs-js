@@ -36,7 +36,9 @@
   .nav-track-active {
     stroke: #d45e6a;
     stroke-width: var(--nav-active-line);
+    stroke-linecap: round;
   }
+  .nav-track .nav-track-drop { fill: #ef9ba3; }
   .nav-group { display: grid; gap: 0; min-width: 0; }
   .nav-group + .nav-group { margin-top: 0.55rem; }
   .nav-group-label,

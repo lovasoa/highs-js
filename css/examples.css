@@ -10,8 +10,6 @@
     .runtime-contract dl { grid-template-columns: 1fr; }
     .runtime-contract dt { padding-bottom: 0; border-bottom: 0; }
     .runtime-contract dd { padding-top: 0.2rem; }
-    .prerelease-banner { margin: 0 1rem; padding: 1rem; }
-    .prerelease-banner a { display: block; float: none; margin-top: 0.4rem; }
     .demo-heading { margin-top: 5rem; padding: 0 1rem; line-height: 1.6; }
     .demo-heading::after { display: block; }
     .container { padding: 0 1rem 5rem; }
