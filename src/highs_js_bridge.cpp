@@ -164,7 +164,15 @@ HighsInt Highs_js_setCallback(void* highs, HighsCCallbackType callback,
         }
         callback(type, message.c_str(), &c_data_out, c_data_in_pointer,
                  callback_user_data);
-        if (data_in) *data_in = c_data_in;
+        if (data_in) {
+          // Highs_setCallbackSolution, Highs_setCallbackSparseSolution and
+          // Highs_repairCallbackSolution write to *data_in through
+          // c_data_in.cbdata, so the snapshot taken before the callback no
+          // longer reflects user_has_solution. Copying the stale snapshot
+          // back verbatim would discard the submitted solution.
+          c_data_in.user_has_solution |= data_in->user_has_solution ? 1 : 0;
+          *data_in = c_data_in;
+        }
       };
   return static_cast<HighsInt>(
       instance->setCallback(safe_callback, user_data));
