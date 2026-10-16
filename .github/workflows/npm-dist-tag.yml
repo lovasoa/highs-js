@@ -10,7 +10,6 @@ on:
       tag:
         description: dist-tag to update
         required: true
-        default: next
         type: string
       remove:
         description: Remove the dist-tag instead of pointing it at a version

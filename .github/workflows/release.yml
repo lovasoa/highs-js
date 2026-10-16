@@ -70,22 +70,7 @@ jobs:
             echo "highs@$VER is already published on npm; skipping."
             exit 0
           fi
-          TAG=$(echo "$VER" | grep -q -- '-' && echo next || echo latest)
-          npm publish --provenance --tag "$TAG"
-      - name: advance the next dist-tag
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |-
-          VER=$(node -p 'require("./package.json").version')
-          case "$VER" in
-            *-*)
-              echo "Prerelease: npm publish already tagged it as next."
-              ;;
-            *)
-              npm dist-tag add "highs@$VER" next \
-                || echo "::warning::Could not advance the next dist-tag to $VER"
-              ;;
-          esac
+          npm publish --provenance
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
