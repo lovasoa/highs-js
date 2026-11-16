@@ -514,7 +514,9 @@ General
 End`;
   const sol = Module.solve(pb);
   assert.strictEqual(sol.Status, 'Optimal');
-  assert.strictEqual(sol.ObjectiveValue, 9);
+  // HiGHS 1.16 stops at x=4.4999995 (objective 8.999999), which is inside
+  // its MIP feasibility tolerance, so compare within that tolerance.
+  assert.ok(Math.abs(sol.ObjectiveValue - 9) < 1e-5, `objective ${sol.ObjectiveValue}`);
   // The invariant that actually broke: presolve must not change the optimum.
   assertDeepApprox(sol, Module.solve(pb, { presolve: 'off' }));
 }

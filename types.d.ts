@@ -1365,6 +1365,8 @@ export interface HighsConstants {
     optionsError: 7;
     /** Presolve allocation failed. */
     outOfMemory: 8;
+    /** Presolve terminated with an internal exception. */
+    exception: 9;
   }>;
   /** Detailed model state after load, presolve, or solve. */
   readonly modelStatus: Readonly<{
@@ -1404,6 +1406,10 @@ export interface HighsConstants {
     solutionLimit: 16;
     /** Solve was interrupted, including by a callback. */
     interrupted: 17;
+    /** Configured memory limit was reached. */
+    memoryLimit: 18;
+    /** HiGHS itself interrupted the solve. */
+    highsInterrupt: 19;
   }>;
   /** IIS strategy, bound classification, and conflict-membership encodings. */
   readonly iis: Readonly<{
@@ -2743,13 +2749,15 @@ export interface Model {
 
   /**
    * Copies current solution buffers when model state permits the native query.
-   * This is not an availability guarantee: inspect model status plus the
-   * `primal_solution_status` and `dual_solution_status` info values.
+   * Throws when no primal solution exists (`primal_solution_status` is
+   * `solutionStatus.none`), for example after proving infeasibility. Inspect
+   * `primal_solution_status` and `dual_solution_status` to judge the values.
    */
   getSolution(): Solution;
   /**
-   * Copies current basis-status buffers. Inspect `basis_validity`; a solved MIP
-   * or an interior-point solve without crossover need not have a valid basis.
+   * Copies current basis-status buffers. Throws when the basis is invalid
+   * (`basis_validity` is `basisValidity.invalid`); a solved MIP or an
+   * interior-point solve without crossover need not have a valid basis.
    */
   getBasis(): Basis;
   /** Returns current model status without running the solver. */
@@ -3030,9 +3038,9 @@ export interface RawModelApi {
   getInfoValue(name: string): RawResult<number | bigint>;
   /** Reads an information item's storage category. */
   getInfoType(name: string): RawResult<InfoType>;
-  /** Copies current buffers; inspect solution-status info because presence does not imply validity. */
+  /** Copies current buffers; the status is an error when no primal solution exists. */
   getSolution(): RawResult<Solution>;
-  /** Copies current basis statuses; inspect `basis_validity` before using basis operations. */
+  /** Copies current basis statuses; the status is an error when the basis is invalid. */
   getBasis(): RawResult<Basis>;
   /** Returns current model status directly; this C getter has no call-status output. */
   getModelStatus(): ModelStatusCode;

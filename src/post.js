@@ -272,17 +272,17 @@ Module["solve"] = function (model_str, highs_options) {
     const rowDualPtr =
       numRow > 0 ? alloc(numRow * Float64Array.BYTES_PER_ELEMENT) : 0;
 
-    assert_ok(
-      () =>
-        Highs_getSolution(
-          highs,
-          colValuePtr,
-          colDualPtr,
-          rowValuePtr,
-          rowDualPtr
-        ),
-      "get solution"
+    // Since HiGHS 1.16, Highs_getSolution reports an error (and copies
+    // nothing) when no primal solution exists, e.g. for infeasible models.
+    // That is a normal outcome here, not a failure of the solve.
+    const solutionResult = Highs_getSolution(
+      highs,
+      colValuePtr,
+      colDualPtr,
+      rowValuePtr,
+      rowDualPtr
     );
+    const hasSolution = solutionResult === 0 || solutionResult === 1;
 
     // Try to get basis (not available for MIP)
     const colBasisPtr =
@@ -339,7 +339,7 @@ Module["solve"] = function (model_str, highs_options) {
     // Integrality scratch buffer
     const integPtr = alloc(Int32Array.BYTES_PER_ELEMENT);
 
-    const hasPrimal = !NO_SOLUTION_STATUSES.has(status);
+    const hasPrimal = hasSolution && !NO_SOLUTION_STATUSES.has(status);
 
     // MIP models use a different column/row shape without Status/Dual.
     let isMip = false;

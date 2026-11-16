@@ -3303,6 +3303,7 @@
       nullError: 6,
       optionsError: 7,
       outOfMemory: 8,
+      exception: 9,
     }),
     modelStatus: Object.freeze({
       notSet: 0,
@@ -3323,6 +3324,8 @@
       unknown: 15,
       solutionLimit: 16,
       interrupted: 17,
+      memoryLimit: 18,
+      highsInterrupt: 19,
     }),
     iis: Object.freeze({
       strategyLight: 0,

@@ -196,7 +196,9 @@ The following are not exposed merely to make a declaration appear complete:
 | Raw pointers, arbitrary `ccall`/`cwrap`, and live heap views | They cannot remain safe across memory growth and allow use-after-free. Use the structured raw API and detached arrays. |
 | `getCoefficient(row, col)` | There is no stable C API entry point. Fetch the sparse row with `getRows({kind: "range", from: row, to: row})`, which is also faster for reading multiple coefficients. |
 | Native `clone()` | The stable C API does not clone a `Highs` instance. Use `getModel()` followed by `createModel(snapshot)` and make the numerical copy cost explicit; copy names separately if needed. |
-| Scheduler reset and thread-pool controls | The WebAssembly build is single-threaded. No public wrapper for `Highs_resetGlobalScheduler` is provided. |
+| Scheduler reset and thread-pool controls | The WebAssembly build is single-threaded. No public wrapper for `Highs_resetThreadScheduler` is provided. |
+| Hessian oracle (`Highs_passHessianOracle`, `Highs_checkHessianOracle`) and QP callback types | The oracle takes a native function pointer and the callback bridge does not marshal QP payloads. Pass an explicit Hessian with `passHessian()` or `passModel()`. |
+| Optional extras (`Highs_initializeExtras`) | Extras are loaded from a dynamic library, which the WebAssembly build cannot do. |
 | External asynchronous interrupt | The stable C API does not provide a safe general external-interrupt operation for this synchronous build. Interrupt from a registered callback or terminate a dedicated Worker. |
 | Gzip model I/O | zlib is disabled. Decompress before `readModel()` or compress exported bytes in JavaScript. |
 | Public file/path APIs | They expose Emscripten implementation details and leak temporary-state concerns. Use data-only I/O. |

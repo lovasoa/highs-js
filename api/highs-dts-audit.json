@@ -76,7 +76,7 @@
       "reason": "The build intentionally uses ZLIB=OFF."
     },
     {
-      "proposal": "resetGlobalScheduler()",
+      "proposal": "resetThreadScheduler()",
       "alternative": "None; dispose models and call releaseMemory().",
       "reason": "The JavaScript build is single-threaded and upstream documents undefined behavior if the scheduler is in use."
     },
