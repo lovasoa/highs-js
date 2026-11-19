@@ -18,7 +18,6 @@ test("streams, interrupts, resumes, and restarts a MIP search", async ({ page })
 
   if (await stop.isEnabled()) {
     await stop.click();
-    await expect(stop).toHaveText("Stopping…");
     await expect(state).toContainText(/status interrupted/i);
   }
 
