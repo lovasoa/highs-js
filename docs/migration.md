@@ -142,6 +142,8 @@ The model-status strings map exactly as follows:
 | `Unknown` | `modelStatus.unknown` |
 | no legacy string | `modelStatus.solutionLimit` |
 | no legacy string | `modelStatus.interrupted` |
+| no legacy string | `modelStatus.memoryLimit` |
+| no legacy string | `modelStatus.highsInterrupt` |
 
 Basis status is numeric in the persistent API:
 `basisStatus.lower`, `basic`, `upper`, `zero`, and `nonbasic`. The legacy

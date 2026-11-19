@@ -86,7 +86,8 @@
         "timeout": "kHighsPresolveStatusTimeout",
         "nullError": "kHighsPresolveStatusNullError",
         "optionsError": "kHighsPresolveStatusOptionsError",
-        "outOfMemory": "kHighsPresolveStatusOutOfMemory"
+        "outOfMemory": "kHighsPresolveStatusOutOfMemory",
+        "exception": "kHighsPresolveStatusException"
       },
       "modelStatus": {
         "notSet": "kHighsModelStatusNotset",
@@ -106,7 +107,9 @@
         "iterationLimit": "kHighsModelStatusIterationLimit",
         "unknown": "kHighsModelStatusUnknown",
         "solutionLimit": "kHighsModelStatusSolutionLimit",
-        "interrupted": "kHighsModelStatusInterrupt"
+        "interrupted": "kHighsModelStatusInterrupt",
+        "memoryLimit": "kHighsModelStatusMemoryLimit",
+        "highsInterrupt": "kHighsModelStatusHighsInterrupt"
       },
       "iis": {
         "strategyLight": "kHighsIisStrategyLight",
@@ -123,7 +126,38 @@
     },
     "excluded": {
       "kHighsMaximumStringLength": "Internal buffer sizing is not a solver semantic.",
-      "kHighsCallbackMipDefineLazyConstraints": "This callback type is inert in the bundled HiGHS version."
+      "kHighsCallbackMipDefineLazyConstraints": "This callback type is inert in the bundled HiGHS version.",
+      "kHighsCallbackQpFirstFeasiblePoint": "The callback bridge does not marshal QP callback payloads.",
+      "kHighsCallbackQpInterrupt": "The callback bridge does not marshal QP callback payloads.",
+      "kHighsHessianOracleCallTypeMin": "The Hessian oracle callback is not exposed.",
+      "kHighsHessianOracleCallTypeEntry": "The Hessian oracle callback is not exposed.",
+      "kHighsHessianOracleCallTypeColumn": "The Hessian oracle callback is not exposed.",
+      "kHighsHessianOracleCallTypeProduct": "The Hessian oracle callback is not exposed.",
+      "kHighsHessianOracleCallTypeMax": "The Hessian oracle callback is not exposed.",
+      "kHighsPresolveRuleEmptyRow": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleSingletonRow": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleRedundantRow": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleEmptyCol": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleFixedCol": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDominatedCol": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleForcingRow": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleForcingCol": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleFreeColSubstitution": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDoubletonEquation": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDependentEquations": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDependentFreeCols": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleAggregator": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleParallelRowsAndCols": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleSparsify": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleProbing": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleEnumeration": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDualFixing": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleZeroCostSingleton": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleColStuffing": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleDualFixProbing": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleInitialSweep": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleFourierMotzkin": "No stable C function accepts or returns presolve rule identifiers.",
+      "kHighsPresolveRuleWeaklyDominatedCol": "No stable C function accepts or returns presolve rule identifiers."
     }
   },
   "defaults": {
@@ -278,8 +312,22 @@
       "family": "scheduler",
       "exposure": "excluded",
       "wasmExport": false,
-      "functions": ["Highs_resetGlobalScheduler"],
-      "reason": "The JavaScript build is single-threaded; exposing global scheduler control adds undefined-behavior risk and no useful capability."
+      "functions": ["Highs_resetThreadScheduler"],
+      "reason": "The JavaScript build is single-threaded; exposing scheduler control adds undefined-behavior risk and no useful capability."
+    },
+    {
+      "family": "hessian-oracle",
+      "exposure": "excluded",
+      "wasmExport": false,
+      "functions": ["Highs_passHessianOracle", "Highs_checkHessianOracle"],
+      "reason": "The Hessian oracle takes a native function pointer; no JavaScript callback adapter exists for it yet."
+    },
+    {
+      "family": "extras",
+      "exposure": "excluded",
+      "wasmExport": false,
+      "functions": ["Highs_initializeExtras"],
+      "reason": "Optional extras are loaded from a dynamic library, which the WebAssembly build cannot do."
     }
   ],
   "overrides": {
@@ -362,7 +410,10 @@
     "Highs_setCallbackSolution": {"rawName": null, "js": ["CallbackControl.setSolution"]},
     "Highs_setCallbackSparseSolution": {"rawName": null, "js": ["CallbackControl.setSparseSolution"]},
     "Highs_repairCallbackSolution": {"rawName": null, "js": ["CallbackControl.repairSolution"]},
-    "Highs_resetGlobalScheduler": {"rawName": null, "returnPolicy": "not-exposed", "js": []}
+    "Highs_resetThreadScheduler": {"rawName": null, "returnPolicy": "not-exposed", "js": []},
+    "Highs_passHessianOracle": {"rawName": null, "returnPolicy": "not-exposed", "js": []},
+    "Highs_checkHessianOracle": {"rawName": null, "returnPolicy": "not-exposed", "js": []},
+    "Highs_initializeExtras": {"rawName": null, "returnPolicy": "not-exposed", "js": []}
   },
   "compatibilityExports": ["_Highs_call"],
   "generatedExports": ["_malloc", "_free"],

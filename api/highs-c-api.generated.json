@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "generatedFrom": "HiGHS/highs/interfaces/highs_c_api.h",
   "deprecatedFunctionsIncluded": false,
-  "functionCount": 152,
-  "constantCount": 80,
+  "functionCount": 155,
+  "constantCount": 114,
   "constants": [
     {
       "cName": "kHighsMaximumStringLength",
@@ -191,6 +191,11 @@
       "jsName": "kHighsPresolveStatusOutOfMemory"
     },
     {
+      "cName": "kHighsPresolveStatusException",
+      "value": 9,
+      "jsName": "kHighsPresolveStatusException"
+    },
+    {
       "cName": "kHighsModelStatusNotset",
       "value": 0,
       "jsName": "kHighsModelStatusNotset"
@@ -281,6 +286,16 @@
       "jsName": "kHighsModelStatusInterrupt"
     },
     {
+      "cName": "kHighsModelStatusMemoryLimit",
+      "value": 18,
+      "jsName": "kHighsModelStatusMemoryLimit"
+    },
+    {
+      "cName": "kHighsModelStatusHighsInterrupt",
+      "value": 19,
+      "jsName": "kHighsModelStatusHighsInterrupt"
+    },
+    {
       "cName": "kHighsBasisStatusLower",
       "value": 0,
       "jsName": "kHighsBasisStatusLower"
@@ -356,6 +371,16 @@
       "jsName": "kHighsCallbackCallbackMipUserSolution"
     },
     {
+      "cName": "kHighsCallbackQpFirstFeasiblePoint",
+      "value": 10,
+      "jsName": "kHighsCallbackQpFirstFeasiblePoint"
+    },
+    {
+      "cName": "kHighsCallbackQpInterrupt",
+      "value": 11,
+      "jsName": "kHighsCallbackQpInterrupt"
+    },
+    {
       "cName": "kHighsIisStrategyLight",
       "value": 0,
       "jsName": "kHighsIisStrategyLight"
@@ -404,6 +429,151 @@
       "cName": "kHighsIisStatusInConflict",
       "value": 1,
       "jsName": "kHighsIisStatusInConflict"
+    },
+    {
+      "cName": "kHighsHessianOracleCallTypeMin",
+      "value": 0,
+      "jsName": "kHighsHessianOracleCallTypeMin"
+    },
+    {
+      "cName": "kHighsHessianOracleCallTypeEntry",
+      "value": 0,
+      "jsName": "kHighsHessianOracleCallTypeEntry"
+    },
+    {
+      "cName": "kHighsHessianOracleCallTypeColumn",
+      "value": 1,
+      "jsName": "kHighsHessianOracleCallTypeColumn"
+    },
+    {
+      "cName": "kHighsHessianOracleCallTypeProduct",
+      "value": 2,
+      "jsName": "kHighsHessianOracleCallTypeProduct"
+    },
+    {
+      "cName": "kHighsHessianOracleCallTypeMax",
+      "value": 2,
+      "jsName": "kHighsHessianOracleCallTypeMax"
+    },
+    {
+      "cName": "kHighsPresolveRuleEmptyRow",
+      "value": 0,
+      "jsName": "kHighsPresolveRuleEmptyRow"
+    },
+    {
+      "cName": "kHighsPresolveRuleSingletonRow",
+      "value": 1,
+      "jsName": "kHighsPresolveRuleSingletonRow"
+    },
+    {
+      "cName": "kHighsPresolveRuleRedundantRow",
+      "value": 2,
+      "jsName": "kHighsPresolveRuleRedundantRow"
+    },
+    {
+      "cName": "kHighsPresolveRuleEmptyCol",
+      "value": 3,
+      "jsName": "kHighsPresolveRuleEmptyCol"
+    },
+    {
+      "cName": "kHighsPresolveRuleFixedCol",
+      "value": 4,
+      "jsName": "kHighsPresolveRuleFixedCol"
+    },
+    {
+      "cName": "kHighsPresolveRuleDominatedCol",
+      "value": 5,
+      "jsName": "kHighsPresolveRuleDominatedCol"
+    },
+    {
+      "cName": "kHighsPresolveRuleForcingRow",
+      "value": 6,
+      "jsName": "kHighsPresolveRuleForcingRow"
+    },
+    {
+      "cName": "kHighsPresolveRuleForcingCol",
+      "value": 7,
+      "jsName": "kHighsPresolveRuleForcingCol"
+    },
+    {
+      "cName": "kHighsPresolveRuleFreeColSubstitution",
+      "value": 8,
+      "jsName": "kHighsPresolveRuleFreeColSubstitution"
+    },
+    {
+      "cName": "kHighsPresolveRuleDoubletonEquation",
+      "value": 9,
+      "jsName": "kHighsPresolveRuleDoubletonEquation"
+    },
+    {
+      "cName": "kHighsPresolveRuleDependentEquations",
+      "value": 10,
+      "jsName": "kHighsPresolveRuleDependentEquations"
+    },
+    {
+      "cName": "kHighsPresolveRuleDependentFreeCols",
+      "value": 11,
+      "jsName": "kHighsPresolveRuleDependentFreeCols"
+    },
+    {
+      "cName": "kHighsPresolveRuleAggregator",
+      "value": 12,
+      "jsName": "kHighsPresolveRuleAggregator"
+    },
+    {
+      "cName": "kHighsPresolveRuleParallelRowsAndCols",
+      "value": 13,
+      "jsName": "kHighsPresolveRuleParallelRowsAndCols"
+    },
+    {
+      "cName": "kHighsPresolveRuleSparsify",
+      "value": 14,
+      "jsName": "kHighsPresolveRuleSparsify"
+    },
+    {
+      "cName": "kHighsPresolveRuleProbing",
+      "value": 15,
+      "jsName": "kHighsPresolveRuleProbing"
+    },
+    {
+      "cName": "kHighsPresolveRuleEnumeration",
+      "value": 16,
+      "jsName": "kHighsPresolveRuleEnumeration"
+    },
+    {
+      "cName": "kHighsPresolveRuleDualFixing",
+      "value": 17,
+      "jsName": "kHighsPresolveRuleDualFixing"
+    },
+    {
+      "cName": "kHighsPresolveRuleZeroCostSingleton",
+      "value": 18,
+      "jsName": "kHighsPresolveRuleZeroCostSingleton"
+    },
+    {
+      "cName": "kHighsPresolveRuleColStuffing",
+      "value": 19,
+      "jsName": "kHighsPresolveRuleColStuffing"
+    },
+    {
+      "cName": "kHighsPresolveRuleDualFixProbing",
+      "value": 20,
+      "jsName": "kHighsPresolveRuleDualFixProbing"
+    },
+    {
+      "cName": "kHighsPresolveRuleInitialSweep",
+      "value": 21,
+      "jsName": "kHighsPresolveRuleInitialSweep"
+    },
+    {
+      "cName": "kHighsPresolveRuleFourierMotzkin",
+      "value": 22,
+      "jsName": "kHighsPresolveRuleFourierMotzkin"
+    },
+    {
+      "cName": "kHighsPresolveRuleWeaklyDominatedCol",
+      "value": 23,
+      "jsName": "kHighsPresolveRuleWeaklyDominatedCol"
     }
   ],
   "constantContract": {
@@ -479,7 +649,8 @@
       "timeout": 5,
       "nullError": 6,
       "optionsError": 7,
-      "outOfMemory": 8
+      "outOfMemory": 8,
+      "exception": 9
     },
     "modelStatus": {
       "notSet": 0,
@@ -499,7 +670,9 @@
       "iterationLimit": 14,
       "unknown": 15,
       "solutionLimit": 16,
-      "interrupted": 17
+      "interrupted": 17,
+      "memoryLimit": 18,
+      "highsInterrupt": 19
     },
     "iis": {
       "strategyLight": 0,
@@ -1204,6 +1377,39 @@
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_passHessianOracle",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs",
+        "const HighsInt dim",
+        "HighsCHessianFunctionType oracleCall",
+        "void* oracle_data"
+      ],
+      "signature": "HighsInt Highs_passHessianOracle(void* highs, const HighsInt dim, HighsCHessianFunctionType oracleCall, void* oracle_data)",
+      "family": "hessian-oracle",
+      "exposure": "excluded",
+      "rawName": null,
+      "js": [],
+      "wasmExport": false,
+      "returnPolicy": "not-exposed",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_checkHessianOracle",
+      "returnType": "HighsInt",
+      "parameters": [
+        "void* highs"
+      ],
+      "signature": "HighsInt Highs_checkHessianOracle(void* highs)",
+      "family": "hessian-oracle",
+      "exposure": "excluded",
+      "rawName": null,
+      "js": [],
+      "wasmExport": false,
+      "returnPolicy": "not-exposed",
       "arrayPolicy": "copy-detached"
     },
     {
@@ -3737,12 +3943,12 @@
       "arrayPolicy": "copy-detached"
     },
     {
-      "cName": "Highs_resetGlobalScheduler",
+      "cName": "Highs_resetThreadScheduler",
       "returnType": "void",
       "parameters": [
         "const HighsInt blocking"
       ],
-      "signature": "void Highs_resetGlobalScheduler(const HighsInt blocking)",
+      "signature": "void Highs_resetThreadScheduler(const HighsInt blocking)",
       "family": "scheduler",
       "exposure": "excluded",
       "rawName": null,
@@ -3822,6 +4028,22 @@
       ],
       "wasmExport": true,
       "returnPolicy": "status-object",
+      "arrayPolicy": "copy-detached"
+    },
+    {
+      "cName": "Highs_initializeExtras",
+      "returnType": "HighsInt",
+      "parameters": [
+        "const char* directory",
+        "HighsInt search_if_empty"
+      ],
+      "signature": "HighsInt Highs_initializeExtras(const char* directory, HighsInt search_if_empty)",
+      "family": "extras",
+      "exposure": "excluded",
+      "rawName": null,
+      "js": [],
+      "wasmExport": false,
+      "returnPolicy": "not-exposed",
       "arrayPolicy": "copy-detached"
     }
   ]
